@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<taglib xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd" version="2.0">
+
+	<description>EL Functions</description>
+	<tlib-version>1.2</tlib-version>
+	<short-name>util</short-name>
+	<uri>/WEB-INF/tld/util.tld</uri>
+	<function>
+		<name>getThisYear</name>
+		<function-class>com.open.cmmn.util.DateUtils</function-class>
+		<function-signature>java.lang.String getThisYear()</function-signature>
+		<example>
+			util:getThisYear() 
+			result : '2016'
+		</example>
+	</function>
+
+	<function>
+		<name>convertEmpNoToEntYear</name>
+		<function-class>com.open.cmmn.util.DateUtils</function-class>
+		<function-signature>java.lang.String convertEmpNoToEntYear(java.lang.String)</function-signature>
+		<example>
+			util:convertEmpNoToEntYear('04412334') 
+			result : '2004'
+			
+			util:convertEmpNoToEntYear('98412334') 
+			result : '1998'
+		</example>
+	</function>
+	<function>
+		<name>getNowDate</name>
+		<function-class>com.open.cmmn.util.DateUtils</function-class>
+		<function-signature>java.lang.String getNowDate(java.lang.String)</function-signature>
+		<example>
+			util:getNowDate('yyyy/MM/dd') 
+			result : '2012/12/31'
+			
+			util:getNowDate('') 
+			result : '2012-12-31'
+		</example>
+	</function>
+
+	<function>
+		<name>getNowUTC</name>
+		<function-class>com.open.cmmn.util.DateUtils</function-class>
+		<function-signature>java.lang.String getNowUTC()</function-signature>
+		<example>
+			util:getNowDate() 
+			result : '2012/12/31T12:33Z'
+		</example>
+	</function>
+	<function>
+		<name>adjustYearMonthDay</name>
+		<function-class>com.open.cmmn.util.DateUtils</function-class>
+		<function-signature>java.lang.String adjustYearMonthDay(java.lang.String, java.lang.String, java.lang.String, int, int, int)</function-signature>
+		<example>
+			util:adjustYearMonthDay('20121231', "yyyyMMdd", "yyyy",  1, 0, 0) 
+			result : '2013'
+			
+			util:adjustYearMonthDay('20121231', "yyyyMMdd", "MM", 0, 1, 0)
+			result : '01'
+			
+			util:adjustYearMonthDay('20121231', "yyyyMMdd", "yyyy", 0, 1, 0)
+			result : '2013'
+		</example>
+	</function>
+
+	<function>
+		<name>adjustWeek</name>
+		<function-class>com.open.cmmn.util.DateUtils</function-class>
+		<function-signature>java.lang.String adjustWeek(int, int, java.lang.String, int, int)</function-signature>
+		<example>
+			util:adjustWeek(2016, 1, 0, -1) 
+			result : '201512'
+			
+			util:adjustWeek(2016, 12, 0, 1) 
+			result : '201701'
+		</example>
+	</function>
+
+	<function>
+		<name>getFirstWeekdayOfMonth</name>
+		<function-class>com.open.cmmn.util.DateUtils</function-class>
+		<function-signature>java.lang.String getFirstWeekdayOfMonth(java.lang.String, java.lang.String)</function-signature>
+		<example>
+			util:getFirstWeekdayOfMonth('20121231', "yyyyMMdd") 
+			result : 
+			
+			util:getFirstWeekdayOfMonth('2012-12-31', "yyyy-MM-dd")
+			result : 
+		</example>
+	</function>
+
+	<function>
+		<name>getFirstDayOfWeek</name>
+		<function-class>com.open.cmmn.util.DateUtils</function-class>
+		<function-signature>java.lang.String getFirstDayOfWeek(java.lang.String, java.lang.String)</function-signature>
+		<example>
+			util:getFirstWeekdayOfMonth('2016', "43") 
+			result : '2016-10-16'
+		</example>
+	</function>
+	<function>
+		<name>getLastDayOfMonth</name>
+		<function-class>com.open.cmmn.util.DateUtils</function-class>
+		<function-signature>java.lang.String getLastDayOfMonth(java.lang.String, java.lang.String)</function-signature>
+		<example>
+			util:getLastDayOfMonth('20121231', "yyyyMMdd") 
+			result : 
+			
+			util:getLastDayOfMonth('2012-12-31', "yyyy-MM-dd")
+			result : 
+		</example>
+	</function>
+	<function>
+		<name>cutText</name>
+		<function-class>com.open.cmmn.util.StringUtil</function-class>
+		<function-signature>java.lang.String cutText(java.lang.String, int,java.lang.String)</function-signature>
+		<example>
+			util:cutText('글씨가 길경우 글씨를 자르고 대체 텍스트로 대체합니다.', 10, '...') 
+			result : 글씨가 길경우 글...
+		</example>
+	</function>
+	<function>
+		<name>abbreviate</name>
+		<function-class>org.apache.commons.lang3.StringUtils</function-class>
+		<function-signature>java.lang.String abbreviate(java.lang.String, int)</function-signature>
+		<example>
+			util:cutText('글씨가 길경우 글씨를 자르고 대체 텍스트로 대체합니다.', 10) 
+			result : 글씨가 길경우 글...
+		</example>
+	</function>
+	<function>
+		<name>replace</name>
+		<function-class>com.open.cmmn.util.StringUtil</function-class>
+		<function-signature>java.lang.String replace(java.lang.String, java.lang.String, java.lang.String)</function-signature>
+		<example>
+			util:replace('가나다라마', '가', '카') 
+			result : 카나다라마
+		</example>
+	</function>
+
+	<function>
+		<name>getMaskedData</name>
+		<function-class>com.open.cmmn.util.StringUtil</function-class>
+		<function-signature>java.lang.String getMaskedData(java.lang.String)</function-signature>
+		<example>
+			util:getMaskedData('010-1234-5678') 
+			result : 010-****-5678
+			util:getMaskedData('test1234@naver.com') 
+			result : tes*****@naver.com
+		</example>
+	</function>
+
+	<function>
+		<name>replaceBrTag</name>
+		<function-class>com.open.cmmn.util.StringUtil</function-class>
+		<function-signature>java.lang.String replaceBrTag(java.lang.String)</function-signature>
+		<example>
+			util:replaceBrTag('글씨안에 엔터가 있는경우\n 엔터를 br테그로 대체합니다.') 
+			result : 글씨안에 엔터가 있는경우
+					 엔터를 br테그로 대체합니다.
+		</example>
+	</function>
+	<function>
+		<name>lpad</name>
+		<function-class>com.open.cmmn.util.StringUtil</function-class>
+		<function-signature>java.lang.String lpad(int, int, java.lang.String)</function-signature>
+		<example>
+			util:lpad(1, 2, '0') 
+			result : 01
+		</example>
+	</function>
+
+	<function>
+		<name>rpad</name>
+		<function-class>com.open.cmmn.util.StringUtil</function-class>
+		<function-signature>java.lang.String rpad(int, int, java.lang.String)</function-signature>
+		<example>
+			util:rpad(1, 2, '0') 
+			result : 10
+		</example>
+	</function>
+
+	<function>
+		<name>defaultString</name>
+		<function-class>org.apache.commons.lang3.StringUtils</function-class>
+		<function-signature>java.lang.String defaultString(java.lang.String)</function-signature>
+		<example>
+			util:defaultString(null) 
+			result : ""
+		</example>
+	</function>
+	
+	<function>
+		<name>getMenuCd</name>
+		<function-class>com.open.cmmn.util.StringUtil</function-class>
+		<function-signature>java.lang.String getMenuCd(java.lang.String)</function-signature>
+		<example>
+			util:getMenuCd('/ad/A/A01/list.do') 
+			result : "A01"
+		</example>
+	</function>
+	
+	<function>
+		<name>getMicroMenuCd</name>
+		<function-class>com.open.cmmn.util.StringUtil</function-class>
+		<function-signature>java.lang.String getMicroMenuCd(java.lang.String)</function-signature>
+		<example>
+		</example>
+	</function>
+	
+	<function>
+		<name>lastMon</name>
+		<function-class>com.open.cmmn.util.DateUtils</function-class>
+		<function-signature>java.lang.String lastMon(java.lang.String, java.lang.String)</function-signature>
+		<example>
+			util:lastMon('2018','11') 
+			result : ""
+		</example>
+	</function>
+	
+	<function>
+		<name>addYearMonthDay</name>
+		<function-class>com.open.cmmn.util.DateUtils</function-class>
+		<function-signature>java.lang.String addYearMonthDay(java.lang.String, int,int,int)</function-signature>
+		<example>
+		</example>
+	</function>
+	
+	<function>
+		<name>checkRlnoInteger</name>
+		<function-class>com.open.cmmn.util.NumberUtil</function-class>
+		<function-signature>java.lang.String checkRlnoInteger(double)</function-signature>
+		<example>
+		</example>
+	</function>
+	<function>
+		<name>addYMDtoWeek</name>
+		<function-class>com.open.cmmn.util.DateUtils</function-class>
+		<function-signature>java.lang.String addYMDtoWeek(java.lang.String, int,int,int)</function-signature>
+		<example>
+		</example>
+	</function>
+	<function>
+		<name>unEscape</name>
+		<function-class>com.open.cmmn.util.StringUtil</function-class>
+		<function-signature>java.lang.String unEscape(java.lang.String)</function-signature>
+		<example>
+		</example>
+	</function>
+	<function>
+		<name>replaceAll</name>
+		<function-class>com.open.cmmn.util.StringUtil</function-class>
+		<function-signature>java.lang.String replaceAll(java.lang.String, java.lang.String, java.lang.String, java.lang.String)</function-signature>
+		<example></example>
+	</function>
+	<function>
+		<name>strToHp</name>
+		<function-class>com.open.cmmn.util.StringUtil</function-class>
+		<function-signature>java.lang.String strToHp(java.lang.String)</function-signature>
+		<example>
+		</example>
+	</function>
+	<function>
+		<name>fineImg</name>
+		<function-class>com.open.cmmn.util.StringUtil</function-class>
+		<function-signature>java.lang.String fineImg(java.lang.String)</function-signature>
+		<example>
+		</example>
+	</function>
+	<function>
+		<name>removeHtml</name>
+		<function-class>com.open.cmmn.util.StringUtil</function-class>
+		<function-signature>java.lang.String removeHtml(java.lang.String)</function-signature>
+		<example>
+		</example>
+	</function>
+	<function>
+		<name>permiSeqStr</name>
+		<function-class>com.open.cmmn.util.StringUtil</function-class>
+		<function-signature>java.lang.String permiSeqStr(java.lang.String)</function-signature>
+		<example>
+		</example>
+	</function>
+	<function>
+		<name>permiStateStr</name>
+		<function-class>com.open.cmmn.util.StringUtil</function-class>
+		<function-signature>java.lang.String permiStateStr(java.lang.String)</function-signature>
+		<example>
+		</example>
+	</function>
+	<function>
+		<name>permiMesDate</name>
+		<function-class>com.open.cmmn.util.StringUtil</function-class>
+		<function-signature>java.lang.String permiMesDate(java.lang.String)</function-signature>
+		<example>
+		</example>
+	</function>
+
+</taglib>

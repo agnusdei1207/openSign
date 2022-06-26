@@ -1,0 +1,378 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.open.Mgr0117">
+ 
+	<sql id="Where">   
+		<if test="searchKeyword !=null and searchKeyword !=''">
+			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==0">
+				AND (ETC LIKE CONCAT('%',#{searchKeyword},'%') OR RSTRN_NAME LIKE CONCAT('%',#{searchKeyword},'%'))
+			</if>
+			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==1">
+				AND ETC LIKE CONCAT('%',#{searchKeyword},'%')
+			</if>
+			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==2">
+				AND RSTRN_NAME LIKE CONCAT('%',#{searchKeyword},'%')
+			</if>  
+	 	</if>   
+	 	<if test='schEtc01 != null and schEtc01 !="" '>
+				AND STATE = #{schEtc01}
+		</if>   
+	 	<if test='schEtc02 != null and schEtc02 !="" '>   
+				AND IF(ATCH_FILE_ID IS NULL OR ATCH_FILE_ID = '', 'N', 'Y') = #{schEtc02}
+		</if>                      
+		<if test="searchStartDate !=null and searchStartDate !=''">      
+			<![CDATA[                     
+				AND #{searchStartDate} <= DATE_FORMAT(RGST_DT, '%Y.%m.%d')  
+				AND #{searchEndDate} >= DATE_FORMAT(RGST_DT, '%Y.%m.%d')
+			]]>    
+		</if>      
+	</sql>          
+	<sql id="modalWhere">  
+		<if test='popSearchCondition != null and popSearchCondition !="" and popSearchCondition ==0'>  
+				AND (A.NAME LIKE CONCAT('%',#{popSearchKeyword},'%') OR B.C_CD_NM LIKE CONCAT('%',#{popSearchKeyword},'%'))
+		</if>   
+		<if test="popSearchCondition !=null and popSearchCondition !='' and popSearchCondition ==1">
+			AND A.NAME LIKE CONCAT('%',#{popSearchKeyword},'%')
+		</if>
+		<if test="popSearchCondition !=null and popSearchCondition !='' and popSearchCondition ==2">
+			AND B.C_CD_NM LIKE CONCAT('%',#{popSearchKeyword},'%') 
+		</if>   
+		<if test="popDivn !=null and popDivn !=''">
+			<choose>
+				<when test='popDivn.equals("fvrts")'>
+					AND IF(IFNULL(C.FVRTS_SEQ, 'N') = 'N', 'N', 'Y') = 'Y'
+				</when>
+				<otherwise>
+					AND A.PART = #{popDivn}	
+				</otherwise>
+			</choose>
+		</if> 
+	</sql>       
+	
+	<select id="selectContents" parameterType="mgr0117VO" resultType="mgr0117VO">
+		/* Mgr0117.selectContents */
+		<![CDATA[    
+			 SELECT	 
+			     
+			 		 EL_SEQ													elSeq       
+					,NUMBER													number  
+					,STATE													state
+					,ATCH_FILE_ID 											atchFileId     
+					,DATE_FORMAT(RGST_DT, '%Y.%m.%d')						rgstDt    
+					,F_USER_NM(RGST_ID)										rgstId  
+					,RGST_ID												rgstSeq  
+					,EAT_DATE												eatDate
+					,USER_SEQ												userSeq
+					,PRICE 													price 
+					,RSTRN_NAME												rstrnName
+					,ETC													etc
+					 
+		      FROM	T_EAT_LOG
+			 WHERE  USE_YN='Y'	
+			   AND	EL_SEQ = #{elSeq}
+		]]>
+	</select> 
+	 
+	
+	<select id="selectList" parameterType="cmmnDefaultVO" resultType="mgr0117VO">
+		/* Mgr0117.selectList */
+		<![CDATA[ 
+      	    SELECT	  
+			    
+					 EL_SEQ													elSeq       
+					,NUMBER													number 
+					,STATE													state 
+					,ATCH_FILE_ID 											atchFileId     
+					,DATE_FORMAT(RGST_DT, '%Y.%m.%d')						rgstDt    
+					,F_USER_NM(RGST_ID)										rgstId   
+					,EAT_DATE												eatDate
+					,USER_SEQ												userSeq 
+					,PRICE 													price 
+					,RSTRN_NAME												rstrnName
+					,ETC													etc    
+					
+		      FROM	T_EAT_LOG A
+			 WHERE  USE_YN='Y'	  
+	      ]]>
+		     <include refid="Where"/>	 
+	     <![CDATA[ 
+	    		ORDER BY EL_SEQ DESC
+				LIMIT  #{firstIndex} , #{recordCountPerPage}
+		]]>
+	</select>	
+
+
+	<select id="selectCount" parameterType="cmmnDefaultVO" resultType="int">
+		/* Mgr0117.selectCount */
+		<![CDATA[
+			SELECT 
+				  	COUNT(EL_SEQ) cnt 
+			  FROM	T_EAT_LOG  
+			 WHERE	USE_YN='Y'  
+		]]>  
+			 <include refid="Where"/> 
+	</select> 
+
+	  
+	  
+	<!-- 엑셀 다운 -->
+	<select id="excelDownSelectList" parameterType="mgr0117VO" resultType="mgr0117VO">
+		/* mgr0117VO.excelDownSelectList */  
+		<![CDATA[
+			SELECT  
+					  @ROWNUM := @ROWNUM + 1 AS				excelRow
+					, A.EL_SEQ								elSeq
+					, F_USER_NM(A.RGST_ID)					rgstId
+					, DATE_FORMAT(A.RGST_DT, '%Y.%m.%d')	rgstDt
+					, A.NUMBER								number
+					, CASE       
+							WHEN	IFNULL(A.ATCH_FILE_ID,'')<>''	THEN '첨부'
+							ELSE	'미첨부'
+					   END 									atchFileId 
+					, IF(A.USE_YN = 'Y', '사용', '미사용')		useYn
+					, IF(A.STATE = 'Y', '확인', '미확인')		state   
+					, A.EAT_DATE							eatDate
+					, A.USER_SEQ							userSeq
+					, A.PRICE								price
+					, A.RSTRN_NAME							rstrnName 
+					, A.ETC									etc
+					       
+			 FROM	(SELECT @ROWNUM := 0) R, t_eat_log A
+			WHERE	A.USE_YN = 'Y'
+		]]> 
+			<include refid="Where"/> 
+		<![CDATA[
+		 ORDER BY	A.RGST_DT ASC, A.EL_SEQ ASC  
+		]]>	
+	</select>  
+	     
+	<!-- 카드 목록 조회 -->
+	<select id="cardSelectList" parameterType="cmmnDefaultVO" resultType="mgr0116VO">
+		/* Mgr0116.cardSelectList */
+		<![CDATA[  
+      	    SELECT	 
+					 ETC													name    
+					,C_CD_NM												number
+					 
+		      FROM	T_CODE      
+			 WHERE  USE_YN='Y'
+			   AND	P_CD = '02'	  
+	      ]]>
+	</select>             
+	  
+	<!-- 관리자 조회 -->
+	<select id="UserSelectList" parameterType="mgr0117VO" resultType="mgr0006VO">
+		/* Mgr0116.UserSelectList */
+		<![CDATA[       
+      	  		SELECT	 
+					  	 A.SEQ												seq
+					    ,A.ID												id
+					    ,A.NAME												name
+						,B.C_CD_NM											position
+					  	
+				  FROM	t_ad_user A
+	   LEFT OUTER JOIN	t_code B  
+					ON	A.POSITION = B.C_CD
+				   AND	B.USE_YN = 'Y'
+						  
+		 		 WHERE	A.USE_YN = 'Y'
+		 		   AND	A.SEQ IN (${userSeq})
+	      ]]>         
+	</select> 
+	      
+	<!-- 직원 목록 조회 -->
+	<select id="modalSelectList" parameterType="cmmnDefaultVO" resultType="mgr0006VO">
+		/* Mgr0117.modalSelectList */  
+			<![CDATA[       
+			  SELECT A.NAME  										name
+			       , A.SEQ											seq
+			       , A.ID											id
+			       , B.C_CD_NM										position
+			       , IF(IFNULL(C.FVRTS_SEQ, 'N') = 'N', 'N', 'Y') 	fvrtsYn
+			    FROM t_ad_user A
+     LEFT OUTER JOIN t_code B
+			      ON A.POSITION = B.C_CD 
+			     AND B.USE_YN = 'Y'
+	 LEFT OUTER JOIN t_fvrts C
+				  ON A.SEQ = C.FVRTS_SEQ     
+			     AND C.USE_YN = 'Y'
+			     AND C.AD_SEQ = #{loginSeq}
+			   WHERE A.USE_YN = 'Y'
+		      ]]>   
+			  <include refid="modalWhere"/>
+	     <![CDATA[            
+	    		ORDER	BY seq DESC
+				LIMIT  #{firstIndex} , #{recordCountPerPage}
+			  ]]>
+	</select>	    
+  
+  	<!-- 직원 목록 조회 카운트 -->
+	<select id="modalSelectCount" parameterType="cmmnDefaultVO" resultType="int">
+		/* Mgr0117.modalSelectCount */ 
+			<![CDATA[
+			SELECT COUNT(A.SEQ)
+	          FROM (SELECT A.SEQ
+				     FROM t_ad_user A
+	      LEFT OUTER JOIN t_code B
+				       ON A.POSITION = B.C_CD 
+				      AND B.USE_YN = 'Y' 
+		  LEFT OUTER JOIN t_fvrts C
+				  	   ON A.SEQ = C.FVRTS_SEQ
+				      AND C.USE_YN = 'Y' 
+				      AND C.AD_SEQ = #{loginSeq}
+				    WHERE A.USE_YN = 'Y'
+				 ]]>  
+			  <include refid="modalWhere"/>) A
+	</select>
+	  
+	<!-- 즐겨찾기 목록 조회 --> 
+	<select id="fvrtsSelectList" parameterType="mgr0117VO" resultType="mgr0006VO">
+		/* Mgr0117.fvrtsSelectList */  
+			<![CDATA[  
+	      	   SELECT  
+			
+						 A.FVRTS_SEQ 									seq	
+						,B.ID											id
+						,B.NAME 										name
+						,C.C_CD_NM 										position
+							
+				 FROM	t_fvrts A  
+	  LEFT OUTER JOIN	t_ad_user B
+		 		   ON	A.FVRTS_SEQ = B.SEQ
+	  LEFT OUTER JOIN	t_code C
+				   ON	C.C_CD = B.POSITION
+		   
+		 		WHERE	A.AD_SEQ = #{loginSeq}
+				  AND	A.USE_YN = 'Y'      
+		      ]]>                
+	     <![CDATA[         
+	    		ORDER BY seq DESC
+				LIMIT  #{firstIndex} , #{recordCountPerPage}
+			  ]]>
+	</select>	      
+	 
+	<!-- 즐겨찾기 목록 카운트 -->     
+	<select id="fvrtsSelectCount" parameterType="cmmnDefaultVO" resultType="int">
+		/* Mgr0117.fvrtsSelectCount */ 
+		<![CDATA[ 
+	         	SELECT  
+			         
+						COUNT(A.FVRTS_SEQ)	
+							 
+				 FROM	t_fvrts A
+	  LEFT OUTER JOIN	t_ad_user B
+		 		   ON	A.FVRTS_SEQ = B.SEQ
+	  LEFT OUTER JOIN	t_code C
+				   ON	C.C_CD = B.POSITION
+		      
+		 		WHERE	A.AD_SEQ = #{loginSeq}
+				  AND	A.USE_YN = 'Y' 
+			  ]]>
+	</select>
+	
+	
+     
+	<!-- 원글 입력 -->	       
+	<insert id="insertContents" parameterType="mgr0117VO">
+		/* Mgr0117.insertContents */
+		<![CDATA[
+			INSERT INTO T_EAT_LOG(
+						 NUMBER
+						,STATE													
+						,ATCH_FILE_ID 											     
+						,RGST_ID								   
+						,EAT_DATE			
+						,USER_SEQ																					
+						,PRICE													
+						,RSTRN_NAME												
+						,ETC																								  
+			)        
+				VALUES (  
+						 #{number         }  
+						,#{state          }  
+						,#{atchFileId	  }
+						,#{loginSeq   	  }
+						,#{eatDate  	  }
+						,#{userSeq  	  }
+						,#{price   	      }
+						,#{rstrnName      }
+						,#{etc			  }
+			)                   
+		]]>
+	</insert>  
+	 
+	<!-- 즐겨찾기 입력 -->
+	<insert id="insertFvrtsContents" parameterType="mgr0117VO">
+		/* Mgr0117.insertFvrtsContents */
+		<![CDATA[
+			INSERT INTO T_FVRTS(
+				 AD_SEQ
+				,FVRTS_SEQ
+			)          
+				VALUES (  
+				 #{loginSeq}
+				,#{fvrtsSeq} 
+			)                   
+		]]>
+	</insert>      
+	
+	<!-- 즐겨찾기 해당 row 카운트 -->
+	<select id="fvrtsCheckCount" parameterType="mgr0117VO" resultType="int">
+		/* Mgr0117.fvrtsCheckCount */ 
+		<![CDATA[ 
+			    SELECT                   
+			    	  	COUNT(FVRTS_SEQ)
+			      FROM	T_FVRTS    
+			     WHERE	AD_SEQ = #{loginSeq} 
+			       AND	FVRTS_SEQ = #{fvrtsSeq}
+			  ]]>       
+	</select>	  
+		     
+	<!-- 즐겨찾기 업데이트 -->	     
+	<update id="updateFvrtsContents" parameterType="mgr0117VO">
+		/* Mgr0117.updateFvrtsContents */
+		<![CDATA[
+			UPDATE	T_FVRTS 
+			   SET  
+				  	USE_YN 														=#{useYn}
+				  	
+			 WHERE	AD_SEQ = #{loginSeq}
+			   AND	FVRTS_SEQ = #{fvrtsSeq}	
+		]]>  
+	</update> 	 
+	
+	
+	<!-- 원글 업데이트 -->		 
+	<update id="updateContents" parameterType="mgr0117VO">
+		/* Mgr0117.updateContents */
+		<![CDATA[
+			UPDATE	T_EAT_LOG      
+			   SET		  
+					 NUMBER													=#{number        }
+					,STATE													=#{state		 }
+					,ATCH_FILE_ID 											=#{atchFileId    } 
+					,RGST_DT												= NOW()
+					,EAT_DATE												=#{eatDate       }
+					,USER_SEQ  												=#{userSeq       }
+					,PRICE													=#{price         }
+					,RSTRN_NAME												=#{rstrnName     }
+					,ETC													=#{etc           }
+					
+			 WHERE	EL_SEQ = #{elSeq}                                                        
+		]]>
+	</update> 
+	 
+	 <!-- 원글 삭제  -->
+	<update id="deleteContents" parameterType="mgr0117VO">
+		/* Mgr0117.deleteContents */
+		<![CDATA[   
+			UPDATE	T_EAT_LOG
+		       SET
+	          	  	USE_YN='N'
+			 WHERE	EL_SEQ=#{elSeq}
+		]]> 
+	</update>
+
+	
+	
+</mapper>

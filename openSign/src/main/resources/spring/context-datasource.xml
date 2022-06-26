@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans profile="local" xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
+	<!-- datasource 설정(propertyConfigurer 활용) -->
+	<alias name="dataSource" alias="dataSource" />
+	<alias name="dataSource" alias="egov.dataSource" />
+
+	<!-- oracle --> 
+	
+	<!-- mysql(로컬) -->
+	<bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver" /> 
+		<property name="url" value="jdbc:mysql://192.168.0.28:3306/opensign?allowMultiQueries=true" /> 
+		<property name="username" value="openSign" />          
+		<property name="password" value="open1010" />     
+	</bean>      
+	     	
+</beans>

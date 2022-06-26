@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.open.Main">
+   
+	<!-- 식대 금액 조회 -->
+	<select id="eatPriceLogSelectContents" parameterType="cmmnDefaultVO" resultType="mgr0117VO">
+		/* Mgr0111.eatPriceLogSelectContents */
+		<![CDATA[  
+			SELECT    
+				  	SUM(CAST(PRICE AS UNSIGNED))								price
+				  	,DATE_FORMAT(EAT_DATE, '%Y.%m.%d')							eatDate
+			     	    	   
+			  FROM	T_EAT_LOG 
+		 	 WHERE	EAT_DATE = #{schEtc01}
+			   AND	USE_YN = 'Y'
+		     GROUP	BY  eatDate   
+		]]>     
+	</select>         
+	                             
+	<!-- 초과근무 시간 조회 -->        
+	<select id="overTimeLogSelectContents" parameterType="cmmnDefaultVO" resultType="mgr0118VO">
+		/* Mgr0111.overTimeLogSelectContents */  
+		<![CDATA[          
+			SELECT 	                        
+					                                            
+					ROUND(SUM(ABS(TIMESTAMPDIFF(MINUTE, STA_DATE, END_DATE))/60)) col1
+					  			          
+			  FROM	t_over_add  
+		     WHERE	DATE_FORMAT(STA_DATE, '%Y.%m.%d') = #{schEtc01}
+			   AND	USE_YN = 'Y' 
+		]]>
+	</select>  
+	    
+	         
+	<!-- 개인 초과근무 시간 --> 
+	<select id="privateWorkOverTime" parameterType="mgr0118VO" resultType="mgr0118VO">
+		/* Mgr0111.privateWorkOverTime */
+		<![CDATA[       
+		SELECT	ROUND(ABS(TIMESTAMPDIFF(MINUTE, STA_DATE, END_DATE))/60) col1
+		  FROM	t_over_add           
+    	                
+		 WHERE	DATE_FORMAT(STA_DATE, '%Y.%m.%d') = #{schEtc01}
+		   AND	USE_YN = 'Y' 
+		   AND	EMPLY_SEQ = #{schEtc04}
+		]]>    
+	</select>        
+	
+	<!-- 월별 식대 총계  -->
+	<select id="searchEatLogSelectContents" parameterType="cmmnDefaultVO" resultType="mgr0117VO"> 
+		/* Mgr0111.searchEatLogSelectContents */ 
+		<![CDATA[   
+	      	   SELECT 	   
+					 	SUM(PRICE)											 price
+					 	,DATE_FORMAT(EAT_DATE, '%m')                         rgstDt
+				 FROM	t_eat_log
+			    WHERE	USE_YN = 'Y'       
+				  AND	DATE_FORMAT(EAT_DATE, '%Y.%m') = #{schEtc02}
+				GROUP	BY rgstDt    
+		]]>   
+	</select>	    
+	     
+	<!-- 월별 추가근무 총계 -->
+	<select id="searchOverTimeSelectContents" parameterType="cmmnDefaultVO" resultType="mgr0118VO"> 
+		/* Mgr0111.searchOverTimeSelectContents */   
+		<![CDATA[       
+	      	   SELECT 	              
+						ROUND(ABS(SUM(TIMESTAMPDIFF(MINUTE, STA_DATE, END_DATE)))/60) col1
+									   
+				 FROM	t_over_add     
+			    WHERE	USE_YN = 'Y'       
+				  AND	DATE_FORMAT(STA_DATE, '%Y.%m') = #{schEtc02}
+		]]>
+	</select>	    
+	
+	<!-- 데이터 있는 연도만 조회 -->
+	<select id="selectYearList" parameterType="cmmnDefaultVO" resultType="mgr0117VO">
+		/* Mgr0111.selectYearList */
+		<![CDATA[ 
+			SELECT
+				  	DATE_FORMAT(RGST_DT, '%Y') schEtc01
+				    
+			  FROM	t_eat_log 
+			 GROUP	BY DATE_FORMAT(RGST_DT, '%Y')
+			HAVING	schEtc01 IS NOT NULL
+			 ORDER	BY DATE_FORMAT(RGST_DT, '%Y') DESC
+		]]>
+	</select>
+	
+	   
+	<!-- 선택된 유저 정보 가져오기 -->
+	<select id="userNameSelectContents" parameterType="loginVO" resultType="loginVO">
+		/* Mgr0111.userNameSelectContents */
+		<![CDATA[  
+		SELECT
+			  	SEQ													seq
+				,NAME												name
+		  FROM  t_ad_user  
+		 WHERE	SEQ = #{schEtc04} 
+		   AND	USE_YN = 'Y'
+		]]>
+	</select>
+	 
+	 
+	<!-- 식대 포인트 클릭 파이 차트 정보 -->
+	<select id="eatPointClickSelectList" parameterType="cmmnDefaultVO" resultType="mgr0117VO">
+		/* Mgr0111.eatPointClickSelectList */
+		<![CDATA[         
+			SELECT 	   
+					USER_SEQ										userSeq 
+					,EL_SEQ											elSeq
+					,PRICE											price
+			  FROM	t_eat_log
+			 WHERE	USE_YN = 'Y'         
+			   AND	DATE_FORMAT(EAT_DATE, '%Y.%m.%d') = #{schEtc05} 
+		]]> 
+	</select>   
+	    
+	<!-- 초과근무 포인트 클릭 파이 차트 정보 -->
+	<select id="overTimePointClickSelectList" parameterType="cmmnDefaultVO" resultType="mgr0118VO">
+		/* Mgr0111.overTimePointClickSelectList */
+		<![CDATA[  
+			SELECT 	       
+				  	EMPLY_SEQ emplySeq
+				  	,ROUND(ABS(TIMESTAMPDIFF(MINUTE, STA_DATE, END_DATE))/60) col1                        
+			   
+			  FROM	t_over_add
+			 WHERE	USE_YN = 'Y'        
+			   AND	DATE_FORMAT(STA_DATE, '%Y.%m.%d') = #{schEtc05}    
+		]]> 
+	</select>                
+
+	  
+	<!-- 사용자 이름 검색 -->     
+	<select id="findNameSelectContents" parameterType="mgr0117VO" resultType="LoginVO">
+		/* Mgr0111.findNameSelectContents */
+		<![CDATA[   
+			SELECT   
+					NAME											name
+			  FROM	t_ad_user    
+		 	 WHERE	SEQ = #{schEtc06}  
+		 	   AND	USE_YN = 'Y'
+		]]> 
+	</select>
+	
+	   
+	<!-- 통계 엑셀 다운 -->   
+	<select id="statisticsExcelDown" parameterType="cmmnDefaultVO" resultType="mgr0111VO">
+		/* Mgr0111.statisticsExcelDown */
+		<![CDATA[        
+			SELECT	@ROWNUM := @ROWNUM + 1 AS												  excelRow 
+				 ,	DATE_FORMAT(EAT_DATE, '%Y.%m')                       				      rgstDt
+				 ,	SUM(PRICE)																  totalPrice
+				 ,	ROUND(AVG(PRICE))														  avgPrice																						
+				 ,	(SELECT ROUND(ABS(SUM(TIMESTAMPDIFF(MINUTE, A.STA_DATE, A.END_DATE)))/60) 
+					   FROM	t_over_add A
+					  WHERE	A.USE_YN = 'Y'       
+						AND	DATE_FORMAT(A.STA_DATE, '%Y.%m') = '2022.06') 					  totalTime
+				 ,  (SELECT	ROUND(AVG(TIMESTAMPDIFF(MINUTE, B.STA_DATE, B.END_DATE)))/60
+					   FROM	t_over_add B
+					  WHERE	B.USE_YN = 'Y'       
+					    AND	DATE_FORMAT(B.STA_DATE, '%Y.%m') = '2022.06') 					  avgTime
+			  FROM	(SELECT @ROWNUM := 0) R, t_eat_log
+			 WHERE	USE_YN = 'Y'        
+			   AND	DATE_FORMAT(EAT_DATE, '%Y.%m') = #{schEtc01}
+			]]> 
+		</select>  
+		
+	
+	
+	
+	
+</mapper>

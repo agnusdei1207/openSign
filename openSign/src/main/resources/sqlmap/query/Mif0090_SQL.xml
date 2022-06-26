@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.open.Mif0090">
+	
+	
+	<select id="noticeBoardSelecList" parameterType="cmmnBoardVO" resultType="cmmnBoardVO">
+		/* Mif0090.noticeBoardSelecList */
+		<![CDATA[
+			SELECT  
+				  BOARD_SEQ							boardSeq     
+				, TITLE								title 
+				, DATE_FORMAT(RGST_DT,'%Y.%m.%d')	rgstDt        
+				,(SELECT IF(DATE_FORMAT(MAX(RGST_DT), '%Y.%m.%d') = DATE_FORMAT(NOW(), '%Y.%m.%d'), 'Y', 'N')
+				  FROM t_board
+				  WHERE USE_YN='Y' AND BOARD_CD = 'mgr0018' AND BOARD_SEQ = BOARD_GRP_SEQ) newChk
+		     FROM t_board TB
+			 WHERE USE_YN='Y'	
+			 	AND BOARD_CD = 'mgr0018'
+			 	AND BOARD_SEQ = BOARD_GRP_SEQ
+		 	 ORDER BY BOARD_SEQ DESC
+		 	 LIMIT 4
+		]]>
+	</select>
+	
+</mapper>

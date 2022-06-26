@@ -1,0 +1,374 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.open.CmmnBoard">
+
+	<sql id="Where">
+		<if test="searchKeyword !=null and searchKeyword !=''">
+			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==0">
+				AND (TB.TITLE LIKE CONCAT('%',#{searchKeyword},'%') OR TB.CONT like CONCAT('%',#{searchKeyword},'%')
+						OR F_USER_NM(TB.RGST_ID) LIKE CONCAT('%',#{searchKeyword},'%'))
+			</if>
+			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==1">
+				AND TB.TITLE LIKE CONCAT('%',#{searchKeyword},'%')
+			</if>
+			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==2">
+				AND TB.CONT LIKE CONCAT('%',#{searchKeyword},'%')
+			</if>
+			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==3">
+				AND F_USER_NM(TB.RGST_ID) LIKE CONCAT('%',#{searchKeyword},'%')
+			</if>
+	 	</if>
+	 	<if test="dateCondition !=null and dateCondition !='' and dateCondition ==0">
+			<if test="searchStartDate !=null and searchStartDate !=''">
+				 <![CDATA[
+					AND TB.RGST_DT >= STR_TO_DATE(CONCAT(#{searchStartDate},'0:0:0'),'%Y.%m.%d%H:%i:%s')
+			 	]]>
+			 </if>
+			 <if test="searchEndDate !=null and searchEndDate !=''">
+			 	<![CDATA[
+			 		AND TB.RGST_DT <= STR_TO_DATE(CONCAT(#{searchEndDate},'23:59:59'),'%Y.%m.%d%H:%i:%s')
+		 		]]>
+		 	</if>
+		</if>
+		<if test='boardDivn != null and boardDivn != ""'>
+			<choose>
+				<when test='boardDivn.equals("cb01")'>
+				</when>
+				<when test='boardDivn.equals("cb02")'>
+				</when>
+				<when test='boardDivn.equals("cb03")'>
+				</when>
+				<when test='boardDivn.equals("cb04")'>
+				</when>
+			</choose>
+		</if>
+	</sql>
+	
+	<select id="selectContents" parameterType="cmmnBoardVO" resultType="cmmnBoardVO">
+		/* CmmnBoard.selectContents */
+		<![CDATA[
+		  SELECT  
+			  BOARD_SEQ								boardSeq    
+			, BOARD_GRP_SEQ							boardGrpSeq
+			, BOARD_GRP_NO							boardGrpNo
+			, LVL									lvl
+			, TITLE									title        
+			, CONT									cont         
+			, ATCH_FILE_ID							atchFileId
+			, IMAGE_FILE_ID							imageFileId   
+			, DATE_FORMAT(RGST_DT,'%Y.%m.%d')		rgstDt       
+			, RGST_ID								rgstId       
+			, DATE_FORMAT(RGST_DT,'%Y.%m.%d')		rvseDt       
+			, RVSE_ID								rvseId 
+			, USE_YN 								useYn
+			, VIEW_YN								viewYn      
+			, NOTI_YN								notiYn       
+			, DATE_FORMAT(NOTI_ST_DT,'%Y.%m.%d')	notiStDt     
+			, DATE_FORMAT(NOTI_END_DT,'%Y.%m.%d')	notiEndDt    
+			, BOARD_CD								boardCd      
+			, BOARD_DIVN							boardDivn    
+			, VIEW_NUM								viewNum      
+			, DEL_HTML_CONT							delHtmlCont
+			, LINK									link 
+			, F_USER_NM(RGST_ID)					name
+			, CONT_TYPE								contType
+	     FROM t_board
+		 WHERE BOARD_SEQ = #{boardSeq}
+		]]>
+	</select>
+	
+	
+	<select id="selectList" parameterType="cmmnBoardVO" resultType="cmmnBoardVO">
+		/* CmmnBoard.selectList */
+		<![CDATA[
+		 SELECT  
+			  TB.BOARD_SEQ							boardSeq     
+			, TB.BOARD_GRP_SEQ						boardGrpSeq
+			, TB.LVL								lvl
+			, TB.CONT								cont
+			, CASE USE_YN
+				WHEN 'N' THEN '[ 삭제된 게시물입니다 ]'
+				WHEN 'Y' THEN TB.TITLE
+			  END									title
+			, TB.ATCH_FILE_ID						atchFileId
+			, TB.IMAGE_FILE_ID						imageFileId       
+			, DATE_FORMAT(TB.RGST_DT,'%Y.%m.%d')	rgstDt       
+			, TB.RGST_ID							rgstId
+			, F_USER_NM(TB.RGST_ID)					name
+			, TB.VIEW_NUM							viewNum
+			, TB.BOARD_CD							boardCd
+			, TB.BOARD_DIVN							boardDivn
+			, TB.USE_YN 							useYn
+			, CASE 
+			 	WHEN TB.NOTI_ST_DT <= NOW() AND NOW() <= TB.NOTI_END_DT AND TB.NOTI_YN = 'Y' THEN 'Y'
+				ELSE 'N' 
+			  END 									notiYn       
+			, TDA.FILE_EXTSN						fileExtsn
+			, TDB.FILE_EXTSN						imageFileExtsn  
+			, TBD.replyCnt							replyCnt
+	    FROM t_board TB
+	    LEFT OUTER JOIN (SELECT
+   							  COUNT(BOARD_SEQ) replyCnt
+   							, BOARD_GRP_SEQ
+   						 FROM t_board
+   						 WHERE USE_YN = 'Y'
+   							AND BOARD_CD = #{boardCd}
+   							AND BOARD_SEQ <> BOARD_GRP_SEQ
+   						 GROUP BY BOARD_GRP_SEQ) TBD
+		 	ON TB.BOARD_SEQ = TBD.BOARD_GRP_SEQ
+	    LEFT OUTER JOIN t_atch_file_detail TDA
+		    ON TB.ATCH_FILE_ID = TDA.ATCH_FILE_ID
+		    AND TDA.DEL_YN = 'N'
+		    AND TDA.FILE_SN = (SELECT MAX(FILE_SN) FROM t_atch_file_detail WHERE DEL_YN='N' AND ATCH_FILE_ID = TDA.ATCH_FIlE_ID)
+		LEFT OUTER JOIN t_atch_file_detail TDB
+			ON TB.IMAGE_FILE_ID = TDB.ATCH_FILE_ID
+		    AND TDB.DEL_YN = 'N'
+		    AND TDB.FILE_SN = (SELECT MAX(FILE_SN) FROM t_atch_file_detail WHERE DEL_YN='N' AND ATCH_FILE_ID = TDB.ATCH_FIlE_ID)
+		WHERE IF(TB.BOARD_DIVN <> 'cb01',USE_YN = 'Y',1=1) AND TB.BOARD_CD = #{boardCd}
+			AND IF(IFNULL(#{menuGrp},'frt') <> 'mgr',TB.VIEW_YN = 'Y',1=1)
+		]]>
+		<include refid="Where"/>
+		ORDER BY notiYn DESC, TB.BOARD_GRP_SEQ DESC, TB.BOARD_GRP_NO ASC 
+		LIMIT #{firstIndex} , #{recordCountPerPage}	
+	</select>
+	
+	
+	<select id="selectCount" parameterType="cmmnBoardVO" resultType="int">
+		/* CmmnBoard.selectCount */
+		<![CDATA[
+			SELECT 
+				COUNT(TB.BOARD_SEQ) cnt 
+			FROM t_board TB
+			WHERE IF(TB.BOARD_DIVN <> 'cb01',USE_YN = 'Y',1=1) AND TB.BOARD_CD = #{boardCd}
+				AND IF(IFNULL(#{menuGrp},'frt') <> 'mgr',TB.VIEW_YN = 'Y',1=1)
+		]]>
+		<include refid="Where"/>
+	</select>
+	
+	<!-- 조회수 증가 -->
+	<update id="viewNumUpdateContents" parameterType="cmmnBoardVO">
+		/* CmmnBoard.viewNumUpdateContents */
+		<![CDATA[
+			UPDATE t_board
+			SET  
+				VIEW_NUM = VIEW_NUM + 1
+			WHERE  BOARD_SEQ = #{boardSeq}  
+		]]>
+	</update>
+	
+	<!-- 다음글 -->
+	<select id="nextSelectContents" parameterType="cmmnBoardVO" resultType="cmmnBoardVO">
+	/* CmmnBoard.nextSelectContents */
+		<![CDATA[
+			SELECT TBR.*
+			FROM (SELECT 
+					  TB.BOARD_SEQ					boardSeq
+					, TB.USE_YN						useYn
+					, CASE USE_YN
+						WHEN 'N' THEN '[ 삭제된 게시물입니다 ]'
+						WHEN 'Y' THEN TB.TITLE
+					  END							title
+					, CASE 
+					 	WHEN TB.NOTI_ST_DT <= NOW() AND NOW() <= TB.NOTI_END_DT AND TB.NOTI_YN = 'Y' THEN 'Y'
+						ELSE 'N' 
+					  END 							notiYn
+					, @rownum:=@rownum+1			rnum							
+					, if(TB.BOARD_SEQ = #{boardSeq}, @nextnum:=@rownum+1, null) eq
+					, @nextnum						nnum
+				  FROM	t_board TB, (SELECT @rownum:=0, @nextnum:=null) RN
+				  WHERE IF(TB.BOARD_DIVN <> 'cb01',USE_YN = 'Y',1=1) AND TB.BOARD_CD = #{boardCd}
+				  	AND IF(IFNULL(#{menuGrp},'frt') <> 'mgr',TB.VIEW_YN = 'Y',1=1)
+		]]>
+		<if test='boardDivn != null and boardDivn != "" and !boardDivn.equals("cb01")'>
+					AND TB.USE_YN = 'Y'			
+		</if>
+		<include refid="Where"/>
+		<![CDATA[
+			ORDER BY notiYn ASC, TB.BOARD_GRP_SEQ  ASC, TB.BOARD_GRP_NO DESC) TBR
+			WHERE rnum = nnum
+		]]>
+	</select>
+	
+	<!-- 이전글 -->
+	<select id="prevSelectContents" parameterType="cmmnBoardVO" resultType="cmmnBoardVO">
+	/* CmmnBoard.prevSelectContents */
+		<![CDATA[
+			SELECT TBR.*
+			FROM (SELECT 
+					  TB.BOARD_SEQ					boardSeq
+					, TB.USE_YN						useYn
+					, CASE USE_YN
+						WHEN 'N' THEN '[ 삭제된 게시물입니다 ]'
+						WHEN 'Y' THEN TB.TITLE
+					  END							title
+					, CASE 
+					 	WHEN TB.NOTI_ST_DT <= NOW() AND NOW() <= TB.NOTI_END_DT AND TB.NOTI_YN = 'Y' THEN 'Y'
+						ELSE 'N' 
+					  END 							notiYn
+					, @rownum:=@rownum+1			rnum							
+					, if(TB.BOARD_SEQ = #{boardSeq}, @prevnum:=@rownum+1, null) eq
+					, @prevnum						pnum
+				  FROM  t_board TB, (SELECT @rownum:=0, @prevnum:=null) RN
+				 WHERE IF(TB.BOARD_DIVN <> 'cb01',USE_YN = 'Y',1=1) AND TB.BOARD_CD = #{boardCd}
+				 	AND IF(IFNULL(#{menuGrp},'frt') <> 'mgr',TB.VIEW_YN = 'Y',1=1)
+		]]>
+		<if test='boardDivn != null and boardDivn != "" and !boardDivn.equals("cb01")'>
+					AND TB.USE_YN = 'Y'			
+		</if>
+		<include refid="Where"/>
+		<![CDATA[
+				ORDER BY notiYn DESC, TB.BOARD_GRP_SEQ  DESC, TB.BOARD_GRP_NO ASC) TBR
+			WHERE rnum = pnum
+		]]>
+	</select>
+	
+	<insert id="insertContents" parameterType="cmmnBoardVO" keyColumn="BOARD_SEQ" keyProperty="boardSeq" useGeneratedKeys="true">
+		/* CmmnBoard.insertContents */
+		<selectKey resultType="String" keyProperty="boardSeq" order="BEFORE">
+	        SELECT IFNULL(MAX(TB.BOARD_SEQ)+1,1) boardSeq FROM t_board TB
+	    </selectKey>
+		<![CDATA[
+			INSERT INTO t_board (
+          		  BOARD_SEQ
+          		, BOARD_GRP_SEQ
+          		, BOARD_GRP_NO
+          		, LVL   
+				, TITLE
+				, CONT
+				, NOTI_YN
+				, BOARD_CD
+				, BOARD_DIVN
+				, RGST_ID
+				, ATCH_FILE_ID
+				, IMAGE_FILE_ID
+				, DEL_HTML_CONT
+				, LINK
+				, CONT_TYPE
+				, NOTI_ST_DT
+				, NOTI_END_DT
+			)
+			VALUES (
+				 #{boardSeq}
+				,CASE
+					WHEN #{boardGrpNo} = -1 OR #{boardGrpNo} > 0 THEN #{boardGrpSeq}
+					ELSE #{boardSeq}
+				 END
+				,CASE
+					WHEN #{boardGrpNo} = -1 THEN (SELECT IFNULL(MAX(TB.BOARD_GRP_NO)+1,1) FROM t_board TB WHERE TB.BOARD_GRP_SEQ = #{boardGrpSeq}) 
+					WHEN #{boardGrpNo} > 0 THEN #{boardGrpNo}
+					ELSE 0
+				 END
+				,CASE
+					WHEN #{lvl} IS NULL OR #{lvl} = '' THEN 0
+					ELSE #{lvl}
+				 END
+				,#{title}
+				,#{cont}
+				,#{notiYn}
+				,#{boardCd}
+				,#{boardDivn}
+				,IF(IFNULL(#{menuGrp},'frt')='mgr',#{loginSeq},#{frontLoginSeq})
+				,#{atchFileId}
+				,#{imageFileId}
+				,#{delHtmlCont}
+				,#{link}
+				,#{contType}
+				,IF(IFNULL(#{notiStDt},'')='',NULL,STR_TO_DATE(CONCAT(#{notiStDt},'0:0:0'),'%Y.%m.%d%H:%i:%s'))
+				,IF(IFNULL(#{notiEndDt},'')='',NULL,STR_TO_DATE(CONCAT(#{notiEndDt},'23:59:59'),'%Y.%m.%d%H:%i:%s'))	
+			)
+		]]>
+	</insert>
+	
+	
+	<update id="updateContents" parameterType="cmmnBoardVO">
+		/* CmmnBoard.updateContents */
+		<![CDATA[
+			UPDATE t_board SET
+				  TITLE			= #{title}
+				, CONT			= #{cont}
+				, NOTI_YN		= IFNULL(#{notiYn}, 'N')
+				, NOTI_ST_DT	= STR_TO_DATE(#{notiStDt}, '%Y.%m.%d')
+				, NOTI_END_DT	= STR_TO_DATE(#{notiEndDt}, '%Y.%m.%d')
+				, RVSE_ID		= IF(IFNULL(#{menuGrp},'frt')='mgr',#{loginSeq},#{frontLoginSeq})
+				, RVSE_DT		= NOW()
+				, ATCH_FILE_ID	= #{atchFileId}
+				, IMAGE_FILE_ID	= #{imageFileId}
+				, DEL_HTML_CONT = #{delHtmlCont}
+				, LINK			= #{link}
+				, CONT_TYPE		= #{contType}
+				, NOTI_ST_DT	= IF(IFNULL(#{notiStDt},'')='',NULL,STR_TO_DATE(CONCAT(#{notiStDt},'0:0:0'),'%Y.%m.%d%H:%i:%s'))
+				, NOTI_END_DT	= IF(IFNULL(#{notiEndDt},'')='',NULL,STR_TO_DATE(CONCAT(#{notiEndDt},'23:59:59'),'%Y.%m.%d%H:%i:%s'))
+			WHERE  BOARD_SEQ = #{boardSeq}
+		]]>
+	</update>
+	
+	<update id="deleteContents" parameterType="cmmnBoardVO">
+		/* CmmnBoard.deleteContents */
+		<![CDATA[
+			UPDATE t_board
+			 SET
+			 	USE_YN='N'
+			WHERE BOARD_SEQ=#{boardSeq}
+		]]>
+	</update>
+	
+	<update id="viewYn" parameterType="cmmnBoardVO">
+		/* CmmnBoard.viewYn */
+		<![CDATA[
+			UPDATE t_board
+			 SET
+			 	VIEW_YN = 'N'
+			WHERE BOARD_SEQ=#{boardSeq}
+		]]>
+	</update>
+	
+<!-- ///////////////////////////////////////////////////////////////////////////////////////////////// -->	
+
+	<select id="grpNoChk" parameterType="cmmnBoardVO" resultType="int">
+		/* cmmnBoard.grpNoChk */
+		<![CDATA[
+			SELECT
+				IFNULL(MIN(BOARD_GRP_NO),0)
+			FROM t_board
+			WHERE BOARD_GRP_SEQ = #{boardGrpSeq}
+				AND BOARD_GRP_NO > #{boardGrpNo}
+				AND LVL <= #{lvl}
+		]]>
+	</select>
+	
+	<update id="grpNoPlus" parameterType="cmmnBoardVO">
+		<![CDATA[
+			UPDATE t_board
+			
+			SET BOARD_GRP_NO = BOARD_GRP_NO + 1 
+			
+			WHERE BOARD_GRP_SEQ = #{boardGrpSeq}
+				AND BOARD_GRP_NO >= #{boardGrpNo}
+		]]>
+	</update>
+
+	<select id="mainSelectList" parameterType="cmmnBoardVO" resultType="cmmnBoardVO">
+		/* CmmnBoard.mainSelectList */
+		<![CDATA[
+			 SELECT  
+				  TB.BOARD_SEQ							boardSeq     
+				, TB.BOARD_GRP_SEQ						boardGrpSeq
+				, TB.TITLE								title 
+				, DATE_FORMAT(TB.RGST_DT,'%Y.%m.%d')	rgstDt       
+				, TB.BOARD_CD							boardCd
+				, TB.BOARD_DIVN							boardDivn
+				, TB.ATCH_FILE_ID						atchFileId
+				, TB.IMAGE_FILE_ID						imageFileId
+				, CASE 
+				 	WHEN TB.NOTI_ST_DT <= NOW() AND NOW() <= TB.NOTI_END_DT AND TB.NOTI_YN = 'Y' THEN 'Y'
+					ELSE 'N' 
+				  END 									notiYn
+		     FROM t_board TB
+		     WHERE IF(TB.BOARD_DIVN <> 'cb01',USE_YN = 'Y',1=1) AND TB.BOARD_CD = (SELECT BOARD_CD FROM t_menu_info WHERE MENU_CD = #{menuCd})
+		     	AND IF(IFNULL(#{menuGrp},'frt') <> 'mgr',TB.VIEW_YN = 'Y',1=1)
+		]]>
+		<include refid="Where"/>
+			ORDER BY notiYn DESC, TB.BOARD_GRP_SEQ DESC, TB.BOARD_GRP_NO ASC 
+			LIMIT #{lastIndex}	
+	</select>
+</mapper>

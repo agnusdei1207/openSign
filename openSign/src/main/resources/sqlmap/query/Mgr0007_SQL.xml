@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.open.Mgr0007">
+
+	<sql id="Where">
+		<if test="searchKeyword !=null and searchKeyword !=''">
+			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==0">
+				AND (UPPER(AUTH_CODE) LIKE CONCAT('%',UPPER(#{searchKeyword}),'%') OR UPPER(AUTH_CODE_NM) like CONCAT('%',UPPER(#{searchKeyword}),'%'))
+			</if>
+			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==1">
+				AND UPPER(AUTH_CODE) LIKE CONCAT('%',UPPER(#{searchKeyword}),'%')
+			</if>
+			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==2">
+				AND UPPER(AUTH_CODE_NM) LIKE CONCAT('%',UPPER(#{searchKeyword}),'%')
+			</if>
+	 	</if>
+	</sql>
+	
+	<select id="selectContents" parameterType="mgr0007VO" resultType="mgr0007VO">
+		/* Auth.selectContents */
+		<![CDATA[
+			  SELECT  
+				  SEQ seq
+				, AUTH_CODE authCode
+				, AUTH_CODE_NM authCodeNm
+				, DATE_FORMAT(RGST_DT,'%Y.%m.%d') rgstDt
+				, RGST_ID rgstId
+				, USE_YN useYn
+				, CTT ctt
+		     FROM  t_ad_user_auth A  
+			 WHERE SEQ = #{seq}
+		]]>
+	</select>
+
+	
+	<select id="selectList" parameterType="cmmnDefaultVO" resultType="mgr0007VO">
+		/* Auth.selectList */
+		<![CDATA[
+		      	   SELECT
+				          SEQ seq
+						, AUTH_CODE authCode
+						, AUTH_CODE_NM authCodeNm
+						, DATE_FORMAT(RGST_DT,'%Y.%m.%d') rgstDt
+						, RGST_ID rgstId
+						, USE_YN useYn
+						, CTT ctt
+		             FROM  t_ad_user_auth 			
+				     WHERE USE_YN='Y' 
+	      ]]>
+		     <include refid="Where"/>
+	     <![CDATA[
+		    ORDER BY  SEQ DESC 	
+		]]>   
+	</select>	
+	   
+	
+	
+
+
+	<select id="selectCount" parameterType="cmmnDefaultVO" resultType="int">
+		/* Auth.electCount */
+		<![CDATA[
+			SELECT 
+				COUNT(SEQ) cnt 
+			FROM t_ad_user_auth
+			WHERE USE_YN='Y' 
+		]]>
+			 <include refid="Where"/>
+	</select>
+	
+	<insert id="insertContents" parameterType="mgr0007VO">
+		/* Auth.insertContents */
+		<![CDATA[
+			INSERT INTO t_ad_user_auth(
+           	      SEQ 
+				, AUTH_CODE 
+				, AUTH_CODE_NM 
+				, RGST_ID 
+				, USE_YN 
+				, CTT   
+			)
+			VALUES (
+				 (SELECT IFNULL(MAX(SEQ)+1,1) FROM t_ad_user_auth a)
+				,#{authCode ,jdbcType=VARCHAR}
+				,#{authCodeNm ,jdbcType=VARCHAR}
+				,#{loginSeq ,jdbcType=VARCHAR}
+				,#{useYn ,jdbcType=VARCHAR}
+				,#{ctt ,jdbcType=VARCHAR}
+			)
+		]]>
+	</insert>
+	
+	
+	<update id="updateContents" parameterType="mgr0007VO">
+		/* Auth.updateContents */
+			UPDATE t_ad_user_auth
+			 SET     
+				    AUTH_CODE = #{authCode ,jdbcType=VARCHAR}   
+				  , AUTH_CODE_NM = #{authCodeNm ,jdbcType=VARCHAR}   
+				  , USE_YN = #{useYn ,jdbcType=VARCHAR}   
+				  , CTT = #{ctt ,jdbcType=VARCHAR}   
+			      , RVSE_ID = #{loginSeq ,jdbcType=VARCHAR}   	
+			      , RVSE_DT =  NOW()  	 
+			WHERE  SEQ = #{seq}  
+	</update>
+	
+	<update id="deleteContents" parameterType="mgr0007VO">
+		/* Auth.deleteContents */
+		<![CDATA[
+			DELETE FROM t_ad_user_auth
+			WHERE SEQ = #{seq}
+		]]>
+	</update>
+	
+		<select id="overlapSelectCount" parameterType="mgr0007VO" resultType="int">
+		/* Auth.overlapSelectCount */
+		<![CDATA[
+			SELECT 
+				COUNT(SEQ) cnt 
+			FROM t_ad_user_auth
+			WHERE AUTH_CODE = #{authCode}
+		]]>
+	</select>
+	
+		<delete id="authDeleteContents" parameterType="mgr0007VO">
+		/* Auth.authDeleteContents */
+		<![CDATA[
+			DELETE FROM t_ad_user_auth_menu
+			WHERE AUTH_CODE = #{authCode}
+		]]>
+	</delete>
+	
+	<insert id="authInsertContents" parameterType="mgr0007VO">
+		/* Auth.authInsertContents */
+		<![CDATA[
+			INSERT INTO t_ad_user_auth_menu(
+           	     AUTH_CODE
+				,MENU_CD
+				,RGST_ID
+			)
+			VALUES (
+				 #{authCode ,jdbcType=VARCHAR}
+				,#{menuCd ,jdbcType=VARCHAR}
+				,#{loginSeq ,jdbcType=VARCHAR}
+			)
+		]]>
+	</insert>
+	
+	<select id="selectAuthList" parameterType="mgr0007VO" resultType="mgr0007VO">
+		/* Auth.selectList */
+		<![CDATA[   
+      	   SELECT
+		          SEQ seq
+				, AUTH_CODE authCode
+				, AUTH_CODE_NM authCodeNm
+				, DATE_FORMAT(RGST_DT,'%Y.%m.%d') rgstDt
+				, RGST_ID rgstId
+				, USE_YN useYn
+				, CTT  ctt
+             FROM  t_ad_user_auth 			
+		     WHERE USE_YN='Y' 
+	      ]]>
+	      <if test="schEtc01 !=null and schEtc01 !='' and schEtc01 !=1">
+	     	<![CDATA[ AND AUTH_CODE <> '1']]>
+	      </if>
+	</select>	
+</mapper>

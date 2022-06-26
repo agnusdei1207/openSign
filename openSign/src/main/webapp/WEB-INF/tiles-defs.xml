@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 3.0//EN"  "http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
+<tiles-definitions>
+  <!-- =======================================================  -->
+  <!-- Manage definition  										-->
+  <!-- =======================================================  -->
+
+  <!-- 관리자 레이아웃 -->
+  <definition name="manage" template="/WEB-INF/jsp/cmmn/layout/mgr/layout.jsp">
+      <put-attribute name="header" value="/WEB-INF/jsp/cmmn/layout/mgr/header.jsp"/>
+      <put-attribute name="aside" value="/WEB-INF/jsp/cmmn/layout/mgr/aside.jsp"/>
+      <put-attribute name="footer" value="/WEB-INF/jsp/cmmn/layout/mgr/footer.jsp"/>
+  </definition>
+
+  <definition name=".mLayout:/*" extends="manage">
+      <put-attribute name="body" value="/WEB-INF/jsp/{1}.jsp" />
+  </definition>
+  <definition name=".mLayout:/*/*" extends="manage">
+      <put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}.jsp" />
+  </definition>
+  <definition name=".mLayout:/*/*/*" extends="manage">
+      <put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}/{3}.jsp" />
+  </definition>
+  <definition name=".mLayout:/*/*/*/*" extends="manage">
+      <put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}/{3}/{4}.jsp" />
+  </definition>
+  <definition name=".mLayout:/*/*/*/*/*" extends="manage">
+      <put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}/{3}/{4}/{5}.jsp" />
+  </definition>
+  <definition name=".mLayout:/*/*/*/*/*/*" extends="manage">
+      <put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}/{3}/{4}/{5}/{6}.jsp" />
+  </definition>
+  <definition name=".mLayout:/*/*/*/*/*/*/*" extends="manage">
+      <put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}/{3}/{4}/{5}/{6}/{7}.jsp" />
+  </definition>
+  <definition name=".mLayout:/*/*/*/*/*/*/*/*" extends="manage">
+      <put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}/{3}/{4}/{5}/{6}/{7}/{8}.jsp" />
+  </definition>
+  <definition name=".mLayout:/*/*/*/*/*/*/*/*/*" extends="manage">
+      <put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}/{3}/{4}/{5}/{6}/{7}/{8}/{9}.jsp" />
+  </definition>
+  <definition name=".mLayout:/*/*/*/*/*/*/*/*/*/*" extends="manage">
+      <put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}/{3}/{4}/{5}/{6}/{7}/{8}/{9}/{10}.jsp" />
+  </definition>
+
+  <!-- 관리자 팝업 레이아웃 -->
+  <definition name="managePopup" template="/WEB-INF/jsp/cmmn/layout/mgr/popupLayout.jsp">
+  </definition>
+
+  <definition name=".mPopLayout:/*" extends="managePopup">
+      <put-attribute name="body" value="/WEB-INF/jsp/{1}.jsp" />
+  </definition>
+  <definition name=".mPopLayout:/*/*" extends="managePopup">
+      <put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}.jsp" />
+  </definition>
+  <definition name=".mPopLayout:/*/*/*" extends="managePopup">
+      <put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}/{3}.jsp" />
+  </definition>
+  <definition name=".mPopLayout:/*/*/*/*" extends="managePopup">
+      <put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}/{3}/{4}.jsp" />
+  </definition>
+  <definition name=".mPopLayout:/*/*/*/*/*" extends="managePopup">
+      <put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}/{3}/{4}/{5}.jsp" /> 
+  </definition>
+  <definition name=".mPopLayout:/*/*/*/*/*/*" extends="managePopup">
+      <put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}/{3}/{4}/{5}/{6}.jsp" />
+  </definition>
+  <definition name=".mPopLayout:/*/*/*/*/*/*/*" extends="managePopup">
+      <put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}/{3}/{4}/{5}/{6}/{7}.jsp" />
+  </definition>
+  <definition name=".mPopLayout:/*/*/*/*/*/*/*/*" extends="managePopup">
+      <put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}/{3}/{4}/{5}/{6}/{7}/{8}.jsp" />
+  </definition>
+  <definition name=".mPopLayout:/*/*/*/*/*/*/*/*/*" extends="managePopup">
+      <put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}/{3}/{4}/{5}/{6}/{7}/{8}/{9}.jsp" />
+  </definition>
+  <definition name=".mPopLayout:/*/*/*/*/*/*/*/*/*/*" extends="managePopup">
+      <put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}/{3}/{4}/{5}/{6}/{7}/{8}/{9}/{10}.jsp" />
+  </definition>
+    
+   <!-- 사용자 레이아웃 -->
+  <definition name="front" template="/WEB-INF/jsp/cmmn/layout/frt/layout.jsp">
+      <put-attribute name="header" value="/WEB-INF/jsp/cmmn/layout/frt/header.jsp"/>
+      <put-attribute name="aside" value="/WEB-INF/jsp/cmmn/layout/frt/aside.jsp"/>
+      <put-attribute name="footer" value="/WEB-INF/jsp/cmmn/layout/frt/footer.jsp"/>
+  </definition>
+
+  <definition name=".fLayout:*" extends="front">
+      <put-attribute name="body" value="/WEB-INF/jsp/{1}.jsp" />
+  </definition>
+  <definition name=".fLayout:*/*" extends="front">
+      <put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}.jsp" />
+  </definition>
+  <definition name=".fLayout:*/*/*" extends="front">
+      <put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}/{3}.jsp" />
+  </definition>
+  <definition name=".fLayout:*/*/*/*" extends="front">
+      <put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}/{3}/{4}.jsp" />
+  </definition>
+  <definition name=".fLayout:*/*/*/*/*" extends="front">
+      <put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}/{3}/{4}/{5}.jsp" />
+  </definition>
+  <definition name=".fLayout:*/*/*/*/*/*" extends="front">
+      <put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}/{3}/{4}/{5}/{6}.jsp" />
+  </definition>
+  <definition name=".fLayout:*/*/*/*/*/*/*" extends="front">
+      <put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}/{3}/{4}/{5}/{6}/{7}.jsp" />
+  </definition>
+  <definition name=".fLayout:*/*/*/*/*/*/*/*" extends="front">
+      <put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}/{3}/{4}/{5}/{6}/{7}/{8}.jsp" />
+  </definition>
+  <definition name=".fLayout:*/*/*/*/*/*/*/*/*" extends="front">
+      <put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}/{3}/{4}/{5}/{6}/{7}/{8}/{9}.jsp" />
+  </definition>
+  <definition name=".fLayout:*/*/*/*/*/*/*/*/*/*" extends="front">
+      <put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}/{3}/{4}/{5}/{6}/{7}/{8}/{9}/{10}.jsp" />
+  </definition>
+  
+  <!-- 관리자 팝업 레이아웃 -->
+  <definition name="frontPopup" template="/WEB-INF/jsp/cmmn/layout/frt/popupLayout.jsp">
+  </definition>
+
+  <definition name=".fPopLayout:/*" extends="frontPopup">
+      <put-attribute name="body" value="/WEB-INF/jsp/{1}.jsp" />
+  </definition>
+  <definition name=".fPopLayout:/*/*" extends="frontPopup">
+      <put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}.jsp" />
+  </definition>
+  <definition name=".fPopLayout:/*/*/*" extends="frontPopup">
+      <put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}/{3}.jsp" />
+  </definition>
+  <definition name=".fPopLayout:/*/*/*/*" extends="frontPopup">
+      <put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}/{3}/{4}.jsp" />
+  </definition>
+  <definition name=".fPopLayout:/*/*/*/*/*" extends="frontPopup">
+      <put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}/{3}/{4}/{5}.jsp" />
+  </definition>
+  <definition name=".fPopLayout:/*/*/*/*/*/*" extends="frontPopup">
+      <put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}/{3}/{4}/{5}/{6}.jsp" />
+  </definition>
+  <definition name=".fPopLayout:/*/*/*/*/*/*/*" extends="frontPopup">
+      <put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}/{3}/{4}/{5}/{6}/{7}.jsp" />
+  </definition>
+  <definition name=".fPopLayout:/*/*/*/*/*/*/*/*" extends="frontPopup">
+      <put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}/{3}/{4}/{5}/{6}/{7}/{8}.jsp" />
+  </definition>
+  <definition name=".fPopLayout:/*/*/*/*/*/*/*/*/*" extends="frontPopup">
+      <put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}/{3}/{4}/{5}/{6}/{7}/{8}/{9}.jsp" />
+  </definition>
+  <definition name=".fPopLayout:/*/*/*/*/*/*/*/*/*/*" extends="frontPopup">
+      <put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}/{3}/{4}/{5}/{6}/{7}/{8}/{9}/{10}.jsp" />
+  </definition>
+ 	
+ 	<!-- 아이프레임 레이아웃 -->
+  <definition name="iframe" template="/WEB-INF/jsp/cmmn/layout/iframe/layout.jsp">
+  </definition>
+
+  <definition name=".iLayout:*" extends="iframe">
+      <put-attribute name="body" value="/WEB-INF/jsp/{1}.jsp" />
+  </definition>
+  <definition name=".iLayout:*/*" extends="iframe">
+      <put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}.jsp" />
+  </definition>
+  <definition name=".iLayout:*/*/*" extends="iframe">
+      <put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}/{3}.jsp" />
+  </definition>
+  <definition name=".iLayout:*/*/*/*" extends="iframe">
+      <put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}/{3}/{4}.jsp" />
+  </definition>
+  <definition name=".iLayout:*/*/*/*/*" extends="iframe">
+      <put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}/{3}/{4}/{5}.jsp" />
+  </definition>
+  <definition name=".iLayout:*/*/*/*/*/*" extends="iframe">
+      <put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}/{3}/{4}/{5}/{6}.jsp" />
+  </definition>
+  <definition name=".iLayout:*/*/*/*/*/*/*" extends="iframe">
+      <put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}/{3}/{4}/{5}/{6}/{7}.jsp" />
+  </definition>
+  <definition name=".iLayout:*/*/*/*/*/*/*/*" extends="iframe">
+      <put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}/{3}/{4}/{5}/{6}/{7}/{8}.jsp" />
+  </definition>
+  <definition name=".iLayout:*/*/*/*/*/*/*/*/*" extends="iframe">
+      <put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}/{3}/{4}/{5}/{6}/{7}/{8}/{9}.jsp" />
+  </definition>
+  <definition name=".iLayout:*/*/*/*/*/*/*/*/*/*" extends="iframe">
+      <put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}/{3}/{4}/{5}/{6}/{7}/{8}/{9}/{10}.jsp" />
+  </definition>
+ 
+</tiles-definitions>

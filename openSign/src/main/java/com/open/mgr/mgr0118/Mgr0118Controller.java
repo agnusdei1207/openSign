@@ -1,0 +1,238 @@
+package com.open.mgr.mgr0118;
+
+import java.util.List;
+import java.util.Properties;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
+
+import com.open.cmmn.excel.ExcelView;
+import com.open.cmmn.service.CmmnService;
+import com.open.cmmn.service.FileMngService;
+import com.open.cmmn.util.DateUtils;
+import com.open.mgr.mgr0003.service.Mgr0003VO;
+import com.open.mgr.mgr0006.service.Mgr0006VO;
+import com.open.mgr.mgr0118.service.Mgr0118VO;
+
+import egovframework.rte.fdl.property.EgovPropertyService;
+import egovframework.rte.ptl.mvc.tags.ui.pagination.PaginationInfo;
+
+/** 공지사항 게시판을 관리하는 컨트롤러 클래스를 정의한다.
+ */
+@Controller
+public class Mgr0118Controller {
+
+	@Resource(name = "cmmnService")
+    protected CmmnService cmmnService;
+	
+	@Autowired
+	ExcelView excelView;
+	
+	/** Program ID **/
+    private final static String PROGRAM_ID = "Mgr0118";
+
+    /** folderPath **/
+    private final static String folderPath = "/mgr/mgr0118/";
+
+	Logger log = Logger.getLogger(this.getClass());
+	
+	@RequestMapping(folderPath + "list.do")
+	public String list(@ModelAttribute("searchVO") Mgr0118VO searchVO, ModelMap model, HttpServletRequest request) throws Exception {
+		// 검색조건에 현재 날짜로 셋팅
+		String time = DateUtils.getCurrentDate("yyyy.MM.dd");
+		searchVO.setSearchStartDate(time);
+		searchVO.setSearchEndDate(time);
+		
+		return ".mLayout:" + folderPath + "list";
+	}
+	
+	@SuppressWarnings("unchecked")
+	@RequestMapping(folderPath + "addList.do")
+	public String addList(@ModelAttribute("searchVO") Mgr0118VO searchVO, ModelMap model, HttpServletRequest request) throws Exception {
+		searchVO.setPageUnit(6);
+		searchVO.setPageSize(7);
+		
+		/** pageing setting */
+		PaginationInfo paginationInfo = new PaginationInfo();
+		paginationInfo.setCurrentPageNo(searchVO.getPageIndex());
+		paginationInfo.setRecordCountPerPage(searchVO.getPageUnit());
+		paginationInfo.setPageSize(searchVO.getPageSize());
+		searchVO.setFirstIndex(paginationInfo.getFirstRecordIndex());
+		searchVO.setLastIndex(paginationInfo.getLastRecordIndex());
+		searchVO.setRecordCountPerPage(paginationInfo.getRecordCountPerPage());
+		
+		int totCnt = cmmnService.selectCount(searchVO, PROGRAM_ID);
+		paginationInfo.setTotalRecordCount(totCnt);
+		model.addAttribute("paginationInfo", paginationInfo);
+
+		List<Mgr0118VO> resultList = (List<Mgr0118VO>) cmmnService.selectList(searchVO, PROGRAM_ID);
+		model.addAttribute("resultList", resultList);
+		
+		return folderPath + "addList";
+	}
+	
+	@SuppressWarnings("unchecked")
+	@RequestMapping(folderPath + "{procType}Form.do")
+	public String form(@ModelAttribute("searchVO") Mgr0118VO searchVO, ModelMap model, HttpServletRequest request, @PathVariable String procType) throws Exception {
+			
+		Mgr0118VO mgr0118VO = new Mgr0118VO();
+		
+		if(procType.equals("update")){
+			
+			mgr0118VO = (Mgr0118VO) cmmnService.selectContents(searchVO, PROGRAM_ID);
+			model.addAttribute("mgr0118VO", mgr0118VO);
+
+			List<Mgr0118VO> addResultList = (List<Mgr0118VO>) cmmnService.selectList(searchVO, PROGRAM_ID + ".addSelectList");
+			model.addAttribute("addResultList", addResultList);
+			
+		}
+		
+		List<Mgr0006VO> emplyList = (List<Mgr0006VO>) cmmnService.selectList(mgr0118VO, PROGRAM_ID + ".emplySelectList");
+		model.addAttribute("emplyList", emplyList);
+		
+		cmmnService.updateContents(searchVO, PROGRAM_ID + ".addDeleteContents");
+		
+		return ".mLayout:" + folderPath + "form";
+	}
+	
+
+	@RequestMapping(folderPath + "{procType}Proc.do")
+	public String proc(@ModelAttribute("searchVO") Mgr0118VO searchVO, ModelMap model,@PathVariable String procType, HttpServletRequest request) throws Exception{
+		
+		if(procType != null){
+			
+			String[] arrEmply = searchVO.getEmplySeq().split(",");
+			String[] arrStaDate = searchVO.getStaDate().split(",");
+			String[] arrStaHour = searchVO.getStaHour().split(",");
+			String[] arrStaMin = searchVO.getStaMin().split(",");
+			String[] arrEndDate = searchVO.getEndDate().split(",");
+			String[] arrEndHour = searchVO.getEndHour().split(",");
+			String[] arrEndMin = searchVO.getEndMin().split(",");
+			String[] arrCont = searchVO.getCont().split(",");
+			
+			if(procType.equals("insert")){
+				
+				if(arrEmply.length > 0){
+					for(int i = 0; i < arrEmply.length; i++){
+						System.out.println("확인 : "+arrEmply[i]);
+						
+						searchVO.setEmplySeq(arrEmply[i].split("_")[0]);
+						searchVO.setStaDate(arrStaDate[i]);
+						searchVO.setStaHour(arrStaHour[i]);
+						searchVO.setStaMin(arrStaMin[i]);
+						searchVO.setEndDate(arrEndDate[i]);
+						searchVO.setEndHour(arrEndHour[i]);
+						searchVO.setEndMin(arrEndMin[i]);
+						searchVO.setCont(arrCont[i]);
+						
+						cmmnService.insertContents(searchVO, PROGRAM_ID + ".addInsertContents");
+					} 
+				}
+				cmmnService.insertContents(searchVO, PROGRAM_ID);
+				model.addAttribute("message","등록되었습니다.");
+				model.addAttribute("cmmnScript","list.do");
+				return "cmmn/execute";
+				
+				
+			}else if(procType.equals("update")){
+				
+				if(arrEmply.length > 0){
+					for(int i = 0; i < arrEmply.length; i++){
+						System.out.println("확인 : "+arrEmply[i]);
+						
+						searchVO.setEmplySeq(arrEmply[i].split("_")[0]);
+						searchVO.setStaDate(arrStaDate[i]);
+						searchVO.setStaHour(arrStaHour[i]);
+						searchVO.setStaMin(arrStaMin[i]);
+						searchVO.setEndDate(arrEndDate[i]);
+						searchVO.setEndHour(arrEndHour[i]);
+						searchVO.setEndMin(arrEndMin[i]);
+						searchVO.setCont(arrCont[i]);
+						
+						cmmnService.updateContents(searchVO, PROGRAM_ID + ".addUpdateContents");
+					}
+				}
+				cmmnService.updateContents(searchVO, PROGRAM_ID);
+				model.addAttribute("message","수정되었습니다.");
+				model.addAttribute("pName", "otSeq");
+				model.addAttribute("pValue", searchVO.getOtSeq());
+				model.addAttribute("cmmnScript","updateForm.do");
+				return "cmmn/execute";
+			}else if(procType.equals("delete")){
+				cmmnService.deleteContents(searchVO, PROGRAM_ID);
+				model.addAttribute("message", "삭제되었습니다.");
+				model.addAttribute("cmmnScript", "list.do");
+				return "cmmn/execute";
+			}
+		}
+		return "redirect/list.do";
+	}
+	
+	/*모달 List */
+	@RequestMapping(folderPath + "modal.do")
+	public String modal(@ModelAttribute("searchVO") Mgr0118VO searchVO, ModelMap model, HttpServletRequest request) throws Exception{
+		
+		return folderPath + "popList";
+	}
+	
+	/* 모달 addList */
+	@SuppressWarnings("unchecked")
+	@RequestMapping(folderPath + "popAddList.do")
+	public String popAddList(@ModelAttribute("searchVO") Mgr0118VO searchVO, ModelMap model, HttpServletRequest request) throws Exception {
+		   
+		searchVO.setPageUnit(10);
+		searchVO.setPageSize(5);
+		
+		/** pageing setting */
+		PaginationInfo paginationInfo = new PaginationInfo();
+		paginationInfo.setCurrentPageNo(searchVO.getPopPageIndex());
+		paginationInfo.setRecordCountPerPage(searchVO.getPageUnit());
+		paginationInfo.setPageSize(searchVO.getPageSize());
+		searchVO.setFirstIndex(paginationInfo.getFirstRecordIndex());
+		searchVO.setLastIndex(paginationInfo.getLastRecordIndex());
+		searchVO.setRecordCountPerPage(paginationInfo.getRecordCountPerPage());
+		
+		int totCnt = cmmnService.selectCount(searchVO, PROGRAM_ID + ".popSelectCount");
+		paginationInfo.setTotalRecordCount(totCnt);
+		model.addAttribute("paginationInfo", paginationInfo);
+
+		List<Mgr0118VO> resultList = (List<Mgr0118VO>) cmmnService.selectList(searchVO, PROGRAM_ID + ".popSelectList");
+		model.addAttribute("resultList", resultList);
+		
+		return folderPath + "popAddList";
+	}
+	
+	/* 엑셀 다운로드 */
+	@SuppressWarnings("unchecked")
+	@RequestMapping(folderPath + "excelDown.do")
+	public ModelAndView excelDown(@ModelAttribute("searchVO") Mgr0118VO mgr0118VO, ModelMap model, HttpServletRequest request) throws Exception{
+		
+		ModelAndView mav = new ModelAndView(excelView);
+		String tit = "추가근무";
+		String url = "/overTime.xlsx";
+		
+		List<Mgr0118VO> resultList = (List<Mgr0118VO>) cmmnService.selectList(mgr0118VO, PROGRAM_ID + ".excelDownSelectList");
+		
+		mav.addObject("target", tit);
+		mav.addObject("source", url);
+		
+		if(resultList.size() > 0 ){
+			mav.addObject("result", resultList);
+		}
+		
+		return mav;
+	}
+
+	
+
+}

@@ -1,0 +1,381 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.open.Mgr0016">
+	
+	<sql id="menuLogWhere">
+		<if test="searchKeyword !=null and searchKeyword !=''">
+			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==0">
+				AND (F_USER_ID(ML.RGST_ID) LIKE CONCAT('%',#{searchKeyword},'%') OR F_USER_NM(ML.RGST_ID) LIKE CONCAT('%',#{searchKeyword},'%')
+						OR CASE ML.MENU_CD
+							WHEN 'mgrMain' THEN '관리자 메인'
+							WHEN 'frtMain' THEN '사용자 메인'
+							ELSE MI.MENU_NM
+						   END LIKE CONCAT('%',#{searchKeyword},'%') OR ML.MENU_URL LIKE CONCAT('%',#{searchKeyword},'%')
+						OR ML.CLIENT_IP LIKE CONCAT('%',#{searchKeyword},'%'))
+			</if>
+			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==1">
+				AND F_USER_ID(ML.RGST_ID) LIKE CONCAT('%',#{searchKeyword},'%')
+			</if>
+			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==2">
+				AND F_USER_NM(ML.RGST_ID) LIKE CONCAT('%',#{searchKeyword},'%')
+			</if>
+			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==3">
+				AND CASE ML.MENU_CD
+						WHEN 'mgrMain' THEN '관리자 메인'
+						WHEN 'frtMain' THEN '사용자 메인'
+						ELSE MI.MENU_NM
+					END LIKE CONCAT('%',#{searchKeyword},'%') 
+			</if>
+			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==4">
+				AND ML.MENU_URL LIKE CONCAT('%',#{searchKeyword},'%')
+			</if>
+			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==5">
+				AND ML.CLIENT_IP LIKE CONCAT('%',#{searchKeyword},'%')
+			</if>
+	 	</if>
+	 	<if test="dateCondition !=null and dateCondition !='' and dateCondition ==0">
+			<if test="searchStartDate !=null and searchStartDate !=''">
+				 <![CDATA[
+					AND ML.RGST_DT >= STR_TO_DATE(CONCAT(#{searchStartDate},'0:0:0'),'%Y.%m.%d%H:%i:%s')
+			 	]]>
+			 </if>
+			 <if test="searchEndDate !=null and searchEndDate !=''">
+			 	<![CDATA[
+			 		AND ML.RGST_DT <= STR_TO_DATE(CONCAT(#{searchEndDate},'23:59:59'),'%Y.%m.%d%H:%i:%s')
+		 		]]>
+		 	</if>
+		</if>
+	</sql>
+	
+	<sql id="logWhere">
+		<if test="searchKeyword !=null and searchKeyword !=''">
+			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==0">
+				AND (F_USER_ID(TL.RGST_ID) LIKE CONCAT('%',#{searchKeyword},'%') OR F_USER_NM(TL.RGST_ID) LIKE CONCAT('%',#{searchKeyword},'%')
+						OR AND TL.CLIENT_IP LIKE CONCAT('%',#{searchKeyword},'%'))
+			</if>
+			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==1">
+				AND F_USER_ID(TL.RGST_ID) LIKE CONCAT('%',#{searchKeyword},'%')
+			</if>
+			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==2">
+				AND F_USER_NM(TL.RGST_ID) LIKE CONCAT('%',#{searchKeyword},'%')
+			</if>
+			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==5">
+				AND TL.CLIENT_IP LIKE CONCAT('%',#{searchKeyword},'%')
+			</if>
+	 	</if>
+	 	<if test="dateCondition !=null and dateCondition !='' and dateCondition ==0">
+			<if test="searchStartDate !=null and searchStartDate !=''">
+				 <![CDATA[
+				 	AND TL.RGST_DT >= STR_TO_DATE(CONCAT(#{searchStartDate},'0:0:0'),'%Y.%m.%d%H:%i:%s')
+			 	]]>
+			 </if>
+			 <if test="searchEndDate !=null and searchEndDate !=''">
+			 	<![CDATA[
+			 		AND TL.RGST_DT <= STR_TO_DATE(CONCAT(#{searchEndDate},'23:59:59'),'%Y.%m.%d%H:%i:%s')
+		 		]]>
+		 	</if>
+		</if>
+	</sql> 
+	
+	<sql id="failLogWhere">
+		<if test="searchKeyword !=null and searchKeyword !=''">
+			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==0">
+				AND (F_USER_ID(TL.RGST_ID) LIKE CONCAT('%',#{searchKeyword},'%') OR F_USER_NM(TL.RGST_ID) LIKE CONCAT('%',#{searchKeyword},'%')
+						OR AND TL.CLIENT_IP LIKE CONCAT('%',#{searchKeyword},'%'))
+			</if>
+			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==1">
+				AND AU.ID LIKE CONCAT('%',#{searchKeyword},'%')
+			</if>
+			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==2">
+				AND AU.NAME LIKE CONCAT('%',#{searchKeyword},'%')
+			</if>
+			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==5">
+				AND TTL.CLIENT_IP LIKE CONCAT('%',#{searchKeyword},'%')
+			</if>
+	 	</if>
+	 	<if test="dateCondition !=null and dateCondition !='' and dateCondition ==0">
+			<if test="searchStartDate !=null and searchStartDate !=''">
+				 <![CDATA[
+				 	AND TTL.RGST_DT >= STR_TO_DATE(CONCAT(#{searchStartDate},'0:0:0'),'%Y.%m.%d%H:%i:%s')
+			 	]]>
+			 </if>
+			 <if test="searchEndDate !=null and searchEndDate !=''">
+			 	<![CDATA[
+			 		AND TTL.RGST_DT <= STR_TO_DATE(CONCAT(#{searchEndDate},'23:59:59'),'%Y.%m.%d%H:%i:%s')
+		 		]]>
+		 	</if>
+		</if>  
+	</sql>
+	
+	<select id="menuLogSelectList" parameterType="mgr0016VO" resultType="mgr0016VO">
+		/* com.open.Mgr0016.menuLogSelectList */
+		<![CDATA[
+			SELECT
+				  ML.MENU_DIVN							menuDivn
+				, F_USER_ID(ML.RGST_ID)					id
+				, F_USER_NM(ML.RGST_ID)					name
+				, ML.MENU_URL							menuUrl
+				, CASE ML.MENU_CD
+					WHEN 'mgrMain' THEN '관리자 메인'
+					WHEN 'frtMain' THEN '사용자 메인'
+					ELSE MI.MENU_NM
+				  END									menuNm
+				, ML.CLIENT_IP							clientIp
+				, DATE_FORMAT(ML.RGST_DT, '%Y.%m.%d %H:%i:%s')	rgstDt
+			FROM t_menu_log ML
+			LEFT OUTER JOIN t_menu_info MI
+				ON ML.MENU_CD = MI.MENU_CD
+				AND MI.USE_YN = 'Y'
+			WHERE ML.USE_YN = 'Y'
+		]]>
+		<include refid="menuLogWhere"/>
+		<if test='schEtc01 != null and schEtc01 != ""'>
+		<![CDATA[
+			AND ML.MENU_DIVN = #{schEtc01}
+		]]>
+		</if>
+		<![CDATA[
+			ORDER BY ML.RGST_DT DESC
+			LIMIT #{firstIndex} , #{recordCountPerPage}
+		]]>	
+	</select>
+	
+	<select id="menuLogSelectCount" parameterType="mgr0016VO" resultType="int">
+		/* com.open.Mgr0016.menuLogSelectCount */
+		<![CDATA[
+			SELECT
+				  COUNT(ML.MENU_LOG_SEQ)		cnt
+			FROM t_menu_log ML
+			LEFT OUTER JOIN t_menu_info MI
+				ON ML.MENU_CD = MI.MENU_CD
+				AND MI.USE_YN = 'Y'
+			WHERE ML.USE_YN = 'Y'
+		]]>
+		<include refid="menuLogWhere"/>
+		<if test='schEtc01 != null and schEtc01 != ""'>
+		<![CDATA[
+			AND ML.MENU_DIVN = #{schEtc01}
+		]]>
+		</if>
+	</select>
+
+	<select id="logSelectList" parameterType="mgr0016VO" resultType="mgr0016VO">
+		/* com.open.Mgr0016.logSelectList */
+		<choose>
+			<when test='searchDivn != null and searchDivn != "" and searchDivn.equals("T")'>
+				<![CDATA[
+					SELECT
+						  F_USER_ID(TL.RGST_ID)							id
+						, F_USER_NM(TL.RGST_ID)							name
+						, TL.CLIENT_IP									clientIp
+						, DATE_FORMAT(TL.RGST_DT, '%Y.%m.%d %H:%i:%s')	rgstDt
+					FROM t_log TL
+					WHERE USE_YN = 'Y' AND LOG_DIVN = 'mgr'
+						AND (HOUR(TL.RGST_DT) >= '18' OR HOUR(TL.RGST_DT) < '8')
+				]]>
+				<include refid="logWhere"/>
+				<![CDATA[
+					ORDER BY TL.RGST_DT DESC
+				]]>
+			</when>
+			<when test='searchDivn != null and searchDivn != "" and searchDivn.equals("O")'>
+				<![CDATA[
+					SELECT
+						  F_USER_ID(TL.RGST_ID)							id
+						, F_USER_NM(TL.RGST_ID)							name
+						, TL.CLIENT_IP									clientIp
+						, DATE_FORMAT(TL.RGST_DT, '%Y.%m.%d')			rgstDt
+						, COUNT(TL.LOG_SEQ)								cnt
+					FROM t_log TL
+					WHERE USE_YN = 'Y' AND LOG_DIVN = 'mgr'
+				]]>
+				<include refid="logWhere"/>
+				<![CDATA[
+					GROUP BY TL.RGST_ID , TL.CLIENT_IP, DATE_FORMAT(TL.RGST_DT, '%Y.%m.%d')
+						HAVING cnt >= 10
+					ORDER BY DATE_FORMAT(TL.RGST_DT, '%Y.%m.%d') DESC
+				]]>
+			</when>
+		</choose>
+		<![CDATA[
+			LIMIT #{firstIndex} , #{recordCountPerPage}
+		]]>
+	</select>
+	
+	<select id="logSelectCount" parameterType="mgr0016VO" resultType="int">
+		/* com.open.Mgr0016.logSelectCount */
+		<choose>
+			<when test='searchDivn != null and searchDivn != "" and searchDivn.equals("T")'>
+				<![CDATA[
+					SELECT
+						COUNT(TL.LOG_SEQ)		cnt
+					FROM t_log TL
+					WHERE USE_YN = 'Y' AND LOG_DIVN = 'mgr'
+						AND (HOUR(TL.RGST_DT) >= '18' OR HOUR(TL.RGST_DT) < '8')
+				]]>
+				<include refid="logWhere"/>
+			</when>
+			<when test='searchDivn != null and searchDivn != "" and searchDivn.equals("O")'>
+				<![CDATA[
+				SELECT
+					COUNT(TTL.cnt)		cnt
+				FROM(	
+					SELECT
+						COUNT(TL.LOG_SEQ)		cnt
+					FROM t_log TL
+					WHERE USE_YN = 'Y' AND LOG_DIVN = 'mgr'
+				]]>
+				<include refid="logWhere"/>
+				<![CDATA[
+					GROUP BY TL.RGST_ID , TL.CLIENT_IP, DATE_FORMAT(TL.RGST_DT, '%Y.%m.%d')
+						HAVING cnt >= 10) TTL
+				]]>
+			</when>
+		</choose>
+	</select>
+	
+	<select id="failLogSelectList" parameterType="mgr0016VO" resultType="mgr0016VO">
+		/* com.open.Mgr0016.failLogSelectList */
+		<![CDATA[
+			SELECT
+				  AU.SEQ											seq
+				, AU.ID												id
+				, AU.NAME											name
+				, TTL.CLIENT_IP										clientIp
+				, AU.FAIl_CNT										failCnt
+				, DATE_FORMAT(TTL.RGST_DT, '%Y.%m.%d %H.%i.%s')		rgstDt
+			FROM t_ad_user AU
+			LEFT OUTER JOIN (
+								SELECT
+									  RGST_ID
+									, MAX(RGST_DT) maxRgstDt
+								FROM t_log
+								WHERE LOG_DIVN = 'mgrFail'
+								GROUP BY RGST_ID
+							) TL
+				ON AU.ID = TL.RGST_ID
+				LEFT OUTER JOIN t_log TTL
+					ON TL.RGST_ID = TTL.RGST_ID
+					AND TL.maxRgstDt = TTL.RGST_DT
+					AND TTL.LOG_DIVN = 'mgrFail'	 
+			WHERE FAIL_CNT >= 5
+		]]>
+		<include refid="failLogWhere"/>
+		<if test='schEtc02 != null and schEtc02 != ""'>
+		<![CDATA[
+		]]>
+		</if>
+		<![CDATA[
+			ORDER BY TTL.RGST_DT DESC
+			LIMIT #{firstIndex} , #{recordCountPerPage}
+		]]>
+	</select>
+	
+	<select id="failLogSelectCount" parameterType="mgr0016VO" resultType="int">
+		/* com.open.Mgr0016.failLogSelectCount */
+		<![CDATA[
+			SELECT
+				COUNT(AU.SEQ)		cnt
+			FROM t_ad_user AU
+			LEFT OUTER JOIN (
+								SELECT
+									  RGST_ID
+									, MAX(RGST_DT) maxRgstDt
+								FROM t_log
+								WHERE LOG_DIVN = 'mgrFail'
+								GROUP BY RGST_ID
+							) TL
+				ON AU.ID = TL.RGST_ID
+				LEFT OUTER JOIN t_log TTL
+					ON TL.RGST_ID = TTL.RGST_ID
+					AND TL.maxRgstDt = TTL.RGST_DT
+					AND TTL.LOG_DIVN = 'mgrFail'	 
+			WHERE AU.FAIL_CNT >= 5
+		]]>
+		<include refid="failLogWhere"/>
+	</select>
+
+<!-- /////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+
+	<!-- 잠금해제 -->
+	<update id="resetFailCnt" parameterType="mgr0016VO">
+		/* Mgr0016.resetFailCnt */
+		<![CDATA[
+			UPDATE t_ad_user
+			 SET
+			 	FAIL_CNT = 0
+			WHERE USE_YN = 'Y' AND SEQ = #{seq}
+		]]>
+	</update>
+	
+	<!-- 잠금해제 일괄 처리 -->
+	<update id="resetArrFailCnt" parameterType="mgr0016VO">
+		/* Mgr0016.resetArrFailCnt */
+		<![CDATA[
+			UPDATE t_ad_user
+			 SET
+			 	FAIL_CNT = 0
+			WHERE USE_YN = 'Y' AND SEQ IN
+		]]>
+		<foreach collection="arrTemp" item="item" open="(" close=")" separator=",">
+			#{item}
+		</foreach>
+	</update>
+
+<!-- /////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+
+	<insert id="logInsertContents" parameterType="mgr0016VO">
+		/* Mgr0016.logInsertContents */
+		<![CDATA[
+			INSERT INTO t_log(
+        	     LOG_SEQ
+				,CLIENT_IP
+				,RGST_ID
+				,RGST_DT
+				,LOG_DIVN
+			)
+			VALUES (
+				 (SELECT IFNULL(MAX(TL.LOG_SEQ)+1,1) FROM t_log TL)
+				,#{clientIp ,jdbcType=VARCHAR}
+				,#{rgstId ,jdbcType=VARCHAR}
+				,NOW()	
+				,#{logDivn ,jdbcType=VARCHAR}
+			)
+		]]>
+	</insert>
+	
+	<select id="menuUrlChkCount" parameterType="mgr0016VO" resultType="int">
+		/* Mgr0016.menuUrlChkCount */
+		<![CDATA[
+			SELECT
+				COUNT(MENU_CD)	cnt
+			FROM t_menu_info
+			WHERE USE_YN = 'Y' AND MENU_URL = #{menuUrl}
+		]]>
+	</select>
+	
+	<insert id="menuLogInsertContents" parameterType="mgr0016VO">
+		/* Mgr0016.menuLogInsertContents */
+		<![CDATA[
+			INSERT INTO t_menu_log(
+        	     MENU_LOG_SEQ
+				,RGST_ID
+				,RGST_DT
+				,CLIENT_IP
+				,MENU_URL
+				,MENU_CD
+				,MENU_DIVN
+			)
+			VALUES (
+				 (SELECT IFNULL(MAX(ML.MENU_LOG_SEQ)+1,1) FROM t_menu_log ML)
+				,#{rgstId}
+				,NOW()
+				,#{clientIp ,jdbcType=VARCHAR}
+				,#{menuUrl ,jdbcType=VARCHAR}
+				,#{menuCd ,jdbcType=VARCHAR}
+				,#{menuDivn ,jdbcType=VARCHAR}
+			)
+		]]>
+	</insert>
+	
+</mapper>

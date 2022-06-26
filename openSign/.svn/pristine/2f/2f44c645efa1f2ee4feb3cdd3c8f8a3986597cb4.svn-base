@@ -1,0 +1,20 @@
+<input type="hidden" name="schSubStartDate" id="schSubStartDate" value="<c:out value='${searchVO.schSubStartDate}'/>"/>
+<input type="hidden" name="schSubEndDate" id="schSubEndDate" value="<c:out value='${searchVO.schSubEndDate}'/>"/>
+<input type="hidden" name="schSubCondition" id="schSubCondition" value="<c:out value='${searchVO.schSubCondition}'/>"/>
+<input type="hidden" name="schSubKeyword" id="schSubKeyword" value="<c:out value='${searchVO.schSubKeyword}'/>"/>
+<input type="hidden" name="subPageIndex" id="subPageIndex" value="<c:out value='${searchVO.subPageIndex}'/>"/>
+<input type="hidden" name="popPageIndex" id="popPageIndex" value="<c:out value='${searchVO.popPageIndex}'/>"/>
+
+<input type="hidden" name="schSub01" id="schSub01" value="<c:out value='${searchVO.schSub01}'/>"/>
+<input type="hidden" name="schSub02" id="schSub02" value="<c:out value='${searchVO.schSub02}'/>"/>
+<input type="hidden" name="schSub03" id="schSub03" value="<c:out value='${searchVO.schSub03}'/>"/>
+<input type="hidden" name="schSub04" id="schSub04" value="<c:out value='${searchVO.schSub04}'/>"/>
+<input type="hidden" name="schSub05" id="schSub05" value="<c:out value='${searchVO.schSub05}'/>"/>
+<input type="hidden" name="schSub06" id="schSub06" value="<c:out value='${searchVO.schSub06}'/>"/>
+<input type="hidden" name="schSub07" id="schSub07" value="<c:out value='${searchVO.schSub07}'/>"/>
+<input type="hidden" name="schSub08" id="schSub08" value="<c:out value='${searchVO.schSub08}'/>"/>
+<input type="hidden" name="schSub09" id="schSub09" value="<c:out value='${searchVO.schSub09}'/>"/>
+<input type="hidden" name="schSub10" id="schSub10" value="<c:out value='${searchVO.schSub10}'/>"/>
+<input type="hidden" name="schSub13" id="schSub13" value="<c:out value='${searchVO.schSub13}'/>"/>
+<input type="hidden" name="schSub14" id="schSub14" value="<c:out value='${searchVO.schSub14}'/>"/>
+<input type="hidden" name="schSub15" id="schSub15" value="<c:out value='${searchVO.schSub15}'/>"/>

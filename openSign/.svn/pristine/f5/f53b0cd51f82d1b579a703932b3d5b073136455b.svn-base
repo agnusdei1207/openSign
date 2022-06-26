@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.open.Login">
+
+	<select id="selectContents" parameterType="loginVO" resultType="loginVO">
+		/* Login.selectContents */
+		<![CDATA[
+		SELECT
+			  SEQ									seq
+			, ID									id
+			, PWD									pwd
+			, NAME									name
+			, AUTH_CODE 							authCode
+			, (SELECT AUTH_CODE_NM FROM t_ad_user_auth WHERE A.AUTH_CODE=AUTH_CODE) authCodeNm
+			, DATE_FORMAT(NOW(), '%Y.%m.%d %r')		nowDate
+			, DATE_FORMAT(LAST_DATE,'%Y.%m.%d %r')	lastDate
+			, FAIL_CNT								failCnt
+		FROM
+			t_ad_user A
+		WHERE ID = #{id} 
+			AND PWD = #{pwd} 
+			AND USE_YN='Y'
+		]]>
+	</select> 
+	
+	<select id="nowLoginedSelectContents" parameterType="loginVO" resultType="loginVO">
+		/* Login.nowLoginedSelectContents */
+		<![CDATA[
+		SELECT
+			  SEQ									seq
+			, ID									id
+			, PWD									pwd
+			, NAME									name
+			, AUTH_CODE 							authCode
+			, (SELECT AUTH_CODE_NM FROM t_ad_user_auth WHERE A.AUTH_CODE=AUTH_CODE) authCodeNm
+			, DATE_FORMAT(NOW(), '%Y.%m.%d %r')		nowDate
+			, DATE_FORMAT(LAST_DATE,'%Y.%m.%d %r')	lastDate
+			, FAIL_CNT								failCnt
+		FROM
+			t_ad_user A 
+		WHERE SEQ = #{loginSeq} 
+			AND USE_YN='Y'
+		]]>
+	</select>
+	
+	<select id="selectLoginDate" parameterType="loginVO" resultType="String">
+		/* Login.selectContents */
+		<![CDATA[
+		SELECT 
+			DATE_FORMAT(PA.RGST_DT,'%Y.%m.%d %H:%i:%s')
+		FROM (
+				SELECT 
+					A.*
+		          , ROW_NUMBER() OVER(ORDER BY RGST_DT DESC) RN
+		        FROM t_log A
+		        WHERE RGST_ID = #{loginSeq}
+		      ) PA
+		WHERE PA.RN <= 2
+		]]>
+	</select>
+	
+	<update id="updateContents" parameterType="loginVO">
+		/* Login.updateContents */
+			UPDATE t_ad_user SET     
+			 	   LAST_DATE = NOW()
+			WHERE  SEQ = #{seq}  
+	</update>
+	
+	<!-- 기존 패스워드 정보 조회 -->
+	<select id="oldPwdSelectList" parameterType="loginVO" resultType="loginVO">
+		/* Login.oldPwdSelectList */
+		<![CDATA[
+			SELECT
+			 	  SEQ			seq
+			 	, OLD_PWD		oldPwd
+			FROM t_ad_user
+			WHERE (OLD_PWD IS NOT NULL OR OLD_PWD <> '')
+				AND (PWD IS NULL OR PWD = '')
+		]]>
+	</select>
+	
+	<update id="oldPwdUpdateContents" parameterType="loginVO">
+		/* Login.oldPwdUpdateContents */
+		<![CDATA[
+			UPDATE t_ad_user
+			 SET
+			 	PWD = #{pwd}
+			 WHERE SEQ = #{seq}
+		]]>
+	</update>
+	
+	<!-- 기존 QnA게시판 정보 조회 -->
+	<select id="oldBoardSelectList" parameterType="CmmnBoardVO" resultType="CmmnBoardVO">
+		/* Login.oldBoardSelectList */
+		<![CDATA[
+			SELECT
+				BOARD_SEQ	boardSeq
+			 	, TITLE		title
+			 	, CONT		cont
+			FROM t_board
+			WHERE BOARD_CD = 'mgr0039'
+		]]>
+	</select>
+	
+	<update id="oldBoardUpdateContents" parameterType="CmmnBoardVO">
+		/* Login.oldBoardUpdateContents */
+		<![CDATA[
+			UPDATE t_board
+			 SET
+			 	TITLE			= #{title, jdbcType=VARCHAR}
+			 	, CONT			= #{cont, jdbcType=VARCHAR}
+			 WHERE BOARD_SEQ = #{boardSeq}
+		]]>
+	</update>
+	
+	<update id="failCntUpdate" parameterType="loginVO">
+		/* Login.failCntUpdate */
+		<![CDATA[
+			UPDATE t_ad_user
+			 SET
+			 	FAIL_CNT = FAIL_CNT+1
+			WHERE ID = #{id}
+		]]>
+		<selectKey resultType="String" keyProperty="failCnt" order="AFTER">
+			<![CDATA[
+				SELECT
+					IFNULL(MAX(FAIL_CNT),0)		failCnt
+				FROM t_ad_user
+				WHERE  USE_YN='Y' AND ID = #{id}
+					AND SEQ = (SELECT MAX(SEQ) FROM t_ad_user WHERE ID = #{id})
+			]]>
+		</selectKey>
+	</update>
+	
+	<update id="failCntReset" parameterType="loginVO">
+		/* Login.failCntReset */
+		<![CDATA[
+			UPDATE t_ad_user
+			 SET
+			 	FAIL_CNT = 0
+			WHERE SEQ = #{seq}
+		]]>
+	</update>
+	
+	<update id="updateContentsPwd" parameterType="loginVO">
+		/* Login.updateContentsPwd */
+		<![CDATA[
+			UPDATE	t_ad_user
+			   SET     
+ 		]]>       	   
+			   <if test="schEtc01 !=null and schEtc01 !=''">
+			 	  	PWD = #{schEtc01}
+			   </if>
+		<![CDATA[	   
+			 WHERE	ID = #{id}
+		]]>
+	</update>
+	
+	
+	
+	
+	
+	
+</mapper>

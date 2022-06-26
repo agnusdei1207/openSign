@@ -1,0 +1,144 @@
+@charset "utf-8";
+
+html,
+body {margin: 0;padding: 0;font-family:"바탕";font-size:11pt;}
+* {box-sizing: border-box; }
+
+h1, h2, h3, h4, h5, h6 {margin:0;font-size:1em;}
+caption {display:none;}
+table {width:100%;border-spacing:0;border:0;border-collapse:separate;font-family:inherit; page-break-inside:auto}
+tr {page-break-inside:avoid; page-break-after:auto }
+th, td {padding:0;margin:0;text-align:left;vertical-align:middle;font-size:inherit;font-weight:normal;word-break:break-all;}
+dd, dl, ol, ul {margin:0;padding:0;}
+li {list-style-type:none;}
+
+.print_wrap {padding:20px;}
+
+.print_wrap .tbl_wrap, .page {
+    width: 21cm;
+    min-height: 29.7cm;
+    border-radius: 5px;
+    background: white;
+}
+
+@page {
+    size:210mm 297mm;
+  	margin:1cm
+}
+
+
+@media print {	
+    .page {
+        margin: 0;
+        border: initial;
+        border-radius: initial;
+        width: initial;
+        min-height: initial;
+        box-shadow: initial;
+        background: initial;
+        page-break-after: always;
+    }
+    .print_wrap {padding:0;}
+
+} 
+
+/*수료증*/
+.headnote {font-size:16px;}
+.report_popup {min-width:800px;}
+.report_popup .pop_header {display:none;}
+.report_top {position:relative;width:100%;}
+.report_top .tab_menu {width:60%;}
+.report_top .btn_right {position:absolute; top:25%; right:0;}
+.report_head {width:70%; margin:50px auto;}
+.who_report {width:80%; margin:40px auto;}
+.report_mid .subj { text-align:center;font-family:"궁서체"; font-size:34px; font-weight:bold; letter-spacing:0.2em;}
+.report_mid .subj02 {text-align:center;font-family:"batang"; font-size:32px; font-weight:bold; letter-spacing:0.5em;}
+.report_tbl {table-layout:fixed;width:100%; font-size:14px;  border-top:0; border-bottom:0; font-family:"dotum","malgun gothic";}
+.report_tbl th {padding:5px 7px; text-align:center; letter-spacing:-0.05em;}
+.report_tbl td {padding:5px 7px; letter-spacing:-0.05em;}
+.report_tbl td.logo_text .top {display:block;font-family:"BATANG"; font-size:24px; font-weight:bold; text-align:center;}
+.report_tbl td.logo_text .bot {display:block;font-family:"BATANG"; font-size:24px; font-weight:bold; text-align:center;}
+.report_tbl td.logo_text .bot .sm {font-size:16px;}
+.report_tbl td.addr {font-family:"dotum","malgun gothic"; font-size:12px;}
+.report_tbl th.tit {font-weight:bold; font-size:17px; text-align:left; color:#666;}
+.report_tbl tbody td { letter-spaicng:-0.05em;}
+.report_tbl .addition {font-size:12px; color:#999;}
+.report_tbl .bdt {border-top:1px solid #888;}
+.report_tbl .no_bdr {border-right:0;}
+.report_tbl .no_bdb {border-bottom:0;}
+.report_tbl td.coord_num > span {display:inline-block;margin:0 5px;}
+
+.report_tbl_type02 {table-layout:fixed;width:100%; font-size:18px; font-family:"굴림";}
+.report_tbl_type02.type02 {font-family:"돋움"; font-weight:bold;}
+.report_tbl_type02 th {padding:5px 7px; text-align:center; font-weight:bold;}
+.report_tbl_type02 td {padding:5px 7px; text-align:left; font-weight:bold; }
+.report_tbl_type02 .th_subj {display:inline-block;letter-spacing:1em; width:80%; }
+.report_tbl_type02 .name {letter-spacing:1em;}
+.completion {margin-bottom:40px;font-family:"궁서"; font-size:20px; font-weight:500; color:#000; letter-spacing:0.2em; text-indent:1.2em;    line-height: 1.6;}
+.report_tbl_type03 {table-layout:fixed;width:100%; font-size:14px; border:4px double #888; font-family:"dotum","malgun gothic";}
+.report_tbl_type03.bdt {border-top:1px solid #888;}
+.report_tbl_type03 thead th {padding:20px 10px; text-align:center; border-right:1px solid #888; font-size:18px; letter-spacing:0.4em; font-weight:bold; border-bottom:1px solid #888; background:#f1f1f1;}
+.report_tbl_type03 th.no_bg{background:#fff;}
+.report_tbl_type03 th.tit {font-weight:bold; font-size:17px; text-align:left; color:#666;}
+.report_tbl_type03 tbody td {padding:20px 10px;letter-spacing:0.1em;  border-right:1px solid #888; border-bottom:1px solid #888; font-size:17px; font-family:"굴림"; font-weight:bold;}
+.report_tbl_type03 .addition {font-size:12px; color:#999;}
+.report_tbl_type03 .bdt {border-top:1px solid #888;}
+.report_tbl_type03 .no_bdr {border-right:0;}
+.report_tbl_type03 .no_bdb {border-bottom:0;}
+.report_tbl_type03 tr:last-child td {border-bottom:0;}
+.report_tbl_type03 td.coord_num > span {display:inline-block;margin:0 5px;}
+.report_tbl_type04 {table-layout:fixed;width:100%; font-size:14px; border:4px double #888; font-family:"dotum","malgun gothic";}
+.report_tbl_type04 thead th {padding:10px 10px; text-align:center; border-right:1px solid #888; font-size:18px; letter-spacing:0.4em; font-weight:bold; border-bottom:1px solid #888; background:#f1f1f1;}
+.report_tbl_type04 th.no_bg{background:#fff;}
+.report_tbl_type04 th.tit {font-weight:bold; font-size:17px; text-align:left; color:#666;}
+.report_tbl_type04 tbody td {padding:5px 10px;letter-spacing:0.1em;  border-right:1px solid #888; border-bottom:1px solid #888; font-size:17px; font-family:"굴림"; font-weight:bold;}
+.report_tbl_type04 .no_bdr {border-right:0;}
+.report_tbl_type04 .no_bdb {border-bottom:0;}
+.report_tbl_type04 tr:last-child td {border-bottom:0;}
+.report_btm .days {margin:40px auto 60px; text-align:right;}
+.report_btm .days > span {min-width:80px; font-size:18px;}
+.report_btm .days .day_tit {display:inline-block; margin-left:10px;}
+.report_btm .btm_subj {padding-top:40px;position:relative;text-align:center;font-family:"궁서체"; font-size:34px; font-weight:bold; letter-spacing:0.2em;}
+.report_btm .btm_subj.type02 {font-family:"돋움";}
+.report_btm .btm_subj > span {position:relative; z-index:1;}
+.report_btm .btm_subj > img {position:absolute; top:0; right:20%; z-index:0;}
+.notific {font-size:18px; width:80%; margin:10px auto; line-height:1.2; }
+.days {width:90%; margin:10px auto;}
+
+/*강사이력*/
+table.tbl_row_type01 {border-collapse: collapse;font-size:10pt; font-family:돋움;line-height:1.3;page-break-after: avoid; page-break-before: avoid;}
+/* table.tbl_row_type01 tr {page-break-inside: auto; } */
+.tbl_row_type01 > tbody > tr > th,
+.tbl_row_type01 > tbody > tr > td {height:21px;border:1px solid #000;}
+.tbl_row_type01 > tbody > tr > th {padding: 0 5px;text-align:center;background:#fafafa;}
+.tbl_row_type01 > tbody > tr > td {padding: 0 10px;page-break-after: avoid; page-break-before: avoid;}
+.tbl_row_type01 th.no_bg {background:#fff;}
+.tbl_row_type01 .title {font-weight:bold;background:#fff;font-size:10pt;font-family:굴림;}
+.tbl_row_type01 .bold {font-weight:bold;}
+.tbl_row_type01 .tit_big {font-size:15pt;font-weight:bold;text-align:center;font-family:휴먼명조;}
+.tbl_row_type01 td.c {text-align:center; padding:0;}
+table.in_tbl_type01 {table-layout:fixed;border-collapse: collapse;page-break-after: avoid; page-break-before: avoid;}
+.in_tbl_type01 th,
+.in_tbl_type01 td {height:15px;border:1px solid #000;}
+.in_tbl_type01 th {text-align:center;}
+.in_tbl_type01 td {padding: 0 10px;}
+.in_tbl_type01 th.tit {font-size:11pt;font-weight:bold; border:0;font-family:휴먼명조;text-align:left;}
+.in_tbl_type01 td.aggre {border:0;text-align:center;padding:5px 0;font-size:11pt;font-weight:bold;font-family:휴먼명조;letter-spacing:-0.07em;line-height: 1.2;}
+.in_tbl_type01 .to {border:0;font-size:11pt;font-weight:bold;font-family:휴먼명조;padding:10px 0 0;}
+
+/*영수증*/
+.receipt_box {width:10cm;margin:10px;font-family:바탕;border-top:1px solid #3745ac;border-left:1px solid #3745ac;}
+.tbl_receipt {width:100%;border-collapse: collapse;font-size:9pt;}
+.tbl_receipt th,
+.tbl_receipt td {border:1px solid #3745ac;}
+.tbl_receipt th {text-align:center;color:#3745ac;}
+.tbl_receipt td {padding: 3px 10px;color:#5c5c5c;}
+.tbl_receipt td.c {text-align:center;}
+.tbl_receipt th.title {border-bottom:0 !important;text-align:center;font-weight:bold;font-size:16pt;padding:5px 0;}
+.tbl_receipt .sm_txt {font-size:10pt;font-weight:normol;}
+.tbl_receipt td.to {border-top:0 !important;text-align:right;} 
+.tbl_receipt .color {color:#3745ac;}
+.tbl_receipt .in_txt {position:relative; margin-top:10px;}
+.tbl_receipt .in_txt::after {content:'';display:table; clear:both;}
+.tbl_receipt .in_txt > span {float:left;display:block;width:85%}
+.tbl_receipt .in_txt > span.tit {width:15%;}

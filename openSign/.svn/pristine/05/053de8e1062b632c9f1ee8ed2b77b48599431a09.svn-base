@@ -1,0 +1,64 @@
+package com.open.mgr.mgr0111.service;
+
+import java.io.Serializable;
+
+import org.apache.ibatis.type.Alias;
+
+import com.open.cmmn.model.CmmnDefaultVO;
+
+@Alias("mgr0111VO")
+@SuppressWarnings("serial")
+public class Mgr0111VO extends CmmnDefaultVO implements Serializable {
+	 
+	private String totalPrice;
+	private String avgPrice  ;
+	private String totalTime ;
+	private String avgTime   ;
+	private String rgstDt    ;
+	private String excelRow  ;
+	
+	
+	
+	public String getRgstDt() {
+		return rgstDt;
+	}
+	public void setRgstDt(String rgstDt) {
+		this.rgstDt = rgstDt;
+	}
+	public String getExcelRow() {
+		return excelRow;
+	}
+	public void setExcelRow(String excelRow) {
+		this.excelRow = excelRow;
+	}
+	public String getTotalPrice() {
+		return totalPrice;
+	}
+	public void setTotalPrice(String totalPrice) {
+		this.totalPrice = totalPrice;
+	}
+	public String getAvgPrice() {
+		return avgPrice;
+	}
+	public void setAvgPrice(String avgPrice) {
+		this.avgPrice = avgPrice;
+	}
+	public String getTotalTime() {
+		return totalTime;
+	}
+	public void setTotalTime(String totalTime) {
+		this.totalTime = totalTime;
+	}
+	public String getAvgTime() {
+		return avgTime;
+	}
+	public void setAvgTime(String avgTime) {
+		this.avgTime = avgTime;
+	}
+	                         
+	
+	
+	
+	
+	
+}

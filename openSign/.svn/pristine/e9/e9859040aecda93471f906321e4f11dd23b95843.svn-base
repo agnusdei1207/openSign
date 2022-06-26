@@ -1,0 +1,44 @@
+;server_id      Mall ������ ������ ���� ��
+server_id = 01
+
+;timeout        API ��û timeout �ð� (����:��)
+timeout = 60
+
+;log_level    3: INFO; 4: DEBUG
+log_level = 3
+
+;verify_cert    1: ������ ����; 0: ������ �������� ����
+verify_cert = 1
+
+;verify_host    1: ������ ���� domain name Ȯ��; 0: Ȯ������ ���� (test �ø� ���)
+verify_host = 1
+
+;report_error   1: error �� dacom ������ report ����; 0: �������� ���� (error ���� ���븸 ������)
+report_error = 1
+
+;output_UTF8    1: ���� ������ UTF-8�� return; 0: EUC-KR�� ����
+output_UTF8 = 1
+
+;auto_rollback  0: �ڵ���� ������,  1: �ڵ���� ���
+auto_rollback = 1
+
+
+;log_dir        log directory full path  (�α� ������ġ�� log ������ �ݵ�� ������ �αװ� ����)
+; TODO xpay.
+log_dir = /www/atic2021_gabia_io/www/lgdacom/log
+
+; 512 (TLS1.1) , 2048 (TLS1.2) , 2560 (TLS1.0) java / php ����
+default_secure_protocols = 2048
+
+;��������ġ (������ ������ ��ġ�� �°� ������ �ʿ��մϴ�.)
+; TODO xpay.
+keystore_cacerts_dir = /www/atic2021_gabia_io/www/WEB-INF/lib/cacerts
+
+;>>>>>>>>>>>>>>>>>>>> �ݵ�� �Է��� �ּ��� <<<<<<<<<<<<<<<<<<<<
+
+;����mertkey ���� (�ڼ��� ������ �������̵� ���� ��Ź�帳�ϴ�)
+taiit6000 = e6070bf42bb68abf1f1fe04adc7a93ce
+aiit6000 = e6070bf42bb68abf1f1fe04adc7a93ce
+
+
+;>>>>>>>>>>>>>>>>>>>> �ݵ�� �Է��� �ּ��� <<<<<<<<<<<<<<<<<<<<

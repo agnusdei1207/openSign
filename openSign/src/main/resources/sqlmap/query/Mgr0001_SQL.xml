@@ -1,0 +1,388 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.open.Mgr0001">
+
+	<sql id="Where">
+	</sql>
+	
+	<select id="selectCount" parameterType="mgr0001VO" resultType="int">
+		<![CDATA[
+			SELECT 
+				COUNT(MENU_SEQ) cnt 
+			FROM t_menu_info
+			WHERE USE_YN='Y'
+				AND MENU_CD = #{menuCd}
+		]]>
+	</select>
+	
+	<insert id="insertContents" parameterType="mgr0001VO">
+		<selectKey resultType="String" keyProperty="menuSeq" order="BEFORE">
+	       SELECT IFNULL(MAX(MENU_SEQ)+1,1) FROM t_menu_info 
+	    </selectKey>  
+		<![CDATA[
+		/*Mgr0001.insertContents */
+			INSERT INTO t_menu_info(
+           	      MENU_SEQ
+				, P_MENU_CD
+				, MENU_CD
+				, MENU_NM
+				, LVL
+				, RGST_ID
+				, MENU_NO
+				, ETC
+				, MENU_DEPT1_CD
+				, MENU_DEPT2_CD
+				, MENU_URL
+			)
+			VALUES (
+			 #{menuSeq}
+			,#{pMenuCd}
+			,CONCAT(#{menuCd},LPAD(#{menuSeq},4,0))
+			,#{menuNm}
+			,#{lvl}
+			,#{loginSeq}
+			,(SELECT IFNULL(MAX(MENU_NO)+1,1) FROM t_menu_info b WHERE P_MENU_CD = #{pMenuCd})
+			,#{etc}
+			,#{menuDept1Cd}
+			,#{menuDept2Cd}
+			]]>
+			<choose>
+				<when test='addUrl != null and addUrl != "" and addUrl.equals("Y")'>
+				, CONCAT('/',#{urlPtn},'/',#{menuCd},LPAD(#{menuSeq},4,0),'/list.do')
+				</when>
+				<otherwise>
+				,''
+				</otherwise>
+			</choose>
+			
+			)
+			ON 
+				DUPLICATE KEY
+			UPDATE
+				P_MENU_CD = CASE WHEN TRIM(#{pMenuCd}) = '' THEN '0' ELSE #{pMenuCd} END
+				,MENU_NM = #{menuNm}
+				,MENU_NO = #{menuNo}
+				,ETC = #{etc}
+				,USE_YN = 'Y'	
+				,MENU_URL = #{menuUrl}
+		
+	</insert>
+	
+
+	<update id="updateContents" parameterType="mgr0001VO">
+		/* Mgr0001.updateContents */
+		<![CDATA[
+			UPDATE 
+				t_menu_info
+			SET
+				 MENU_NM = #{menuNm}  
+				 , ETC = #{etc}
+				 , MENU_URL = #{menuUrl}
+				 , BOARD_DIVN = #{boardDivn}
+		]]>
+		<if test="writeYn != null and writeYn != ''">
+				, WRITE_YN = #{writeYn}
+		</if>
+		<if test="dsplYn != null and dsplYn != ''">
+				, DSPL_YN = #{dsplYn}
+		</if>
+		<choose>
+			<when test="boardDivn == null || boardDivn == ''">
+					, BOARD_CD = NULL
+			</when>
+			<otherwise>
+				<choose>
+					<when test="boardCd != null and boardCd != ''">
+						 , BOARD_CD = #{boardCd}
+					</when>
+					<otherwise>
+						 , BOARD_CD = #{menuCd}
+					</otherwise>
+				</choose>
+			</otherwise>
+		</choose>
+		<![CDATA[
+			WHERE MENU_SEQ = #{menuSeq}
+		]]>
+	</update>
+	
+		<update id="boardDivnUpdate" parameterType="mgr0001VO">
+		/* Mgr0001.boardDivnUpdate */
+		<![CDATA[
+			UPDATE 
+				t_board
+			 SET
+				 BOARD_DIVN = #{boardDivn}  
+			WHERE BOARD_CD = #{menuCd}
+		]]>
+	</update>
+
+	<delete id="deleteContents" parameterType="mgr0001VO">
+		/* Mgr0001.deleteContents */
+		<![CDATA[
+		UPDATE 
+			t_menu_info 
+		SET
+			USE_YN = 'N'
+		WHERE MENU_SEQ = #{menuSeq}
+		]]>
+	</delete>
+
+	<select id="selectContents" parameterType="mgr0001VO" resultType="mgr0001VO">
+		/* Mgr0001.selectContents */
+			 SELECT  
+				  MENU_SEQ menuSeq
+				, P_MENU_CD pMenuCd
+				, MENU_CD menuCd
+				, MENU_NM menuNm
+				, LVL lvl
+				, MENU_NO menuNo
+				, ETC etc
+				, MENU_URL menuUrl
+				, MENU_DEPT1_CD menuDept1Cd
+				, MENU_DEPT2_CD menuDept2Cd
+				, BOARD_DIVN boardDivn
+				, BOARD_CD boardCd
+				, WRITE_YN writeYn
+				, DSPL_YN dsplYn
+		     FROM  t_menu_info A  
+			 WHERE  USE_YN='Y'
+			 <if test="menuSeq != '' and menuSeq != null">
+				 AND MENU_SEQ = #{menuSeq}
+			 </if>
+			 <if test="menuSeq == '' or menuSeq == null">
+				 AND MENU_CD = #{menuCd}
+			 </if>	
+	</select>
+
+	<select id="selectList" parameterType="mgr0001VO" resultType="mgr0001VO">
+	/* Mgr0001.selectList */
+		SELECT
+			  MENU_SEQ menuSeq
+			, P_MENU_CD pMenuCd
+			, MENU_CD menuCd
+			, MENU_NM menuNm
+			, LVL lvl
+			, MENU_NO menuNo
+			, ETC etc
+			, MENU_URL menuUrl
+			, MENU_DEPT1_CD menuDept1Cd
+			, MENU_DEPT2_CD menuDept2Cd
+		FROM t_menu_info
+		WHERE USE_YN='Y'
+			AND P_MENU_CD = #{pMenuCd}
+		ORDER BY MENU_NO 
+	</select>	
+	
+	<update id="OrderUpTagetupdateContents" parameterType="mgr0001VO">
+	/* Mgr0001.OrderUpTaget.updateContents */
+		UPDATE t_menu_info
+			SET
+				MENU_NO = MENU_NO+1
+		WHERE USE_YN='Y'
+		     AND P_MENU_CD = #{pMenuCd} 
+			 AND MENU_NO = #{menuNo} -1
+	</update>
+	
+	<update id="OrderDownTargetupdateContents" parameterType="mgr0001VO" >
+	/* Mgr0001.OrderDownTarget.updateContents */
+		UPDATE t_menu_info
+			SET
+				MENU_NO = MENU_NO-1
+		WHERE USE_YN='Y'
+		     AND P_MENU_CD = #{pMenuCd}    /*코드그룹ID */
+			 AND MENU_NO = #{menuNo} +1
+	</update>
+	
+	<update id="OrderUpSelfupdateContents" parameterType="mgr0001VO">
+	/* Mgr0001.OrderUpSelf.updateContents */
+		<![CDATA[
+		UPDATE t_menu_info
+			SET
+				MENU_NO = MENU_NO-1
+		WHERE USE_YN='Y'
+		     AND MENU_CD = #{menuCd}    /*코드ID */
+			 AND MENU_NO > 1
+		 ]]>
+	</update>
+	
+	<update id="OrderDownSelfupdateContents" parameterType="mgr0001VO">
+	/* Mgr0001.OrderDownSelf.updateContents */
+		<![CDATA[
+		UPDATE t_menu_info
+			SET
+				MENU_NO = MENU_NO+1
+		WHERE USE_YN='Y'
+		     AND MENU_CD = #{menuCd}    /*코드ID */
+			 AND MENU_NO <= (SELECT B.MENU_NO FROM(SELECT MAX(MENU_NO) AS MENU_NO FROM t_menu_info A WHERE P_MENU_CD = #{pMenuCd}) B)
+		 ]]>
+	</update>
+	
+	
+	
+	<select id="menuSelectList" parameterType="cmmnDefaultVO" resultType="mgr0001VO">
+		/* Mgr0001.menuSelectList */
+		<![CDATA[
+		SELECT
+			  MI.MENU_SEQ menuSeq
+			, MI.P_MENU_CD pMenuCd
+			, MI.LVL lvl
+			, MI.MENU_NO menuNo
+			, MI.MENU_NM menuNm
+			, MI.MENU_CD menuCd
+			, MI.MENU_URL menuUrl
+            , CASE WHEN UA.MENU_CD IS NULL THEN 'N' ELSE 'Y' END menuChk
+			, MI.ETC etc
+			,(SELECT GROUP_CONCAT(DISTINCT MENU_CD SEPARATOR '-') FROM t_menu_info WHERE MENU_DEPT1_CD = MI.MENU_CD) menuDept1Cd
+			,(SELECT GROUP_CONCAT(DISTINCT MENU_CD SEPARATOR '-') FROM t_menu_info WHERE MENU_DEPT2_CD = MI.MENU_CD) menuDept2Cd
+		FROM t_menu_info MI
+            LEFT OUTER JOIN t_ad_user_auth_menu UA
+             ON MI.MENU_CD = UA.MENU_CD
+             AND UA.AUTH_CODE = #{authCode}
+		WHERE MI.LVL = #{lvl}
+			AND MI.USE_YN='Y'
+			AND MI.P_MENU_CD = #{pMenuCd}
+		]]>
+			<if test="schEtc03 == 'LAYOUT'">
+				AND UA.MENU_CD IS NOT NULL
+			</if>
+		ORDER BY MI.MENU_NO
+	</select>
+	
+	<select id="authViewSelectList" parameterType="cmmnDefaultVO" resultType="mgr0001VO">
+		/* Mgr0001.authViewSelectList */
+		<![CDATA[
+		SELECT
+			  MI.MENU_SEQ menuSeq
+			, MI.P_MENU_CD pMenuCd
+			, MI.LVL lvl
+			, MI.MENU_NO menuNo
+			, MI.MENU_NM menuNm
+			, MI.MENU_CD menuCd
+			, MI.MENU_URL menuUrl
+            , CASE WHEN UA.MENU_CD IS NULL THEN 'N' ELSE 'Y' END menuChk
+			, MI.ETC etc
+			,(SELECT GROUP_CONCAT(DISTINCT MENU_CD SEPARATOR '-') FROM t_menu_info WHERE MENU_DEPT1_CD = MI.MENU_CD) menuDept1Cd
+			,(SELECT GROUP_CONCAT(DISTINCT MENU_CD SEPARATOR '-') FROM t_menu_info WHERE MENU_DEPT2_CD = MI.MENU_CD) menuDept2Cd
+		FROM t_menu_info MI
+            LEFT OUTER JOIN t_ad_user_auth_menu UA
+             ON MI.MENU_CD = UA.MENU_CD
+			 AND UA.AUTH_CODE = #{authCode}
+		WHERE MI.LVL = #{lvl}
+			AND MI.USE_YN='Y'
+			AND MI.P_MENU_CD = #{pMenuCd}
+		]]>
+		ORDER BY MI.MENU_NO
+	</select>
+	
+	<select id="menuAuthSelectList" parameterType="mgr0001VO" resultType="String">
+		/* Mgr0001.menuAuthSelectList */
+		<![CDATA[
+		SELECT
+			MENU_CD menuCd
+		FROM t_ad_user_auth_menu
+		WHERE AUTH_CODE = #{authCode}
+		]]>
+	</select>	
+	
+	<select id="frontMenuSelectList" parameterType="cmmnDefaultVO" resultType="mgr0001VO">
+		/* Mgr0001.frontMenuSelectList */
+		<![CDATA[
+		SELECT
+			  MI.MENU_SEQ menuSeq
+			, MI.P_MENU_CD pMenuCd
+			, MI.LVL lvl
+			, MI.MENU_NO menuNo
+			, MI.MENU_NM menuNm
+			, MI.MENU_CD menuCd
+			, MI.MENU_URL menuUrl
+			, MI.ETC etc
+			,(SELECT GROUP_CONCAT(DISTINCT MENU_CD SEPARATOR '-') FROM t_menu_info WHERE MENU_DEPT1_CD = MI.MENU_CD) menuDept1Cd
+			,(SELECT GROUP_CONCAT(DISTINCT MENU_CD SEPARATOR '-') FROM t_menu_info WHERE MENU_DEPT2_CD = MI.MENU_CD) menuDept2Cd
+		FROM t_menu_info MI
+		WHERE MI.LVL = #{lvl}
+			AND MI.USE_YN='Y' AND MI.DSPL_YN='Y'
+			AND MI.P_MENU_CD = #{pMenuCd}
+		ORDER BY MI.MENU_NO
+		]]>
+	</select>
+	
+	<!-- 관리자 게시판 리스트 조회 -->
+	<select id="brdCdSelectList" parameterType="mgr0001VO" resultType="mgr0001VO">
+		<![CDATA[
+		SELECT
+			  MENU_NM menuNm
+			, MENU_CD menuCd
+		FROM t_menu_info
+		WHERE BOARD_DIVN = #{boardDivn}
+			AND USE_YN = 'Y'
+			AND MENU_CD = BOARD_CD
+		]]>
+	</select>
+	
+	<!-- 관리자 게시판 중복 확인 -->
+	<select id="cdOverLapChk" parameterType="mgr0001VO" resultType="int">
+		<![CDATA[
+			SELECT 
+				COUNT(MENU_SEQ) cnt 
+			FROM t_menu_info
+			WHERE USE_YN='Y'
+				AND MENU_CD != BOARD_CD
+				AND BOARD_CD = #{boardCd}
+		]]>
+	</select>
+	
+	<!-- 관리자 게시물 DIVN 삭제시 사용자 게시물 CD, DIVN 삭제 -->
+	<update id="frtBoardDelete" parameterType="mgr0001VO">
+		<![CDATA[
+			UPDATE t_menu_info
+			 SET
+				   BOARD_CD = NUll  
+				 , BOARD_DIVN = NUll
+			WHERE BOARD_CD != MENU_CD
+				AND BOARD_CD = #{menuCd}
+		]]>
+	</update>
+	
+	<!-- 개별컨텐츠 리스트 조회 -->
+	<select id="menuClcdSelectList" parameterType="mgr0001VO" resultType="mgr0001VO">
+		<![CDATA[
+		SELECT
+			  MENU_NM		menuNm
+			, MENU_CD 		menuCd
+			, P_MENU_CD		pMenuCd
+			, (SELECT MENU_NM FROM t_menu_info WHERE MENU_CD = pMenuCd)	pMenuNm
+			, LVL			lvl
+		FROM t_menu_info
+		WHERE BOARD_DIVN = 'cb04'
+			AND USE_YN = 'Y'
+		]]>
+	</select>
+	
+	<update id="menuChkLogInsert" parameterType="mgr0001VO">
+		/* Mgr0001.menuChkLogInsert */
+		<![CDATA[
+			INSERT INTO t_menu_chk_log(
+				  MENU_CHK_LOG_SEQ
+				, MENU_CD
+				, LAST_DT
+			)
+			VALUES(
+				  (SELECT IFNULL(MAX(MCL.MENU_CHK_LOG_SEQ)+1,1) FROM t_menu_chk_log MCL)
+				, #{menuCd}
+				, NOW()
+			)
+		]]>
+	</update>
+	
+	<select id="menuChkLogLastDt" parameterType="mgr0001VO" resultType="String">
+		/* Mgr0001.menuChkLogLastDt */
+		<![CDATA[
+			SELECT
+				DATE_FORMAT(LAST_DT, '%Y%m%d%H%i%s')
+			FROM t_menu_chk_log
+			WHERE MENU_CD = #{menuCd}
+				AND LAST_DT = (SELECT MAX(LAST_DT) FROM t_menu_chk_log WHERE MENU_CD = #{menuCd})
+		]]>
+	</select>
+</mapper>

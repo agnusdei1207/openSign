@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.open.Mgr0017">
+
+	<sql id="Where">
+		 <if test="searchStartDate !=null and searchStartDate !=''">
+			<![CDATA[
+				AND DATE_FORMAT(REG_DATE,'%Y.%m.%d') >= #{searchStartDate}
+			]]>
+		</if>
+		<if test="searchEndDate !=null and searchEndDate !=''">
+			<![CDATA[
+				AND DATE_FORMAT(REG_DATE,'%Y.%m.%d') <= #{searchEndDate}
+			]]>
+		</if>
+	</sql>  
+	       
+	<select id="selectContents" parameterType="mgr0017VO" resultType="mgr0017VO">
+		/* Mgr0017.selectContents */
+		<![CDATA[
+			 SELECT  
+			 	  SEQ seq
+			 	, ERR_TYPE errType
+			 	, ERR_MSG errMsg
+			 	, FULL_ERR_MSG fullErrMsg
+			 	, PARAM_VAL paramVal
+			 	, ERR_MENU_CD errMenuCd
+			 	, ERR_PAGE errPage
+			 	, ERR_PAGE_URL errPageUrl
+			 	, DATE_FORMAT(REG_DATE,'%Y-%m-%d  %H:%i:%s') rgstDt
+			 	, IP ip
+			 	, F_USER_NM(REG_ID) rgstId 			 	
+			 	, (SELECT TMI.MENU_NM FROM t_menu_info TMI WHERE TE.ERR_MENU_CD = TMI.MENU_CD AND TMI.MENU_CL = SUBSTR(ERR_PAGE,2,2)) menuNm
+			 	, SUBSTR(ERR_PAGE,2,2)
+		     FROM  t_exception TE
+			 WHERE SEQ = #{seq}
+		]]>
+	</select>
+	
+	
+	
+	<select id="selectList" parameterType="cmmnDefaultVO" resultType="mgr0017VO">
+		/* Mgr0017.selectList */
+		<![CDATA[
+			SELECT 
+				  SEQ seq
+				, ERR_TYPE errType
+			 	, ERR_MSG errMsg
+			 	, FULL_ERR_MSG fullErrMsg
+			 	, PARAM_VAL paramVal
+			 	, ERR_MENU_CD errMenuCd
+			 	, ERR_PAGE errPage
+			 	, ERR_PAGE_URL errPageUrl
+			 	, DATE_FORMAT(REG_DATE,'%Y-%m-%d  %H:%i:%s') rgstDt
+			 	, IP ip
+			 	, F_USER_NM(REG_ID) rgstId 
+			 	, (SELECT TMI.MENU_NM FROM t_menu_info TMI WHERE TE.ERR_MENU_CD = TMI.MENU_CD ) menuNm
+	       FROM  t_exception TE
+		   WHERE 1=1
+		]]>
+			    <include refid="Where"/>
+		<![CDATA[
+			ORDER BY SEQ DESC
+		    LIMIT #{firstIndex} , #{recordCountPerPage}
+		]]>
+	</select>	
+
+	<select id="selectCount" parameterType="cmmnDefaultVO" resultType="int">
+		/* Mgr0017.selectCount */
+		<![CDATA[
+			SELECT 
+				COUNT(SEQ) cnt 
+			FROM t_exception 
+			WHERE 1=1
+		]]>
+			 <include refid="Where"/>
+	</select>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+</mapper>

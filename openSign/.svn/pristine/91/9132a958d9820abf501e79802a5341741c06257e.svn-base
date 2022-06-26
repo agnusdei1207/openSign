@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.open.Mgr0003">
+
+	<sql id="Where">
+	</sql>
+	
+	<insert id="insertContents" parameterType="mgr0003VO">
+		<![CDATA[
+		/*Mgr0003.insertContents */
+			INSERT INTO t_code(
+           	   CD_SEQ
+				, P_CD
+				, C_CD
+				, C_CD_NM
+				, CD_CL
+				, RGST_ID
+				, C_CD_ENM
+				, CD_NO
+				, ETC
+			)
+			VALUES (
+			 (SELECT IFNULL(MAX(CD_SEQ)+1,1) FROM t_code a)
+			,CASE WHEN TRIM(#{pCd}) = '' THEN '0' ELSE #{pCd} END
+			,#{cCd}
+			,#{cCdNm}
+			,#{cdCl}
+			,#{loginSeq}
+			,#{cCdEnm}
+			,(SELECT IFNULL(MAX(CD_NO)+1,1) FROM t_code b WHERE P_CD = #{pCd})
+			,#{etc}
+			)
+			ON 
+				DUPLICATE KEY
+			UPDATE
+				P_CD = CASE WHEN TRIM(#{pCd}) = '' THEN '0' ELSE #{pCd} END
+				,C_CD_NM = #{cCdNm}
+				,CD_NO = #{cdNo}
+				,ETC = #{etc}
+				,USE_YN = 'Y'	
+		]]>
+	</insert>
+	
+
+	<update id="updateContents" parameterType="mgr0003VO">
+		/* Mgr0003.updateContents */
+		<![CDATA[
+			UPDATE 
+				t_code
+			 SET
+				   C_CD_NM = #{cCdNm}  
+				 , C_CD_ENM = #{cCdEnm} 
+				 , IN_OUT_YN  = #{inOutYn}
+				 , ETC = #{etc}
+			WHERE C_CD = #{cCd}
+				AND P_CD = #{pCd}
+		]]>
+	</update>
+
+
+	<delete id="deleteContents" parameterType="mgr0003VO">
+		/* Mgr0003.deleteContents */
+		<![CDATA[
+		UPDATE 
+			t_code 
+		 SET
+			USE_YN = 'N'
+		WHERE 1=1
+			  AND C_CD = #{cCd}
+			  AND P_CD = #{pCd}
+			  OR P_CD = #{cCd}
+		]]>
+	</delete>
+
+	<select id="selectContents" parameterType="mgr0003VO" resultType="mgr0003VO">
+		/* Mgr0003.selectContents */
+			 SELECT  
+				  CD_SEQ cdSeq
+				, P_CD pCd
+				, C_CD cCd
+				, C_CD_NM cCdNm
+				, CD_CL cdCl
+				, C_CD_ENM cCdEnm
+				, CD_NO cdNo
+				, IN_OUT_YN inOutYn
+				, ETC etc
+		     FROM  t_code A  
+			 WHERE  USE_YN='Y'	
+				 AND CD_SEQ = #{cdSeq}
+	</select>
+	
+	<select id="selectList" parameterType="mgr0003VO" resultType="mgr0003VO">
+	/* Mgr0003.selectList */
+		SELECT
+			  CD_SEQ cdSeq
+			, P_CD pCd
+			, C_CD cCd
+			, C_CD_NM cCdNm
+			, CD_CL cdCl  
+			, C_CD_ENM cCdEnm
+			, CD_NO cdNo
+			, IN_OUT_YN inOutYn
+			, ETC etc
+		FROM t_code
+		WHERE USE_YN='Y'
+		 AND P_CD = #{pCd}
+		ORDER BY CD_NO 
+	</select>	
+	
+	<update id="OrderUpTagetupdateContents" parameterType="mgr0003VO">
+	/* Mgr0003.OrderUpTaget.updateContents */
+		UPDATE t_code
+			SET
+				CD_NO = CD_NO+1
+		WHERE USE_YN='Y'
+		     AND P_CD = #{pCd} 
+			 AND CD_NO = #{cdNo} -1
+	</update>
+	
+	<update id="OrderDownTargetupdateContents" parameterType="mgr0003VO" >
+	/* Mgr0003.OrderDownTarget.updateContents */
+		UPDATE t_code
+			SET
+				CD_NO = CD_NO-1
+		WHERE USE_YN='Y'
+		     AND P_CD = #{pCd}    /*코드그룹ID */
+			 AND CD_NO = #{cdNo} +1
+	</update>
+	
+	<update id="OrderUpSelfupdateContents" parameterType="mgr0003VO">
+	/* Mgr0003.OrderUpSelf.updateContents */
+		<![CDATA[
+		UPDATE t_code
+			SET
+				CD_NO = CD_NO-1
+		WHERE USE_YN='Y'
+		     AND C_CD = #{cCd}    /*코드ID */
+			 AND CD_NO > 1
+		 ]]>
+	</update>
+	
+	<update id="OrderDownSelfupdateContents" parameterType="mgr0003VO">
+	/* Mgr0003.OrderDownSelf.updateContents */
+		<![CDATA[
+		UPDATE t_code
+			SET
+				CD_NO = CD_NO+1
+		WHERE USE_YN='Y'
+		     AND C_CD = #{cCd}    /*코드ID */
+			 AND CD_NO <= (SELECT B.CD_NO FROM(SELECT MAX(CD_NO) AS CD_NO FROM t_code A WHERE P_CD = #{pCd}) B)
+		 ]]>
+	</update>
+	
+	
+	<select id="chkselectCount" parameterType="mgr0003VO" resultType="java.lang.Integer">
+	/* Mgr0003.chk.selectCount */
+		SELECT
+			COUNT(C_CD) 
+		FROM
+			t_code 
+		WHERE C_CD = #{cCd} 
+	</select>
+	
+	<select id="cdNmSelectContents" parameterType="mgr0003VO" resultType="String">
+		/* Mgr0003.cdNmSelectContents */
+			 SELECT  
+				 C_CD_NM cCdNm
+		     FROM  t_code A  
+			 WHERE  USE_YN='Y'	
+				 AND C_CD = #{cCd}
+	</select>
+</mapper>

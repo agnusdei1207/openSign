@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans profile="local" xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd 
+    http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+    <!--
+    	기존 properties 파일 주석
+		1.  key = value 구조입니다.
+		2.  key값은 공백문자를 포함불가, value값은 공백문자를 가능
+		3.  key값으로 한글을 사용불가,   value값은 한글사용이 가능
+		4.  줄을 바꿀 필요가 있으면 '\'를 라인의 끝에 추가(만약  '\'문자를 사용해야 하는 경우는 '\\'를 사용)
+		5.  Windows에서의 디렉토리 표시 : '\\' or '/'  ('\' 사용하면 안됨)
+		6.  Unix에서의 디렉토리 표시 : '/'
+		7.  주석문 처리는  #사용
+		8.  value값 뒤에 스페이스가 존재하는 경우 서블릿에서 참조할때는 에러발생할 수 있으므로 trim()하거나 마지막 공백없이 properties 값을 설정할것
+     -->
+     
+    <!--
+		 Usage : 
+			In java - 1. (non-static) @Value("#{Globals['Globals.MAIN_PAGE']}") String mainPage;
+						 (static)
+							 	private static String MAIN_PAGE;
+		
+								@Value("#{Globals['Globals.MAIN_PAGE']}")
+								public void setMainPage(String MAIN_PAGE) {
+									ExampleUtil.MAIN_PAGE = MAIN_PAGE;
+								}
+												 
+			          2. @Resource(name = "Globals")
+						 protected Properties props = new Properties();
+						 props.getProperty("Globals.httpPath");
+						 
+			In jsp - <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %> 
+					 <spring:eval expression="@Globals['Globals.MAIN_PAGE']"/>
+					 
+			In xml - <property name="value" value="#{Globals['Globals.MAIN_PAGE']}"/>
+	 -->
+	<!-- 
+		XML Escape String
+		<      &lt;
+		>      &gt;
+		&      &amp
+	 -->
+	 <bean name="propertiesService" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+				<entry key="pageUnit" value="10" />
+				<entry key="pageSize" value="10" />
+			</map>
+		</property>
+	</bean>
+	 
+	<util:properties id="globalProperties">
+		<prop key="Globals.jndiNm">jdbc/rapa</prop>
+		<prop key="Globals.MainPage"></prop>
+		<prop key="Globals.LoginPage"></prop>
+		<prop key="Globals.sessionTime">1800</prop>
+		<prop key="pageUnit">10</prop>
+		<prop key="pageSize">10</prop>
+		<prop key="posblAtchFileSize">2147483647</prop>
+		<prop key="Globals.fileStorePath">C:\default_attach</prop><!-- 로컬 -->
+		<!-- <prop key="Globals.fileStorePath">/www/rapa_gabia_io/attach</prop> --><!-- 운영 -->
+	 </util:properties>
+    <!-- 로컬 -->
+	<util:properties id="fileUploadProperties">
+		<prop key="file.attach.path">C:\default_attach</prop>
+		<prop key="file.editor.path">C:\default_attach\editor</prop>
+		<prop key="file.upload.path">C:\default_attach\upload</prop>
+		<prop key="file.exl.path">C:\default_attach\excel</prop>
+		<prop key="file.exlImg.path">C:\default_attach\excel\img</prop>
+		<prop key="file.fileImg.path">C:\default_attach\upload\img</prop>
+		<prop key="file.image.path">C:\default_attach\image</prop>
+		<prop key="file.zip.path">C:\default_attach\zip</prop>
+		<prop key="file.board.path">C:\default_attach\board</prop>
+		<prop key="file.mail.path">C:\workspace\default_attach\src\main\webapp\publish\admin\html\</prop>
+		<prop key="file.exlExt">xls</prop>
+		<prop key="file.imgExt">jpg|gif|png|jpeg|pdf</prop>
+		<prop key="file.imgExt2">jpg|gif|png|jpeg</prop>
+		<prop key="file.docExt">doc|docx|xls|xlsx|ppt|pptx|pdf|hwp|zip</prop>
+		<prop key="file.fileExt">doc|docx|xls|xlsx|ppt|pptx|jpg|gif|png|jpeg|pdf|hwp|zip|avi|mp4|ogg|wmv|dwg|cad|tif|bmp|mov</prop>
+		<prop key="file.FileSize">2147483647</prop>
+		<prop key="file.image.FileSize">2147483647</prop>
+		<prop key="file.imageDownPath">/atch/getImage.do?atchFileId=</prop>
+	</util:properties>
+	
+	 <!-- 운영 -->
+		<!-- <util:properties id="fileUploadProperties">
+		<prop key="file.attach.path">/www/atic2021_gabia_io/attach</prop>
+		<prop key="file.editor.path">/www/atic2021_gabia_io/attach/editor</prop>
+		<prop key="file.upload.path">/www/atic2021_gabia_io/attach/upload</prop>
+		<prop key="file.exl.path">/www/atic2021_gabia_io/attach/excel</prop>
+		<prop key="file.exlImg.path">/www/atic2021_gabia_io/attach/excel/img</prop>
+		<prop key="file.fileImg.path">/www/atic2021_gabia_io/attach/upload/img</prop>
+		<prop key="file.image.path">/www/atic2021_gabia_io/attach/image</prop>
+		<prop key="file.zip.path">/www/atic2021_gabia_io/attach/zip</prop>
+		<prop key="file.board.path">/www/atic2021_gabia_io/attach/board</prop>
+		<prop key="file.mail.path">/www/atic2021_gabia_io/www/publish/admin/html\</prop>
+		<prop key="file.exlExt">xls</prop>
+		<prop key="file.imgExt">jpg|gif|png|jpeg|pdf</prop>
+		<prop key="file.imgExt2">jpg|gif|png|jpeg</prop>
+		<prop key="file.docExt">doc|docx|xls|xlsx|ppt|pptx|pdf|hwp|zip</prop>
+		<prop key="file.fileExt">doc|docx|xls|xlsx|ppt|pptx|jpg|gif|png|jpeg|pdf|hwp|zip|avi|mp4|ogg|wmv|dwg|cad|tif|bmp|mov</prop>
+		<prop key="file.FileSize">2147483647</prop>
+		<prop key="file.image.FileSize">2147483647</prop>
+		<prop key="file.imageDownPath">/atch/getImage.do?atchFileId=</prop>
+	</util:properties> -->
+	
+	<!-- 로컬 -->
+	<util:properties id="setProperties">
+		<prop key="atic.domain">http://121.179.119.218:7200</prop>
+		<prop key="isp.domain">https://rapa.or.kr</prop>
+		<prop key="isp.kakaoJsKey">e67a37e277f3c76e7d43d602175d38d2</prop>
+		<prop key="isp.naverJsKey">wI3q6bCu1vo5AmskuKPB</prop>
+		<prop key="isp.kakaoRestKey">23522c03463f274acdf9e965a35af2c0</prop>
+	 </util:properties>
+	 
+	 <!-- 운영 -->
+	<!-- <util:properties id="setProperties">
+		<prop key="atic.domain">http://atic2021.gabia.io</prop>
+		<prop key="isp.domain">https://rapa.or.kr</prop>
+		<prop key="isp.kakaoJsKey">e67a37e277f3c76e7d43d602175d38d2</prop>
+		<prop key="isp.naverJsKey">wI3q6bCu1vo5AmskuKPB</prop>
+		<prop key="isp.kakaoRestKey">23522c03463f274acdf9e965a35af2c0</prop>
+	 </util:properties> -->
+
+	<util:properties id="excelUploadProperties" location="classpath:/property/excel.properties" />
+</beans>    

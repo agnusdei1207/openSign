@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.open.Mgr0118">
+
+	<sql id="Where">
+		<if test="searchKeyword !=null and searchKeyword !=''">
+			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==0">
+				AND (PRJCT_NM LIKE CONCAT('%',#{searchKeyword},'%') OR (F_USER_NM(RGST_ID) like CONCAT('%',#{searchKeyword},'%'))
+			</if>
+			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==1">
+				AND PRJCT_NM LIKE CONCAT('%',#{searchKeyword},'%')
+			</if>
+			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==2">
+				AND (F_USER_NM(RGST_ID) LIKE CONCAT('%',#{searchKeyword},'%')
+			</if>
+	 	</if>
+
+		<if test="schEtc01 !=null and schEtc01 !='' and schEtc01 == ''">
+		
+		</if>
+ 		<if test='schEtc01 !=null and schEtc01 !="" and schEtc01 =="A"'>
+			AND STATUS = #{schEtc01}
+		</if>
+ 		<if test='schEtc01 !=null and schEtc01 !="" and schEtc01 =="B"'>
+			AND STATUS = #{schEtc01}
+		</if>
+ 		<if test='schEtc01 !=null and schEtc01 !="" and schEtc01 =="C"'>
+			AND STATUS = #{schEtc01}
+		</if>
+	</sql>
+	   
+	<sql id="modalWhere">
+		<if test="popDivn == null and popDivn ==''">
+			 AND C.C_CD = '0401'
+		 </if>
+		<if test="popDivn != null and popDivn !=''">
+			 AND C.C_CD = #{popDivn}
+		 </if>
+	</sql>
+	
+	<!-- 추가근무  selectContents -->
+	<select id="selectContents" parameterType="mgr0118VO" resultType="mgr0118VO">
+		/* Mgr0118.selectContents */
+		<![CDATA[
+		 	SELECT  
+					 OT_SEQ 							otSeq
+					,DATE_FORMAT(RGST_DT,'%Y.%m.%d')    rgstDt
+					,RGST_ID 							rgstId
+					,F_USER_NM(RGST_ID)					name
+					,STATUS 							status   
+				    ,PRJCT_NM 							prjctNm     
+					,ETC 								etc   
+					,ATCH_FILE_ID 						atchFileId
+		      FROM   T_OVER_TIME 
+			 WHERE   USE_YN='Y'	
+			   AND   OT_SEQ = #{otSeq}
+		]]>
+	</select>
+
+	<!-- 추가근무  selectList -->
+	<select id="selectList" parameterType="mgr0118VO" resultType="mgr0118VO">
+		/* Mgr0118.selectList */
+		<![CDATA[
+			SELECT  
+					 OT_SEQ 							otSeq
+					,DATE_FORMAT(RGST_DT,'%Y.%m.%d')    rgstDt
+					,RGST_ID 							rgstId
+					,F_USER_NM(RGST_ID)					name
+					,STATUS 							status   
+				    ,PRJCT_NM 							prjctNm     
+					,ETC 								etc   
+					,ATCH_FILE_ID 						atchFileId
+		      FROM   T_OVER_TIME 
+			 WHERE   USE_YN='Y'	
+	      ]]>
+		     <include refid="Where"/>	 
+	     <![CDATA[ 
+	    		ORDER BY OT_SEQ DESC
+				LIMIT  #{firstIndex} , #{recordCountPerPage}
+		]]>
+	</select>	
+
+	<select id="selectCount" parameterType="mgr0118VO" resultType="int">
+		/* Mgr0118.selectCount */
+		<![CDATA[
+			SELECT 
+					COUNT(OT_SEQ) cnt 
+			  FROM  T_OVER_TIME
+			 WHERE  USE_YN='Y' 
+		]]>
+			 <include refid="Where"/>
+	</select>
+	
+	<insert id="insertContents" parameterType="mgr0118VO">
+		/* Mgr0118.insertContents */
+		<![CDATA[
+			INSERT INTO T_OVER_TIME(
+		           	  	OT_SEQ
+					   ,RGST_ID 											
+					   ,ATCH_FILE_ID 					
+		           	   ,PRJCT_NM 						  												
+					   ,ETC 							
+					   ,STATUS 							
+					
+			)
+			VALUES (
+					 (SELECT IFNULL(MAX(OT.OT_SEQ)+1,1) FROM T_OVER_TIME OT)
+					,#{loginSeq }
+					,#{atchFileId }
+					,#{prjctNm }
+					,#{etc }
+					,#{status }
+			)
+		]]>
+	</insert>
+	
+	<update id="updateContents" parameterType="mgr0118VO">
+		/* Mgr0118.updateContents */
+		<![CDATA[
+			UPDATE   T_OVER_TIME     
+			   SET 
+				     PRJCT_NM			 = #{prjctNm } 
+				    ,ETC			 	 = #{etc } 
+					,STATUS 			 = #{status }
+					,ATCH_FILE_ID 		 = #{atchFileId }
+					,RVSE_DT 			 = NOW()
+			
+		 	 WHERE   OT_SEQ 			 = #{otSeq}  
+		]]>
+	</update>
+	
+	<update id="deleteContents" parameterType="mgr0118VO">
+		/* Mgr0118.deleteContents */
+		<![CDATA[
+			UPDATE   T_OVER_TIME
+		       SET
+	          	 	 USE_YN       = 'N'
+			 WHERE   OT_SEQ       = #{otSeq}
+		]]>
+	</update>
+	
+	<!-- 인원추가 selectContents -->
+	<select id="addSelectContents" parameterType="mgr0118VO" resultType="mgr0118VO">
+		/* Mgr0118.addSelectContents */
+		<![CDATA[
+		 	SELECT  
+					 AD_SEQ 							adSeq
+					,EMPLY_SEQ 							emplySeq
+					,STA_DATE 							staDate   
+					,END_DATE 							endDate
+				    ,CONT 							    cont     
+		      FROM   T_OVER_ADD 
+			 WHERE   USE_YN='Y'	
+			   AND   AD_SEQ = #{adSeq}
+		]]>
+	</select>
+	
+	<!-- 인원추가 selectList -->
+	<select id="addSelectList" parameterType="mgr0118VO" resultType="mgr0118VO">
+		/* Mgr0118.addSelectList */
+		<![CDATA[
+		 		SELECT  
+					 A.AD_SEQ 							    adSeq
+					,A.EMPLY_SEQ 							emplySeq
+					,DATE_FORMAT(STA_DATE,'%Y.%m.%d')  	    staDate											
+					,DATE_FORMAT(END_DATE,'%Y.%m.%d')  	    endDate
+					,DATE_FORMAT(STA_DATE,'%H') 	 	    staHour
+					,DATE_FORMAT(STA_DATE,'%i') 	     	staMin
+					,DATE_FORMAT(END_DATE,'%H') 	 	 	endHour
+					,DATE_FORMAT(END_DATE,'%i') 	        endMin
+				    ,A.CONT 							    cont
+					,(SELECT NAME FROM t_ad_user B WHERE B.USE_YN='Y' AND B.SEQ = A.EMPLY_SEQ ) emplyName
+					,A.RGST_ID								rgstId     
+		      FROM   T_OVER_ADD A
+   LEFT OUTER JOIN 	 T_OVER_TIME C
+   				ON	 A.OT_SEQ = C.OT_SEQ
+			   AND   C.USE_YN = 'Y'
+			 WHERE   A.USE_YN='Y' AND C.OT_SEQ = #{otSeq}
+		]]>
+	</select>
+	
+	<select id="addCnt" parameterType="mgr0118VO" resultType="int">
+		/* Mgr0118VO.addCnt */
+		<![CDATA[
+			SELECT
+				     COUNT(AD_SEQ)   cnt
+			  FROM   t_over_add
+  			 WHERE   AD_SEQ       =  #{adSeq}
+		
+		]]>
+	</select>
+	
+	<!-- 인원추가 insert -->
+	<insert id="addInsertContents" parameterType="mgr0118VO">
+		/* Mgr0118.addInsertContents */
+		<![CDATA[
+			INSERT INTO T_OVER_ADD(
+		           	  	AD_SEQ
+		           	   ,RGST_ID 
+		           	   ,EMPLY_SEQ
+					   ,STA_DATE	   
+					   ,END_DATE  						
+					   ,CONT
+					   ,OT_SEQ 												
+					
+			)
+			VALUES (
+					 (SELECT IFNULL(MAX(AD.AD_SEQ)+1,1) FROM T_OVER_ADD AD)
+					,#{loginSeq } 
+					,#{emplySeq } 
+					,STR_TO_DATE(CONCAT(#{staDate},#{staHour},#{staMin}),'%Y.%m.%d%H%i')
+					,STR_TO_DATE(CONCAT(#{endDate},#{endHour},#{endMin}),'%Y.%m.%d%H%i')
+					,#{cont }
+					,(SELECT MAX(OT.OT_SEQ)FROM T_OVER_TIME OT)
+			)
+		]]>
+	</insert>
+	
+	
+	<!-- 인원추가 update -->
+	<update id="addUpdateContents" parameterType="mgr0118VO">
+		/* Mgr0118.addUpdateContents */
+		<![CDATA[
+			UPDATE   T_OVER_ADD     
+			   SET 
+			   		 STA_DATE 			 = STR_TO_DATE(CONCAT(#{staDate},#{staHour},#{staMin}),'%Y.%m.%d%H%i')
+			   		,END_DATE 			 = STR_TO_DATE(CONCAT(#{endDate},#{endHour},#{endMin}),'%Y.%m.%d%H%i')
+					,CONT 				 = #{cont }
+								
+		 	 WHERE   OT_SEQ 			 = #{otSeq}  
+		]]>
+	</update>
+	
+	<!-- 인원추가 delete  -->
+	<update id="addDeleteContents" parameterType="mgr0118VO">
+		/* Mgr0118.addDeleteContents */
+		<![CDATA[
+			UPDATE   T_OVER_ADD
+		       SET
+	          	 	 USE_YN       = 'N'
+			 WHERE   AD_SEQ       = #{adSeq}
+		]]>
+	</update>
+	
+	<!-- 모달 직원 목록 selectList  -->
+ 	<select id="popSelectList" parameterType="mgr0118VO" resultType="mgr0118VO">
+		/* Mgr0118.popSelectList */
+			<![CDATA[
+			SELECT SEQ	 									seq
+				 , A.NAME									name						
+				 , B.C_CD_NM 								position
+			     , C.C_CD_NM								part
+			  FROM t_ad_user A
+   LEFT OUTER JOIN t_code B 
+				ON A.POSITION = B.C_CD
+			   AND B.USE_YN = 'Y'
+   LEFT OUTER JOIN t_code C
+			  	ON A.PART = C.C_CD
+			   AND C.USE_YN = 'Y'
+			 WHERE A.USE_YN = 'Y'
+			   AND A.PART IS NOT NULL
+			]]>
+				<include refid="modalWhere"/>
+			 <![CDATA[       
+	    		ORDER BY SEQ DESC
+				LIMIT  #{firstIndex} , #{recordCountPerPage}
+			  ]]>
+	</select>
+	
+	<!-- 모달 직원 목록 selecCount  -->
+	<select id="popSelectCount" parameterType="mgr0118VO" resultType="int">
+		/* Mgr0118.popSelectCount */
+			<![CDATA[
+			SELECT COUNT(SEQ)       			cnt 
+			  FROM (SELECT SEQ 					seq
+			  FROM t_ad_user A	
+   LEFT OUTER JOIN t_code B					
+			    ON A.POSITION = B.C_CD
+			   AND B.USE_YN = 'Y'
+   LEFT OUTER JOIN t_code C
+				ON A.PART = C.C_CD
+			   AND C.USE_YN = 'Y'
+			 WHERE A.USE_YN = 'Y'
+			   AND A.PART IS NOT NULL
+			]]>
+				<include refid="modalWhere"/>
+			<![CDATA[
+			) P
+			]]>
+	</select>
+	
+	<!-- 추가된 인원 정보 selectList  -->
+ 	<select id="emplySelectList" parameterType="mgr0117VO" resultType="mgr0006VO">
+		/* Mgr0118.emplySelectList */
+		<![CDATA[      
+      	  		SELECT	 
+					  	 A.SEQ												seq
+					    ,A.ID												id
+					    ,A.NAME												name
+						,B.C_CD_NM											position
+					  	
+				  FROM	t_ad_user A
+	   LEFT OUTER JOIN	t_code B  
+					ON	A.POSITION = B.C_CD
+				   AND	B.USE_YN = 'Y'
+						  
+		 		 WHERE	A.USE_YN = 'Y'
+		 		   AND	A.SEQ  = #{emplySeq}
+	      ]]>         
+	</select> 
+	
+	<!-- 엑셀 다운  -->
+	<select id="excelDownSelectList" parameterType="mgr0118VO" resultType="mgr0118VO">
+		/* Mgr0118.excelDownSelectList*/
+		<![CDATA[
+			SELECT 
+					 @ROWNUM := @ROWNUM + 1 AS         		excelRow
+				   , A.OT_SEQ						   		otSeq
+				   , F_USER_NM(A.RGST_ID)			   		rgstId
+				   , DATE_FORMAT(A.RGST_DT, '%Y.%m.%d')		rgstDt
+				   , A.PRJCT_NM								prjctNm	
+				   , A.ETC									etc	
+				   , CASE
+				   			WHEN  IFNULL(A.ATCH_FILE_ID,'')<>''  THEN '첨부'
+				   			ELSE  '미첨부'
+				   	 END									atchFileId
+				   , IF(A.USE_YN = 'Y', '사용', '미사용')		useYn
+				   , IF(A.STATUS = 'B', '대기', '승인완료')	 	status
+				   
+			  FROM   (SELECT @ROWNUM := 0) R, t_over_time A
+			 WHERE    A.USE_YN = 'Y'
+		  ORDER BY    A.RGST_DT ASC, A.OT_SEQ  ASC
+		]]>
+	</select> 
+	
+	
+	
+</mapper>

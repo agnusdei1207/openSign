@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.open.Mgr0006">
+
+	<sql id="Where">
+		<if test="searchKeyword !=null and searchKeyword !=''">
+			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==0">
+				AND (UPPER(ID) LIKE CONCAT('%',UPPER(#{searchKeyword}),'%') OR UPPER(NAME) like CONCAT('%',UPPER(#{searchKeyword}),'%'))
+			</if>
+			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==1">
+				AND UPPER(ID) LIKE CONCAT('%',UPPER(#{searchKeyword}),'%')
+			</if>
+			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==2">
+				AND UPPER(NAME) LIKE CONCAT('%',UPPER(#{searchKeyword}),'%')
+			</if>
+			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==3">
+				AND UPPER(HP) LIKE CONCAT('%',UPPER(#{searchKeyword}),'%')
+			</if>
+			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==4">
+				AND (UPPER(HP) LIKE CONCAT('%',UPPER(#{searchKeyword}),'%') OR UPPER(NAME) like CONCAT('%',UPPER(#{searchKeyword}),'%')
+			</if>
+			<if test="schEtc05 !=null and schEtc05 !='' and schEtc05 ==1">
+				AND NAME LIKE CONCAT('%',#{searchKeyword},'%')
+			</if>
+	 	</if>
+	 	<if test='schEtc03 !=null and schEtc03 !=""'>
+	 		AND AUTH_CODE = #{schEtc03}
+	 	</if>
+	 	<if test='schEtc04 !=null and schEtc04 !=""'>
+	 		AND USE_YN = #{schEtc04}
+	 	</if>
+	 	<if test="schEtc15 !=null and schEtc15 !='' and schEtc15 = 'VOC'">
+	 		AND AUTH_CODE IN ('1', '2', '3')
+	 	</if>  
+	</sql>
+	
+	<select id="selectContents" parameterType="mgr0006VO" resultType="mgr0006VO">
+		/* Mgr0006.selectContents */
+		<![CDATA[
+			  SELECT  
+				  SEQ seq
+				, ID id
+				, PWD pwd
+				, NAME name
+				, PART part 
+				, POSITION	position
+				, DATE_FORMAT(RGST_DT,'%Y.%m.%d') rgstDt
+				, RGST_ID rgstId     
+				, AUTH_CODE authCode
+				, (SELECT TA.AUTH_CODE_NM FROM t_ad_user_auth TA WHERE TA.AUTH_CODE = A.AUTH_CODE) authCodeNm
+				, HP hp
+				, ATCH_FILE_ID atchFileId
+				, EMAIL email  
+				, USE_YN useYn
+				, TEL tel 
+				, DATE_FORMAT(LAST_DATE,'%Y.%m.%d %H:%i:%s') lastDate
+		     FROM  t_ad_user A  
+			 WHERE SEQ = #{seq}
+		]]> 
+	</select>
+
+	<select id="selectList" parameterType="cmmnDefaultVO" resultType="mgr0006VO">
+		/* Mgr0006.selectList */
+		<![CDATA[
+      	  SELECT  
+			    	A.SEQ seq
+				    , A.ID id
+					, A.PWD pwd
+					, A.TEL tel
+					, A.USE_YN useYn
+					, A.NAME name
+					, B.C_CD_NM part
+					, A.POSITION	position    
+					, A.HP hp
+					, A.ATCH_FILE_ID atchFileId
+					, A.EMAIL email
+					, A.FAIL_CNT failCnt
+					, (SELECT AUTH_CODE_NM FROM t_ad_user_auth WHERE AUTH_CODE = A.AUTH_CODE) authCode
+					, DATE_FORMAT(A.RGST_DT,'%Y.%m.%d') rgstDt
+					, DATE_FORMAT(A.LAST_DATE,'%Y.%m.%d %H:%i:%s') lastDate
+             FROM	t_ad_user A
+  LEFT OUTER JOIN	t_code B
+			   ON	A.PART = B.C_CD			
+		    WHERE	1=1
+	      ]]>
+		     <include refid="Where"/>
+	     <![CDATA[
+		    ORDER BY SEQ DESC
+			LIMIT #{firstIndex} , #{recordCountPerPage}
+		]]>
+	</select>	
+	
+	<select id="selectCount" parameterType="cmmnDefaultVO" resultType="int">
+		/* Mgr0006.selectCount */
+		<![CDATA[
+			SELECT 
+				COUNT(SEQ) cnt 
+			FROM t_ad_user
+			WHERE USE_YN='Y'
+		]]>
+		<include refid="Where"></include>
+	</select>
+	
+	<insert id="insertContents" parameterType="mgr0006VO">
+	/* Mgr0006.insertContents */
+		INSERT INTO t_ad_user(
+			SEQ
+			, ID
+			, PWD
+			, NAME
+			, PART
+			, POSITION	
+		    , AUTH_CODE
+			, EMAIL
+			, TEL
+			, HP
+		) VALUES (
+			 #{seq,jdbcType=VARCHAR}
+			, #{id ,jdbcType=VARCHAR}
+			, #{pwd ,jdbcType=VARCHAR}
+			, #{name ,jdbcType=VARCHAR}
+			, #{part ,jdbcType=VARCHAR}
+			, #{position ,jdbcType=VARCHAR}
+			, #{authCode ,jdbcType=VARCHAR}
+			, #{email ,jdbcType=VARCHAR}
+			, #{tel ,jdbcType=VARCHAR}
+			, #{hp ,jdbcType=VARCHAR}
+		)
+	</insert>
+	
+	
+	<update id="updateContents" parameterType="mgr0006VO">
+		/* Mgr0006.updateContents */
+			UPDATE t_ad_user
+			 SET     
+			 	  NAME = #{name ,jdbcType=VARCHAR}	
+			 	  ,PART = #{part ,jdbcType=VARCHAR}	
+			 	  ,POSITION = #{position ,jdbcType=VARCHAR}	
+			      ,RVSE_ID =  #{loginSeq ,jdbcType=VARCHAR}   	
+			      ,RVSE_DT =  NOW()  	 
+				  <if test="pwdChk == 'CHK'">
+				  ,PWD = #{pwd ,jdbcType=VARCHAR}
+				  </if>
+				  ,AUTH_CODE =  #{authCode ,jdbcType=VARCHAR}
+				  , HP =  #{hp ,jdbcType=VARCHAR}
+				  , ATCH_FILE_ID =  #{atchFileId ,jdbcType=VARCHAR}
+				  , EMAIL = #{email ,jdbcType=VARCHAR}
+				  , USE_YN = IFNULL(#{useYn ,jdbcType=VARCHAR},'Y')
+				  , TEL = #{tel ,jdbcType=VARCHAR}
+			WHERE  SEQ = #{seq}  
+	</update>
+	
+	
+	
+	<update id="deleteContents" parameterType="mgr0006VO">
+		/* Mgr0006.deleteContents */
+		<![CDATA[
+			UPDATE t_ad_user
+		       SET
+	           USE_YN='N'
+			WHERE SEQ = #{seq}
+		]]>
+	</update>
+	
+	
+	<select id="overlapSelectCount" parameterType="mgr0006VO" resultType="int">
+		/* Mgr0006.overlapSelectCount */
+			SELECT 
+				COUNT(SEQ) cnt 
+			FROM t_ad_user
+			WHERE ID = #{id}
+			<if test="pwd != null and pwd != ''">
+				AND PWD = #{pwd}
+			</if>
+	</select>
+	
+	
+	<delete id="authDeleteContents" parameterType="mgr0006VO">
+		/* Mgr0006.authDeleteContents */
+		<![CDATA[
+			DELETE FROM t_ad_user_auth_menu
+			WHERE ID = #{id}
+		]]>
+	</delete>
+	
+	<insert id="authInsertContents" parameterType="mgr0006VO">
+		/* Mgr0006.authInsertContents */
+		<![CDATA[
+			INSERT INTO t_ad_user_auth_menu(
+           	     ID
+				,MENU_SEQ
+				,RGST_ID
+			)
+			VALUES (
+				 #{id ,jdbcType=VARCHAR}
+				,#{menuSeq ,jdbcType=VARCHAR}
+				,#{loginSeq ,jdbcType=VARCHAR}
+			)
+		]]>
+	</insert>
+	
+	<select id="myPageSelectContents" parameterType="mgr0006VO" resultType="mgr0006VO">
+		/* Mgr0006.selectContents */
+		<![CDATA[ 
+			  SELECT  
+				  SEQ seq
+				, ID id
+				, PWD pwd
+				, NAME name
+				, PART part
+				, POSITION position
+				, DATE_FORMAT(RGST_DT,'%Y.%m.%d') rgstDt
+				, RGST_ID rgstId     
+				, AUTH_CODE authCode
+				, (SELECT TA.AUTH_CODE_NM FROM t_ad_user_auth TA WHERE TA.AUTH_CODE = A.AUTH_CODE) authCodeNm
+				, HP hp
+				, ATCH_FILE_ID atchFileId
+				, EMAIL email
+				, USE_YN useYn
+				, TEL tel
+				, DATE_FORMAT(LAST_DATE,'%Y.%m.%d %H:%i:%s') lastDate
+		     FROM  t_ad_user A  
+			 WHERE ID = #{loginSeq}
+		]]>
+	</select>
+	<update id="failCntUpdateContent" parameterType="mgr0006VO">
+		/* jn.failCntUpdateContent */
+		UPDATE t_ad_user SET       	
+			FAIL_CNT = FAIL_CNT + 1  
+		WHERE  ID= #{id}
+		
+		<selectKey resultType="String" keyProperty="failCnt" order="AFTER">
+	         SELECT 
+	            IFNULL(Max(FAIL_CNT),0) failCnt
+	         FROM t_ad_user
+	         WHERE ID= #{id}
+	      </selectKey>
+	</update>
+	
+	<update id="unLcokContent" parameterType="mgr0006VO">
+		/* Mgr0006.unLcokContent */
+		<![CDATA[
+			UPDATE t_ad_user
+		       SET
+	               FAIL_CNT = '0'
+			WHERE ID = #{id}
+		]]>
+		 <selectKey resultType="string" keyProperty="failCnt" order="AFTER">
+	         SELECT 
+	            FAIL_CNT failCnt
+	         FROM t_ad_user
+	         WHERE ID= #{id}
+	      </selectKey>
+	</update>
+	
+	
+	<select id="excelSelectList" parameterType="cmmnDefaultVO" resultType="mgr0006VO">
+		/* Mgr0006.excelSelectList */
+		<![CDATA[
+      	   SELECT
+		          SEQ seq
+				, ID id
+				, PWD pwd
+				, TEL tel
+				, USE_YN useYn
+				, NAME name
+				, PART part
+				, POSITION	position
+				, HP hp
+				, ATCH_FILE_ID atchFileId
+				, EMAIL email
+				, FAIL_CNT failCnt
+				, (SELECT AUTH_CODE_NM FROM t_ad_user_auth WHERE AUTH_CODE = A.AUTH_CODE) authCode
+				, DATE_FORMAT(A.RGST_DT,'%Y.%m.%d') rgstDt
+				, DATE_FORMAT(A.LAST_DATE,'%Y.%m.%d %H:%i:%s') lastDate
+             FROM  t_ad_user A			
+		     WHERE 1=1
+		     AND USE_YN = 'Y'
+	      ]]>
+		     <include refid="Where"/>
+	     <![CDATA[
+		    ORDER BY SEQ DESC
+		]]>
+	</select>	
+</mapper>

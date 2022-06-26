@@ -1,0 +1,431 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.open.FileManageDAO">
+
+	<resultMap id="fileList" type="com.open.cmmn.model.FileVO">
+		<result property="atchFileId" column="ATCH_FILE_ID" />
+		<result property="fileCn" column="FILE_CN" />
+		<result property="fileExtsn" column="FILE_EXTSN" />
+		<result property="fileSize" column="FILE_SIZE" />
+		<result property="fileSn" column="FILE_SN" />
+		<result property="fileStreCours" column="FILE_STRE_COURS" />
+		<result property="orignFileNm" column="ORIGN_FILE_NM" />
+		<result property="streFileNm" column="STRE_FILE_NM" />
+		<result property="regDate" column="REG_DATE" />	
+		<result property="fileType" column="FILE_TYPE" />	
+		<result property="imageWidth" column="IMAGE_WIDTH" />
+		<result property="imageHeight" column="IMAGE_HEIGHT" />	
+		<result property="atchFile" column="ATCH_FILE" />	
+		<result property="regId" column="REG_ID" />	
+	</resultMap>
+	
+	<resultMap id="fileListNew" type="com.open.cmmn.model.FileVO">
+		<result property="atchFileId" column="ATCH_FILE_ID" />
+		<result property="fileCn" column="FILE_CN" />
+		<result property="fileExtsn" column="FILE_EXTSN" />
+		<result property="fileSize" column="FILE_SIZE" />
+		<result property="fileSn" column="FILE_SN" />
+		<result property="fileStreCours" column="FILE_STRE_COURS" />
+		<result property="orignFileNm" column="ORIGN_FILE_NM" />
+		<result property="streFileNm" column="STRE_FILE_NM" />
+		<result property="regDate" column="REG_DATE" />	
+		<result property="fileType" column="FILE_TYPE" />	
+		<result property="imageWidth" column="IMAGE_WIDTH" />
+		<result property="imageHeight" column="IMAGE_HEIGHT" />	
+		<result property="atchFile" column="ATCH_FILE" />	
+		<result property="regId" column="REG_ID" />	
+		<result property="parentSeq" column="PARENT_SEQ" />	
+	</resultMap>
+	
+	
+	<resultMap id="fileListWithSubject" type="com.open.cmmn.model.FileVO">
+		<result property="atchFileId" column="ATCH_FILE_ID" />
+		<result property="fileCn" column="FILE_CN" />
+		<result property="fileExtsn" column="FILE_EXTSN" />
+		<result property="fileSize" column="FILE_SIZE" />
+		<result property="fileSn" column="FILE_SN" />
+		<result property="fileStreCours" column="FILE_STRE_COURS" />
+		<result property="orignFileNm" column="ORIGN_FILE_NM" />
+		<result property="streFileNm" column="STRE_FILE_NM" />
+		<result property="regDate" column="REG_DATE" />	
+		<result property="fileType" column="FILE_TYPE" />	
+		<result property="imageWidth" column="IMAGE_WIDTH" />
+		<result property="imageHeight" column="IMAGE_HEIGHT" />	
+		<result property="fileSubject" column="FILE_SUBJECT" />
+		<result property="atchFile" column="ATCH_FILE" />	
+	</resultMap>
+	
+	
+	
+
+	<resultMap id="fileDetail" type="com.open.cmmn.model.FileVO">
+		<result property="atchFileId" column="ATCH_FILE_ID" />
+		<result property="fileCn" column="FILE_CN" />
+		<result property="fileExtsn" column="FILE_EXTSN" />
+		<result property="fileSize" column="FILE_SIZE" />
+		<result property="fileSn" column="FILE_SN" />
+		<result property="fileStreCours" column="FILE_STRE_COURS" />
+		<result property="orignFileNm" column="ORIGN_FILE_NM" />
+		<result property="streFileNm" column="STRE_FILE_NM" />
+		<result property="fileType" column="FILE_TYPE" />
+		<result property="imageWidth" column="IMAGE_WIDTH" />
+		<result property="imageHeight" column="IMAGE_HEIGHT" />
+		<result property="regId" column="REG_ID" />
+		<result property="atchFile" column="ATCH_FILE" />	
+		
+	</resultMap>	
+
+ 	<select id="selectCount" parameterType="FileVO" resultType="java.lang.Integer" >
+ 		<![CDATA[
+			SELECT 
+				count(*) totCnt
+			FROM
+				t_atch_file a
+			WHERE
+				ATCH_FILE_ID = #{atchFileId}
+			AND 
+				REG_ID = #{regId}
+			AND 
+				USE_YN = 'Y'			
+ 		]]>
+ 	</select>
+
+ 	<select id="selectFileList" parameterType="FileVO" resultMap="fileList" >
+ 		<![CDATA[
+			SELECT 
+				a.ATCH_FILE_ID, b.FILE_CN, b.FILE_SN, b.FILE_STRE_COURS, b.STRE_FILE_NM,
+				b.FILE_EXTSN, b.ORIGN_FILE_NM, b.FILE_SIZE, DATE_FORMAT(a.REG_DATE,'%Y.%m.%d') REG_DATE, b.FILE_TYPE,
+				b.IMAGE_WIDTH, b.IMAGE_HEIGHT, b.ATCH_FILE, (SELECT NAME FROM t_ad_user TA WHERE b.REG_ID = ID) REG_ID
+			FROM
+				t_atch_file a, t_atch_file_detail b
+			WHERE
+				a.ATCH_FILE_ID = #{atchFileId}
+			AND 
+				a.ATCH_FILE_ID = b.ATCH_FILE_ID
+			AND 
+				a.USE_YN = 'Y'			
+			AND b.DEL_YN='N'	
+			ORDER BY b.FILE_SN	
+ 		]]>
+ 	</select>
+ 	
+ 	<select id="selectFileListNew" parameterType="FileVO" resultMap="fileListNew" >
+ 		<![CDATA[
+			SELECT 
+				a.ATCH_FILE_ID, b.FILE_CN, b.FILE_SN, b.FILE_STRE_COURS, b.STRE_FILE_NM,
+				b.FILE_EXTSN, b.ORIGN_FILE_NM, b.FILE_SIZE, DATE_FORMAT(a.REG_DATE,'%Y.%m.%d') REG_DATE, b.FILE_TYPE,
+				b.IMAGE_WIDTH, b.IMAGE_HEIGHT, b.ATCH_FILE, (SELECT NAME FROM t_ad_user TA WHERE b.REG_ID = ID) REG_ID, b.PARENT_SEQ
+			FROM
+				t_atch_file a, t_atch_file_detail b
+			WHERE
+				a.ATCH_FILE_ID = #{atchFileId}
+			AND 
+				a.ATCH_FILE_ID = b.ATCH_FILE_ID
+			AND 
+				a.USE_YN = 'Y'	
+			AND b.DEL_YN='N'		
+		]]>			
+		<if test="parentSeq !=null and parentSeq !='' ">
+			AND
+				b.PARENT_SEQ = #{parentSeq}
+		</if>
+		<if test="parentSeq ==null or parentSeq =='' ">
+			AND
+				b.PARENT_SEQ IS NULL
+		</if>
+		<![CDATA[
+			ORDER BY b.FILE_SN	
+ 		]]>
+ 	</select>
+ 	
+ 	<select id="selectFileListWithSubject" parameterType="FileVO" resultMap="fileListWithSubject" >
+ 		<![CDATA[
+			SELECT 
+				a.ATCH_FILE_ID, b.FILE_CN, b.FILE_SN, b.FILE_STRE_COURS, b.STRE_FILE_NM,
+				b.FILE_EXTSN, b.ORIGN_FILE_NM, b.FILE_SIZE, a.REG_DATE, b.FILE_TYPE,
+				b.IMAGE_WIDTH, b.IMAGE_HEIGHT, b.FILE_SUBJECT, b.ATCH_FILE
+			FROM
+				t_atch_file a, t_atch_file_detail b
+			WHERE
+				a.ATCH_FILE_ID = #{atchFileId}
+			AND 
+				a.ATCH_FILE_ID = b.ATCH_FILE_ID
+			AND 
+				a.USE_YN = 'Y'				
+			ORDER BY b.FILE_SN	
+ 		]]>
+ 	</select>
+ 	
+	<insert id="insertFileMaster" parameterType="FileVO" >
+		<![CDATA[
+			INSERT INTO t_atch_file
+				(ATCH_FILE_ID, REG_DATE, USE_YN, REG_ID)
+			VALUES
+				( #{atchFileId}, NOW(), 'Y', IFNULL(IF(#{frontLoginSeq ,jdbcType=VARCHAR} ='',null,#{frontLoginSeq ,jdbcType=VARCHAR}),#{loginSeq ,jdbcType=VARCHAR}))			
+		]]>
+	</insert>
+	
+	<insert id="insertFileDetail" parameterType="FileVO" >
+		<![CDATA[
+			INSERT INTO t_atch_file_detail
+								(ATCH_FILE_ID,
+                                 FILE_SN,
+                                 FILE_STRE_COURS,
+                                 STRE_FILE_NM,
+                                 ORIGN_FILE_NM,
+                                 FILE_EXTSN,
+                                 FILE_CN,
+                                 FILE_SIZE,
+                                 FILE_TYPE,
+                                 DEL_YN,
+                                 REG_DATE,
+                                 REG_ID,
+                                 IMAGE_WIDTH,
+                                 IMAGE_HEIGHT,
+                                 PARENT_SEQ,
+                                 FILE_IMSI)
+			SELECT #{atchFileId}, IFNULL(MAX(FILE_SN)+1, 0), #{fileStreCours}, #{streFileNm}, 
+			  #{orignFileNm}, #{fileExtsn}, #{fileCn}, #{fileSize}, #{fileType},
+			  'N', NOW(), IFNULL(IF(#{frontLoginSeq ,jdbcType=VARCHAR} ='',null,#{frontLoginSeq ,jdbcType=VARCHAR}),#{loginSeq ,jdbcType=VARCHAR}), #{imageWidth}, #{imageHeight}, #{parentSeq}, 'N'
+			FROM t_atch_file_detail A
+			WHERE ATCH_FILE_ID = #{atchFileId}	
+			  AND DEL_YN = 'N'		
+		]]>
+	</insert>
+		
+	
+	<delete id="deleteFileDetail" parameterType="FileVO" >
+		<![CDATA[
+			UPDATE t_atch_file_detail SET
+				DEL_YN='Y'
+			WHERE
+				ATCH_FILE_ID = #{atchFileId}
+			AND	
+				FILE_SN = #{fileSn}			
+			AND 
+				DEL_YN = 'N'		
+		]]>	
+	</delete>
+	
+	<delete id="deleteFileDetailAll" parameterType="FileVO" >
+		<![CDATA[
+			DELETE FROM t_atch_file_detail
+			WHERE
+				ATCH_FILE_ID = #{atchFileId}
+		]]>	
+	</delete>
+	
+	<delete id="deleteFile" parameterType="FileVO" >
+		<![CDATA[
+			DELETE FROM t_atch_file
+			WHERE
+				ATCH_FILE_ID = #{atchFileId}		
+		]]>	
+	</delete>
+ 	
+	<select id="getMaxFileSN" parameterType="FileVO" resultType="java.lang.Integer">
+		<![CDATA[
+			SELECT IFNULL(MAX(FILE_SN),0)+1 AS FILE_SN
+			FROM t_atch_file_detail
+			WHERE ATCH_FILE_ID =  #{atchFileId}		
+		]]>
+	</select>
+ 	
+	<select id="getFileMaxSn" parameterType="FileVO" resultType="java.lang.String">
+		<![CDATA[
+			SELECT MAX(FILE_SN) FILE_SN
+			FROM t_atch_file_detail
+			WHERE ATCH_FILE_ID =  #{atchFileId}
+			AND DEL_YN = 'N'
+		]]>
+	</select>
+
+ 	<select id="selectFileInf" parameterType="FileVO" resultMap="fileDetail" >
+ 		<![CDATA[
+			SELECT 
+				ATCH_FILE_ID, FILE_CN, FILE_SN, FILE_STRE_COURS, STRE_FILE_NM,
+				FILE_EXTSN, ORIGN_FILE_NM, FILE_SIZE, FILE_TYPE, IMAGE_WIDTH, IMAGE_HEIGHT, REG_ID,ATCH_FILE
+			FROM				
+				t_atch_file_detail
+			WHERE
+				ATCH_FILE_ID = #{atchFileId}
+			AND 
+				FILE_SN = #{fileSn}	
+			AND 
+				DEL_YN = 'N'	
+ 		]]>
+ 	</select>
+ 	
+ 	<select id="selectFileDetailInf" parameterType="FileVO" resultMap="fileDetail" >
+ 		<![CDATA[
+			SELECT 
+				ATCH_FILE_ID, FILE_CN, FILE_SN, FILE_STRE_COURS, STRE_FILE_NM,
+				FILE_EXTSN, ORIGN_FILE_NM, FILE_SIZE, FILE_TYPE, IMAGE_WIDTH, IMAGE_HEIGHT, REG_ID,ATCH_FILE
+			FROM				
+				t_atch_file_detail
+			WHERE
+				ATCH_FILE_ID = #{atchFileId}
+			AND 
+				FILE_SN = #{fileSn}	
+			AND
+				STRE_FILE_NM = #{streFileNm}
+			AND 
+				DEL_YN = 'N'		
+ 		]]>
+ 	</select>
+
+	<update id="deleteCOMTNFILE" parameterType="FileVO" >
+		<![CDATA[
+			UPDATE t_atch_file
+			SET USE_YN = 'N'
+			WHERE ATCH_FILE_ID = #{atchFileId}
+		]]>
+	</update>
+	
+	<update id="updateCOMTNFILE" parameterType="FileVO" >
+		<![CDATA[
+			UPDATE t_atch_file
+			SET USE_YN = 'Y'
+			WHERE ATCH_FILE_ID = #{atchFileId}
+		]]>
+	</update>
+
+ 	<select id="selectFileListByFileNm" parameterType="FileVO" resultMap="fileList" >
+ 		<![CDATA[
+ 		SELECT * FROM ( SELECT rownum rn, TB.* FROM (
+			SELECT 
+				a.ATCH_FILE_ID, b.FILE_CN, b.FILE_SN, b.FILE_STRE_COURS, b.STRE_FILE_NM,
+				b.FILE_EXTSN, b.ORIGN_FILE_NM, b.FILE_SIZE, a.REG_DATE, b.FILE_TYPE,
+				b.IMAGE_WIDTH, b.IMAGE_HEIGHT, b.ATCH_FILE
+			FROM
+				t_atch_file a, t_atch_file_detail b
+			WHERE
+				a.ATCH_FILE_ID = b.ATCH_FILE_ID
+			AND 
+				a.USE_YN = 'Y'
+			AND b.DEL_YN = 'N'	
+ 		]]>
+        	<if test="searchCnd !=null and searchCnd !='' and searchCnd =='streFileNm'">
+				<![CDATA[	AND b.STRE_FILE_NM LIKE '%' || #{searchWrd} || '%' 		]]>
+			</if>
+        	<if test="searchCnd !=null and searchCnd !='' and searchCnd =='orignFileNm'">
+				<![CDATA[	AND b.ORIGN_FILE_NM LIKE '%' || #{searchWrd} || '%' 		]]>
+			</if>	
+		<![CDATA[			
+			ORDER BY a.ATCH_FILE_ID, b.FILE_SN	
+			) TB ) WHERE rn BETWEEN #{firstIndex} + 1 AND #{firstIndex} + #{recordCountPerPage}
+		]]>		 		
+ 	</select>
+
+ 	<select id="selectFileListCntByFileNm" parameterType="FileVO" resultType="java.lang.Integer" >
+ 		<![CDATA[
+			SELECT 
+				COUNT(a.ATCH_FILE_ID)
+			FROM
+				t_atch_file a, t_atch_file_detail b
+			WHERE
+				a.ATCH_FILE_ID = b.ATCH_FILE_ID
+			AND 
+				a.USE_YN = 'Y'		
+			AND b.DEL_YN = 'N'		
+ 		]]>
+        	<if test="searchCnd !=null and searchCnd !='' and searchCnd =='streFileNm'">
+				<![CDATA[	AND b.STRE_FILE_NM LIKE '%' || #{searchWrd} || '%' 		]]>
+			</if>
+        	<if test="searchCnd !=null and searchCnd !='' and searchCnd =='orignFileNm'">
+				<![CDATA[	AND b.ORIGN_FILE_NM LIKE '%' || #{searchWrd} || '%' 		]]>
+			</if>	 		
+ 	</select>
+ 	
+  	<select id="selectImageFileList" parameterType="FileVO" resultMap="fileList" >
+ 		<![CDATA[
+			SELECT 
+				a.ATCH_FILE_ID, b.FILE_CN, b.FILE_SN, b.FILE_STRE_COURS, b.STRE_FILE_NM,
+				b.FILE_EXTSN, b.ORIGN_FILE_NM, b.FILE_SIZE, a.REG_DATE, b.FILE_TYPE,
+				b.IMAGE_WIDTH, b.IMAGE_HEIGHT, b.ATCH_FILE
+			FROM
+				t_atch_file a, t_atch_file_detail b
+			WHERE
+				a.ATCH_FILE_ID = #{atchFileId}
+			AND 
+				a.ATCH_FILE_ID = b.ATCH_FILE_ID
+			AND
+				UPPER(b.FILE_EXTSN) IN ('GIF','JPG','BMP','PNG')
+			AND 
+				a.USE_YN = 'Y'				
+			AND b.DEL_YN = 'N'
+			ORDER BY b.FILE_SN	
+ 		]]>
+ 	</select>	
+ 	
+ 	
+ 	<select id="selectImageFileListWithSubject" parameterType="FileVO" resultMap="fileListWithSubject" >
+ 		<![CDATA[
+			SELECT 
+				a.ATCH_FILE_ID, b.FILE_CN, b.FILE_SN, b.FILE_STRE_COURS, b.STRE_FILE_NM,
+				b.FILE_EXTSN, b.ORIGN_FILE_NM, b.FILE_SIZE, a.REG_DATE, b.FILE_TYPE,
+				b.IMAGE_WIDTH, b.IMAGE_HEIGHT, b.FILE_SUBJECT, b.ATCH_FILE
+			FROM
+				t_atch_file a, t_atch_file_detail b
+			WHERE
+				a.ATCH_FILE_ID = #{atchFileId}
+			AND 
+				a.ATCH_FILE_ID = b.ATCH_FILE_ID
+			AND
+				UPPER(b.FILE_EXTSN) IN ('GIF','JPG','BMP','PNG')
+			AND 
+				a.USE_YN = 'Y'		
+			AND b.DEL_YN = 'N'		
+			ORDER BY b.FILE_SN	
+ 		]]>
+ 	</select>
+ 	
+  	<select id="selectFileCnt" parameterType="FileVO" resultType="java.lang.Integer"  >
+ 		<![CDATA[
+			SELECT COUNT(b.FILE_SN) fileCnt
+			FROM
+				t_atch_file_detail b
+			WHERE
+				b.ATCH_FILE_ID = #{atchFileId}
+ 		]]>
+ 	</select>	
+ 	
+ 	<delete id="deleteFileDetailImsi" parameterType="FileVO" >
+		<![CDATA[
+			DELETE FROM t_atch_file_detail
+			WHERE
+				ATCH_FILE_ID = #{atchFileId}
+			AND	
+				FILE_IMSI = 'N'			
+		]]>	
+	</delete>
+	
+	<update id="updateFileImsi" parameterType="FileVO" >
+		<![CDATA[
+			UPDATE t_atch_file_detail
+			   SET FILE_IMSI = 'Y'
+			   	   ,DEL_YN='N'
+			 WHERE ATCH_FILE_ID = #{atchFileId}
+		]]>
+	</update>
+	
+	<update id="updateFileImsiDelYn" parameterType="FileVO" >
+		<![CDATA[
+			UPDATE t_atch_file_detail
+			   SET DEL_YN='N'
+			 WHERE ATCH_FILE_ID = #{atchFileId}
+		]]>
+	</update>
+	
+	<delete id="deleteFileDetailDel" parameterType="FileVO" >
+		<![CDATA[
+			DELETE FROM t_atch_file_detail
+			WHERE
+				ATCH_FILE_ID = #{atchFileId}
+			AND 
+				DEL_YN = 'Y'		
+		]]>	
+	</delete>
+	
+</mapper>

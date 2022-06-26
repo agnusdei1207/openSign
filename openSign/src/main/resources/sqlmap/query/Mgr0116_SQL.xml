@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.open.Mgr0116">
+ 
+	<sql id="Where">   
+		<if test="searchKeyword !=null and searchKeyword !=''">
+			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==0">
+				AND (NUMBER LIKE CONCAT('%',#{searchKeyword},'%') OR F_USER_NM(RGST_ID)	 LIKE CONCAT('%',#{searchKeyword},'%'))
+			</if>   
+			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==1">
+				AND NUMBER LIKE CONCAT('%',#{searchKeyword},'%')
+			</if>
+			<if test="searchCondition !=null and searchCondition !='' and searchCondition ==2">
+				AND F_USER_NM(RGST_ID)	 LIKE CONCAT('%',#{searchKeyword},'%')
+			</if>
+	 	</if>           
+		<if test="searchStartDate !=null and searchStartDate !=''">      
+			<![CDATA[                       
+				AND #{searchStartDate} <= DATE_FORMAT(RGST_DT, '%Y.%m.%d') 
+				AND #{searchEndDate} >= DATE_FORMAT(RGST_DT, '%Y.%m.%d')
+			]]>    
+		</if>        
+	 	<if test='schEtc01 != null and schEtc01 != ""'>
+	 		AND STATE = #{schEtc01} 
+	 	</if>    
+	</sql>       
+	
+	<!-- 원글 조회 -->
+	<select id="selectContents" parameterType="mgr0116VO" resultType="mgr0116VO">
+		/* Mgr0116.selectContents */
+		<![CDATA[ 
+			 SELECT	 
+			 
+					 CL_SEQ																	clSeq    
+					,NUMBER																	number  
+					,(SELECT ETC FROM t_code B WHERE USE_YN = 'Y' AND A.number = B.C_CD_NM)	name   
+					,STATE																	state  
+					,RENTAL_DATE															rentalDate
+					,RETURN_DATE															returnDate    
+					,DATE_FORMAT(RGST_DT, '%Y.%m.%d')										rgstDt    
+					,F_USER_NM(RGST_ID)														rgstId   
+					,RGST_ID																rgstSeq
+					        
+		      FROM	T_CARD_LOG A
+			 WHERE  USE_YN='Y'	
+			   AND	CL_SEQ = #{clSeq}
+		]]>   
+	</select> 
+	
+	<!-- 원글 목록 조회 -->
+	<select id="selectList" parameterType="cmmnDefaultVO" resultType="mgr0116VO">
+		/* Mgr0116.selectList */
+		<![CDATA[ 
+      	    SELECT	 
+			          
+					 CL_SEQ																	clSeq    
+					,NUMBER																	number  
+					,(SELECT ETC FROM t_code B WHERE USE_YN = 'Y' AND A.number = B.C_CD_NM)	name  
+					,STATE																	state  
+					,RENTAL_DATE															rentalDate
+					,RETURN_DATE															returnDate    
+					,DATE_FORMAT(RGST_DT, '%Y.%m.%d')										rgstDt    
+					,F_USER_NM(RGST_ID)														rgstId    
+					,RGST_ID																rgstSeq 
+					     
+		      FROM	T_CARD_LOG A
+			 WHERE  USE_YN='Y'	  
+	      ]]>
+		     <include refid="Where"/>	    
+	     <![CDATA[ 
+	    		ORDER BY CL_SEQ DESC
+				LIMIT  #{firstIndex} , #{recordCountPerPage}
+		]]>
+	</select>	
+
+	<select id="selectCount" parameterType="cmmnDefaultVO" resultType="int">
+		/* Mgr0116.selectCount */
+		<![CDATA[
+			SELECT 
+				  	COUNT(CL_SEQ) cnt 
+			  FROM	T_CARD_LOG  
+			 WHERE	USE_YN='Y'  
+		]]>  
+			 <include refid="Where"/>
+	</select>
+	 
+	  
+	<!-- 등록된 카드 목록 조회 -->
+	<select id="cardSelectList" parameterType="cmmnDefaultVO" resultType="mgr0116VO">
+		/* Mgr0116.cardSelectList */
+		<![CDATA[ 
+      	    SELECT	 
+			       
+					 ETC													name    
+					,C_CD_NM												number  
+					
+		      FROM	T_CODE  
+			 WHERE  USE_YN='Y'
+			   AND	P_CD = '02'	  
+	      ]]>
+	</select>   
+	
+	<!-- 엑셀 다운로드 -->
+	<select id="excelDownSelectList" parameterType="mgr0116VO" resultType="mgr0116VO">
+		/* Mgr0116.excelDownSelectList */
+		<![CDATA[  
+      	    SELECT	         
+			         @ROWNUM := @ROWNUM + 1 AS													excelRow   
+					,A.CL_SEQ																	clSeq    
+					,F_USER_NM(A.RGST_ID)														rgstId    
+					,DATE_FORMAT(A.RGST_DT, '%Y.%m.%d')											rgstDt    
+					,IF(A.USE_YN = 'Y', '사용', '미사용')											useYn
+					,A.NUMBER								 									number    
+					,(SELECT ETC FROM t_code B WHERE USE_YN = 'Y' AND A.number = B.C_CD_NM)		name  
+					,IF(A.STATE = 'B', '대여', '반납')												state  
+					,A.RENTAL_DATE																rentalDate
+					,A.RETURN_DATE																returnDate    
+					     	    
+		      FROM	(SELECT @ROWNUM := 0) R, T_CARD_LOG A
+			 WHERE  A.USE_YN='Y'	  
+		]]>
+			<include refid="Where"/>  
+		<![CDATA[
+		  ORDER BY	A.RGST_DT ASC, A.CL_SEQ ASC    
+		]]>
+	</select>	
+	 
+	<insert id="insertContents" parameterType="mgr0116VO">
+		/* Mgr0116.insertContents */ 
+		<![CDATA[ 
+			INSERT INTO T_CARD_LOG(
+						 NUMBER
+						,STATE    
+						,RGST_ID    
+						,RENTAL_DATE											
+						,RETURN_DATE											  
+			)       
+				VALUES ( 
+						 #{number       }  
+						,#{state        }
+						,#{loginSeq     }
+						,#{rentalDate	}
+						,#{returnDate	}
+			)                   
+		]]>
+	</insert>
+	 
+	<!-- 원글 업데이트 --> 
+	<update id="updateContents" parameterType="mgr0116VO">
+		/* Mgr0116.updateContents */
+		<![CDATA[
+			UPDATE	T_CARD_LOG      
+			   SET		  
+					 NUMBER													=#{number    }
+					,STATE 													=#{state     }
+					,RGST_DT												= NOW()
+		]]>
+			<if test='rentalDate != null and rentalDate != ""'>   
+					,RENTAL_DATE											=#{rentalDate}
+			</if>
+			<if test='rentalDate != null and rentalDate != ""'>    
+					,RETURN_DATE											=#{returnDate}
+			</if> 
+			 WHERE	CL_SEQ = #{clSeq}                                                        
+	</update>  
+	 
+	<!-- 원글 삭제 -->
+	<update id="deleteContents" parameterType="mgr0116VO">
+		/* Mgr0116.deleteContents */
+		<![CDATA[
+			UPDATE T_CARD_LOG
+		       SET
+	          	 USE_YN='N'
+			WHERE CL_SEQ=#{clSeq}
+		]]> 
+	</update>
+
+
+	
+	
+	
+	
+</mapper>
