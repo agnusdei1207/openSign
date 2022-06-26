@@ -31,7 +31,7 @@ import com.open.mgr.mgr0016.service.Mgr0016VO;
 import egovframework.rte.fdl.idgnr.EgovIdGnrService;
 import egovframework.rte.fdl.property.EgovPropertyService;
 
-/** 공지사항 게시판을 관리하는 컨트롤러 클래스를 정의한다.
+/** 공지사항 게시판을 관리하는 컨트롤러 클래스를 정의한다. 
  */
 @Controller  
 public class LoginController {
