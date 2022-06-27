@@ -276,7 +276,7 @@ public class Mgr0117Controller {
 		host = "smtp.gmail.com";	 
 		useraddr = "opennote.opensign@gmail.com";
 		userpwd = "bvuwxxdqcgkkgsmk";        
-		  
+		   
 		/* Gmail 앱 비밀번호 : bvuwxxdqcgkkgsmk */
 		props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
 		props.put("mail.smtp.socketFactory.port", "465");       

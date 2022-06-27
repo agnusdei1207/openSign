@@ -344,12 +344,10 @@ public class MainController {
 			String userNames = "";
 			String[] arrUserSeq = new String[eatList.get(i).getUserSeq().split(",").length];
 			arrUserSeq = eatList.get(i).getUserSeq().split(",");
-			/* 조회 명단 이름 가져오기*/
-			for(int j = 0; j < arrUserSeq.length; j++){   
-				System.out.println("명단 : " + arrUserSeq[j]);
+			/* 조회 명단 이름 가져오기 */
+			for(int j = 0; j < arrUserSeq.length; j++){    
 				searchVO.setSchEtc02(arrUserSeq[j]);
 				Mgr0006VO info = (Mgr0006VO)cmmnService.selectContents(searchVO, PROGRAM_ID+".UserSelectContents"); 
-				System.out.println("이름 : " + info.getName());
 				String comma = ",";  
 				if(j == arrUserSeq.length - 1){ 
 					comma = "";   

@@ -33,9 +33,8 @@
 							</c:choose>         
 							<c:if test="${loginVO.authCode eq '1' }">       
 								<a href="javscript:void(0);" onclick="fncUpdateState();" class="btn btn_mdl btn_save" style="background-color:#308cde;border-color: #308cde;margin-left:3px;">변경</a>
-								<a href="javscript:void(0);" onclick="fncSendMail();" class="btn btn_mdl btn_save" style="background-color:#308cde;border-color: #308cde;margin-left:3px;">메일 발송</a>
    							</c:if>    
-						</td>         
+						</td>          
 				 	<tr>          
 						<th scope="row"><strong class="th_tit">사용일</strong></th>  
 						<td>          
@@ -100,7 +99,7 @@
 						</td>    
 					</tr>  
 				</tbody>         
-			</table>                        
+			</table>                         
 		</div>                                                       
 		<div class="btn_area">                             
 		<c:if test="${searchVO.procType ne 'update'}">     
