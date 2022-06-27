@@ -4,8 +4,20 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
+import javax.activation.CommandMap;
+import javax.activation.MailcapCommandMap;
 import javax.annotation.Resource;
+import javax.mail.Message;
+import javax.mail.Multipart;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
+import javax.mail.internet.MimeUtility;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +34,9 @@ import com.open.cmmn.service.CmmnService;
 import com.open.cmmn.util.DateUtils;
 import com.open.cmmn.util.StringUtil;
 import com.open.mgr.mgr0006.service.Mgr0006VO;
+import com.open.mgr.mgr0013.service.Mgr0013VO;
 import com.open.mgr.mgr0117.service.Mgr0117VO;
-
+  
 import egovframework.rte.ptl.mvc.tags.ui.pagination.PaginationInfo;
 
 @Controller
@@ -55,7 +68,7 @@ public class Mgr0117Controller {
 	@SuppressWarnings("unchecked")
 	@RequestMapping(folderPath + "addList.do")
 	public String addList(@ModelAttribute("searchVO") Mgr0117VO searchVO, ModelMap model) throws Exception {
-			
+			 
 		searchVO.setPageUnit(7);  
 		searchVO.setPageSize(8);
      
@@ -168,10 +181,10 @@ public class Mgr0117Controller {
 			cmmnService.deleteContents(searchVO, PROGRAM_ID);
 			message = "삭제되었습니다";
 			cmmnScript = "list.do";
-		} else{
-			return "redirect:list.do"; 
+		} else {
+			return "redirect:list.do";   
 		}
-		 
+		   
 		model.addAttribute("pName", "elSeq");	
 		model.addAttribute("pValue", searchVO.getElSeq());
 		model.addAttribute("message", message);
@@ -221,11 +234,104 @@ public class Mgr0117Controller {
 		        
 		if(resultList.size() > 0){
 			mav.addObject("result", resultList);
-		}    
+		}      
 		
 		return mav;
 	}
-	 
+	   
+	/* 상태 변경 */  
+	@ResponseBody
+	@SuppressWarnings("rawtypes")
+	@RequestMapping(folderPath + "stateUpdate.do")
+	public Map stateUpdate(@ModelAttribute("searchVO") Mgr0117VO searchVO) throws Exception{
+		  
+		Map<String, String> map = new HashMap<>();   
+		cmmnService.updateContents(searchVO, PROGRAM_ID + ".stateUpdateContents");
+		map.put("result", "변경이 완료되었습니다.");             
+		       
+		return map;
+	} 
+	
+	/* 메일 전송 */     
+	@RequestMapping(folderPath + "sendMail.do")
+	public String sendMailDo(@ModelAttribute("searchVO") Mgr0013VO searchVO, ModelMap model, HttpServletRequest request) throws Exception{
+		     
+		sendMail("agnusdei1207@naver.com", "내용", "제목");
+		      
+		model.addAttribute("message", "전송되었습니다");
+		model.addAttribute("cmmnScript", "list.do");    
+		return "cmmn/execute";
+	}    
+	    
+	/* 메일 전송 */
+	public static void sendMail(String mail, String htmlContent, String ttl) throws Exception {
+
+		String host = ""; 
+		String useraddr = ""; 
+		String userpwd = "";   
+		/* IMAP/SMTP 설정 */ 
+		Properties props = new Properties(); 
+ 
+		// 호스트, 계정 비번 설정 
+		host = "smtp.gmail.com";	 
+		useraddr = "opennote.opensign@gmail.com";
+		userpwd = "bvuwxxdqcgkkgsmk";        
+		  
+		/* Gmail 앱 비밀번호 : bvuwxxdqcgkkgsmk */
+		props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+		props.put("mail.smtp.socketFactory.port", "465");       
+		props.put("mail.smtp.ssl.enable", "true");
+		props.put("mail.smtp.host", host);
+		props.put("mail.smtp.auth", "true"); 
+		props.put("mail.smtp.starttls.enable", "true");
+		props.put("mail.smtp.ssl.protocols", "TLSv1.2");
+		 
+		  
+		final String username = useraddr; // 계정
+		final String password = userpwd; // 비밀번호
+		// mailForm에 따른 메일 설정
+
+		/* Session 생성 */
+		Session session = Session.getInstance(props, new javax.mail.Authenticator() {
+			String userId = username;  
+			String userPw = password;
+
+			protected javax.mail.PasswordAuthentication getPasswordAuthentication() {
+				return new javax.mail.PasswordAuthentication(userId, userPw);
+			} 
+		});   
+		/* Message 설정 */ 
+		MimeMessage message = new MimeMessage(session);   
+		message.setFrom(new InternetAddress(useraddr, MimeUtility.encodeText("오픈노트", "UTF-8", "B"))); 
+		message.setSender(new InternetAddress(useraddr)); // 발송인
+		message.setSubject(ttl); // 제목 
+		    
+		/* 디버깅 여부 */ 
+		session.setDebug(true); 
+    
+		/* 내용 값 설정 */     
+		String htmlContents = StringUtil.unEscape(htmlContent); 
+           
+		/* 한 명씩 전달하는  경우 */    
+		message.setRecipient(Message.RecipientType.TO, new InternetAddress(mail));
+   
+		Multipart mp = new MimeMultipart();
+		MimeBodyPart mbp1 = new MimeBodyPart();
+		mbp1.setContent(htmlContents, "text/html;charset=UTF-8"); // 내용
+		mp.addBodyPart(mbp1);  
+  
+		MailcapCommandMap mc = (MailcapCommandMap) CommandMap.getDefaultCommandMap();
+		mc.addMailcap("text/html; x-java-content-handler=com.sun.mail.handlers.text_html");
+		mc.addMailcap("text/xml; x-java-content-handler=com.sun.mail.handlers.text_xml");
+		mc.addMailcap("text/plain; x-java-content-handler=com.sun.mail.handlers.text_plain");
+		mc.addMailcap("multipart/*; x-java-content-handler=com.sun.mail.handlers.multipart_mixed");
+		mc.addMailcap("message/rfc822; x-java-content-handler=com.sun.mail.handlers.message_rfc822");
+		CommandMap.setDefaultCommandMap(mc);
+
+		message.setContent(mp);
+		Transport.send(message); 
+	}
+	
 	/* 식사 인원 명단 SEQ 입력 셋팅*/        
 	public String fncSetPeopleList(String list){
 		String userSeqList = "";          

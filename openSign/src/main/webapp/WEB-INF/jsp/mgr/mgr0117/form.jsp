@@ -11,19 +11,31 @@
 			<table class="tbl_row_type01">    
 				<caption>내용</caption>   
 				<colgroup>
-					<col style="width:20%;">
-					<col style="width:30%;">   
+					<col style="width:20%;">  
+					<col style="width:30%;">     
 					<col style="width:20%;">            
 					<col style="width:30%;">    
-				</colgroup>      
+				</colgroup>       
 				<tbody>        
-					<tr>             
-						<th scope="row"><strong>상태 </strong></th>               
-						<td colspan="3">         
-							<label class="cursor"><input type="radio" name="radio" id="state_N" class="cursor" onclick="${loginVO.authCode eq '3' ? 'return false;' : ''}"  value="N" ${mgr0117VO.state eq 'N' ? 'checked' : '' }>미확인</label>
-							<label class="cursor"><input type="radio" name="radio" id="state_Y" class="cursor" onclick="${loginVO.authCode eq '3' ? 'return false;' : ''}" value="Y" ${mgr0117VO.state eq 'Y' ? 'checked' : '' }>확인</label>
-							<input type="hidden" name="state" id="state" value="${mgr0117VO.state }">      
-						</td>       
+					<tr>               
+						<th scope="row"><strong>상태 </strong></th>                 
+						<td colspan="3">            
+							<c:choose>  
+								<c:when test="${loginVO.authCode eq '1' }">                
+									<select name="state" id="state" style="width:192px;">
+										<option value="N" ${mgr0117VO.state eq 'N' ? 'selected="selected"' : '' }>미확인</option>
+										<option value="Y" ${mgr0117VO.state eq 'Y' ? 'selected="selected"' : '' }>확인</option> 
+									</select>
+								</c:when>        
+								<c:otherwise>      
+									${empty mgr0117VO.state ? '미확인' : mgr0117VO.state eq 'N' ? '미확인' : '확인'}
+								</c:otherwise>          
+							</c:choose>         
+							<c:if test="${loginVO.authCode eq '1' }">       
+								<a href="javscript:void(0);" onclick="fncUpdateState();" class="btn btn_mdl btn_save" style="background-color:#308cde;border-color: #308cde;margin-left:3px;">변경</a>
+								<a href="javscript:void(0);" onclick="fncSendMail();" class="btn btn_mdl btn_save" style="background-color:#308cde;border-color: #308cde;margin-left:3px;">메일 발송</a>
+   							</c:if>    
+						</td>         
 				 	<tr>          
 						<th scope="row"><strong class="th_tit">사용일</strong></th>  
 						<td>          
@@ -61,19 +73,25 @@
 						</td>  
 					</tr>  
 					<tr>                                 
-						<th scope="row"><strong class="th_tit" style="margin-right: 11px;">식사 인원</strong><a href="javascript:void(0);" class="btn btn_sml btn_ok" onclick='openModal();'>추가</a></th>       
-						<td colspan="3">             
+						<th scope="row"><strong class="th_tit" style="margin-right: 11px;">식사 인원</strong>
+							<c:if test="${searchVO.procType eq 'update' && mgr0117VO.state ne 'Y' }">
+								<a href="javascript:void(0);" class="btn btn_sml btn_ok" onclick='fncOpenModal();'>추가</a>
+							</c:if>
+						</th>       
+						<td colspan="3">                 
 							<ul id="receiver" class="mail_select_list">                           
 								<c:if test="${fn:length(userList) gt 0 }">                     
 									<c:forEach var="user" items="${userList }">       
 										<li id="${user.seq}-${user.position }-" class="mail_select_obj" data-userInfo="${user.seq}-${user.position }&${user.name }_${user.position }" style="display:inline-block; width:17%;">   
-											<c:out value="${user.name }_${user.position }"/>                                                
-											<a class="mail_del btn_del cursor" onclick="fncUserDel('${user.seq}-${user.position }', '${user.seq}-${user.position }&${user.name }_${user.position }');" style="display:inline-block;">x</a>
+											<c:out value="${user.name }_${user.position }"/>              
+											<c:if test="${searchVO.procType eq 'update' && mgr0117VO.state ne 'Y' }">
+												<a class="mail_del btn_del cursor" onclick="fncUserDel('${user.seq}-${user.position }', '${user.seq}-${user.position }&${user.name }_${user.position }');" style="display:inline-block;">x</a>
+											</c:if>
 										</li> 
-									</c:forEach>
-								</c:if>    
+									</c:forEach>    
+								</c:if>     
 							</ul>              
-						</td>  
+						</td>   
 					</tr>   
 					<tr>     
 						<th scope="row"><strong>영수증 첨부 </strong></th> 
@@ -96,7 +114,7 @@
 		</div>  
 	</form>          
 </div>            
-  
+   
 <script type="text/javascript">
 
 <%-- 체크 상태 배열 --%> 
@@ -110,9 +128,6 @@ $(function(){
 	});              
 	
 	fncDate('eatDate');    
-	if("${mgr0117VO.state }" == null || "${mgr0117VO.state }" == ""){
-		$("#state_N").prop("checked", true);
-	}       
 	return false;  
 });      
   
@@ -134,18 +149,16 @@ function fncSubmit(proc){
 		return false;         
 	}
 	if($(".mail_select_obj").length == 0){
-		alert("식사 인원을 추가해주세요.");
+		alert("식사 인원을 추가해주세요.");    
 		return false;
 	}  
-	if($("#state_Y").prop("checked")){
-		$("#state").val("Y");
-	}else if($("#state_N").prop("checked")){
+	if($("#state").val() == null || $("#state").val() == ""){
 		$("#state").val("N");
-	}                   
+	}
 	<%-- 식사 인원 --%>                
 	$("#userSeq").val(checked);   
 	fncPageBoard("update", proc + 'Proc.do');
-	return false;  
+	return false;    
 }  
                 
 <%-- 받는 사람 목록 삭제 --%>            
@@ -154,9 +167,9 @@ function fncUserDel(pstn, info){
 	checked.splice(checked.indexOf(info), 1); 
 	return false;         
 }            
-                   
+                    
 <%-- 모달 열기 --%>                         
-function openModal(){   
+function fncOpenModal(){   
 	fncLoadingStart();           
 	$.ajax({                      
 	    method: "POST",   
@@ -169,9 +182,40 @@ function openModal(){
 	    },complete : function(){     
 	    	fncLoadingEnd();
 		}     
-	});	
+	});	  
 }                   
-
-
+   
+<%-- 상태 변경 --%>
+function fncUpdateState(){      
+	fncLoadingStart();                 
+	$.ajax({                                     
+	    method: "POST",               
+	    url: "stateUpdate.do",	                                                  
+	    data : $("#defaultFrm").serialize(),    
+	    dataType: "JSON",              
+	    success: function(data) {    
+	    	alert(data.result);    
+	    },complete : function(){     
+	    	fncLoadingEnd();
+		}     
+	});	
+}
+   
+<%-- 메일 발송 --%>
+function fncSendMail(){
+	fncLoadingStart();                 
+	$.ajax({                                     
+	    method: "POST",               
+	    url: "sendMail.do",	                                                  
+	    data : $("#defaultFrm").serialize(),    
+	    dataType: "JSON",              
+	    success: function(data) {    
+	    	alert(data.result);    
+	    },complete : function(){     
+	    	fncLoadingEnd();
+		}     
+	});
+	return false;
+}
 
 </script>

@@ -1,9 +1,10 @@
 package com.open.mgr.mgr0116;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -11,6 +12,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.open.cmmn.excel.ExcelView;
@@ -115,7 +117,7 @@ public class Mgr0116Controller {
 		model.addAttribute("pValue", searchVO.getClSeq());
 		model.addAttribute("message", message);
 		model.addAttribute("cmmnScript", cmmnScript);
-		return "cmmn/execute";
+		return "cmmn/execute";  
 	}
 	  
 	/* 엑셀 다운로드 */
@@ -136,8 +138,23 @@ public class Mgr0116Controller {
 			mav.addObject("result", resultList);
 		}    
 		
-		return mav;
+		return mav; 
+	}    
+	
+	/* 상태 변경 */ 
+	@ResponseBody   
+	@SuppressWarnings("rawtypes")  
+	@RequestMapping(folderPath + "stateUpdate.do")
+	public Map stateUpdate(@ModelAttribute("searchVO") Mgr0116VO searchVO) throws Exception{
+		
+		Map<String, String> map = new HashMap<>();   
+		cmmnService.updateContents(searchVO, PROGRAM_ID + ".stateUpdateContents");
+		map.put("result", "변경이 완료되었습니다.");             
+		      
+		return map;
 	}
+	
+	
 	
 
 }

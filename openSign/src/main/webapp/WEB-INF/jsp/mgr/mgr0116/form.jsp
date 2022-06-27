@@ -25,17 +25,29 @@
 										<option value="${card.number }" ${card.number eq mgr0116VO.number ? 'selected="selected"' : '' }>카드 번호 : ${card.number } | 카드 이름 : ${card.name }</option>
 									</c:forEach>     
 								</c:if>              
-							</select>                     
-						</td>                                            
+							</select>               
+							        
+						</td>                                                
 						<th scope="row"><strong class="th_tit">상태</strong></th>                               
-						<td>               
-							<label class="cursor" style="margin-right:5%;"><input type="radio" name="radio" id="state_B" class="cursor" onclick="fncRadio('B'); ${loginVO.authCode eq '3' ? 'return false;' : ''}" ${mgr0116VO.state eq 'B' ? 'checked' : '' }>대여</label>
-							<label class="cursor"><input type="radio" name="radio" id="state_R" class="cursor" onclick="fncRadio('R'); ${loginVO.authCode eq '3' ? 'return false;' : ''}" ${mgr0116VO.state eq 'R' ? 'checked' : '' }>반납</label>
-							<input type="hidden" name="state" id="state" value="${mgr0116VO.state }">    
+						<td>                  
+							<c:choose>              
+								<c:when test="${loginVO.authCode eq '1' }">                 
+									<select name="state" id="state" style="width:192px;">
+										<option value="B" ${mgr0116VO.state eq 'B' ? 'selected="selected"' : '' }>대여</option>
+										<option value="R" ${mgr0116VO.state eq 'R' ? 'selected="selected"' : '' }>반납</option> 
+									</select>  
+								</c:when>             
+								<c:otherwise>      
+									${empty mgr0116VO.state ? '대여' : mgr0116VO.state eq 'B' ? '대여' : '반납'}
+								</c:otherwise>            
+							</c:choose>     
+							<c:if test="${loginVO.authCode eq '1' }">           
+								<a href="javscript:void(0);" onclick="fncUpdateState();" class="btn btn_mdl btn_save" style="background-color:#308cde;border-color: #308cde;margin-left:3px;">변경</a>
+   							</c:if>   
 						</td>                    
 					</tr>    
 					<tr>    
-						<th scope="row"><strong class="th_tit">대여일</strong></th>
+						<th scope="row"><strong class="th_tit">대여일</strong></th> 
 						<td>   
 							<input type="hidden" name="dateCondition" id="dateCondition" value="0"/>   
 							<span class="calendar_input type03">
@@ -48,8 +60,8 @@
 								<input type="text" name="returnDate" id="returnDate" class="text p50" value="<c:out value="${mgr0116VO.returnDate }"/>" readonly="readonly"/> 
 							</span>
 						</td>
-					</tr>    
-				</tbody>         
+					</tr>       
+				</tbody>           
 			</table>              
 		</div>                       
 		<div class="btn_area">                 
@@ -68,7 +80,7 @@
 <script type="text/javascript"> 
      
 $(function(){                    
-	<%-- 날짜 셋팅 --%> 
+	<%-- 날짜 셋팅 --%>  
 	fncDate('rentalDate','returnDate');  
 	if("${mgr0116VO.state }" == null || "${mgr0116VO.state }" == ""){
 		$("#state_B").prop("checked", true);
@@ -90,18 +102,28 @@ function fncSubmit(proc){
 	}  
 	
 	if($("#state").val() == null || $("#state").val() == ""){
-		$("#state").val("B");
+		$("#state").val("B");  
 	}
 	  
 	<%-- insert || update 구분 --%>
 	fncPageBoard('update', proc + 'Proc.do');
 	return false;
 }       
+    
   
-<%-- 라디오 버튼 --%>
-function fncRadio(divn){
-	$("#state").val(divn);
-	return true;
+<%-- 상태 변경 --%>
+function fncUpdateState(){      
+	fncLoadingStart();                   
+	$.ajax({                                     
+	    method: "POST",               
+	    url: "stateUpdate.do",	                                                  
+	    data : $("#defaultFrm").serialize(),    
+	    dataType: "JSON",              
+	    success: function(data) {    
+	    	alert(data.result);    
+	    },complete : function(){     
+	    	fncLoadingEnd();
+		}     
+	});	
 }
-     
 </script>

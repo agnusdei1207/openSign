@@ -161,7 +161,7 @@
 			 WHERE	USE_YN = 'Y'        
 			   AND	DATE_FORMAT(EAT_DATE, '%Y.%m') = #{schEtc01}
 			]]> 
-		</select>  
+		</select>   
 		
 	<!-- 엑셀 식대 금액 조회 -->
 	<select id="excelEatLogSelectList" parameterType="cmmnDefaultVO" resultType="mgr0111VO">
@@ -186,17 +186,17 @@
 			 ORDER	BY rgstDt
 		]]>     
 	</select> 
-	
+	  
 	<!-- 엑셀  초과 근무 조회 -->
 	<select id="excelOverTimeSelectList" parameterType="cmmnDefaultVO" resultType="mgr0111VO">
 		/* Main.excelOverTimeSelectList */
 		<![CDATA[  
 			SELECT	@ROWNUM := @ROWNUM + 1 AS							  		excelRow
-					,ROUND(ABS(TIMESTAMPDIFF(MINUTE, STA_DATE, END_DATE))/60) 	workTime
+					,ROUND(ABS(TIMESTAMPDIFF(MINUTE, STA_DATE, END_DATE))/60) 	workTime 
 					,F_USER_NM(RGST_ID) 										rgstId
 					,DATE_FORMAT(STA_DATE, '%Y.%m.%d')							rgstDt  
-					,STA_DATE													staDate
-					,END_DATE													endDate
+					,DATE_FORMAT(STA_DATE, '%Y.%m.%d %H:%i')					staDate   
+					,DATE_FORMAT(END_DATE, '%Y.%m.%d %H:%i')					endDate
 					,F_USER_NM(EMPLY_SEQ)									 	emplySeq
 					,CONT													 	cont
 			

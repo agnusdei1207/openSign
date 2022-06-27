@@ -28,8 +28,7 @@
 <script type="text/javascript" src="/publish/mgr/js/highcharts.js"></script>
 <script type="text/javascript" src="/publish/mgr/js/exporting.js"></script>
 </head>      
- 
- 
+   
  
  
 <body>  

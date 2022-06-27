@@ -286,9 +286,6 @@ public class CmmnDefaultVO implements Serializable {
 	/* 모달 팝업  구분*/
 	private String popDivn;
 	
-	/* 엑셀 다운 */
-	private String excelDivn;
-	
 	private String excelYear;
 	
 	private String excelMonth;
@@ -1513,13 +1510,6 @@ public class CmmnDefaultVO implements Serializable {
 		this.popSearchCondition = popSearchCondition;
 	}
 
-	public String getExcelDivn() {
-		return excelDivn;
-	}
-
-	public void setExcelDivn(String excelDivn) {
-		this.excelDivn = excelDivn;
-	}
 
 	public String getExcelYear() {
 		return excelYear;

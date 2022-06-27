@@ -71,7 +71,7 @@ public class MainController {
 		return folderPath + "main";  
 	}
 	   
-	   
+	    
 	@RequestMapping("/mgr/statistics/midArea.do")             
 	public String midArea(@ModelAttribute("searchVO") CmmnDefaultVO searchVO, ModelMap model, HttpServletRequest request) throws Exception {
 		
@@ -89,28 +89,28 @@ public class MainController {
 		model.addAttribute("selectedUserVO", selectedUserVO);
 		     
 		/* default 날짜 값 설정 */
-		String nowDay = DateUtils.getNowDate("dd"); 
+		String nowDay = DateUtils.getNowDate("dd");  
 		String year = DateUtils.getNowDate("yyyy");    
-		String month = DateUtils.getNowDate("MM");   
-		 
-		/* 날짜 검색 시 날짜 값 셋팅 */
-		if(!"".equals(searchVO.getExcelYear())){
-			year = searchVO.getExcelYear(); 
-		} 
-		if(!"".equals(searchVO.getExcelMonth())){
+		String month = DateUtils.getNowDate("MM");     
+		
+		/* 날짜 검색 시 날짜 값 셋팅 */ 
+		if(null != searchVO.getExcelYear() && !"".equals(searchVO.getExcelYear())){
+			year = searchVO.getExcelYear();   
+		}            
+		if(null != searchVO.getExcelMonth() && !"".equals(searchVO.getExcelMonth())){
 			month = searchVO.getExcelMonth();
-			if(Integer.parseInt(month) < 10){
-				month = "0"+month; 
-			}
+			if(Integer.parseInt(month) < 10){   
+				month = "0"+month;   
+			}     
 			nowDay = String.valueOf(DateUtils.getLastDayOfMonth(year + month + "01", "")); // 마지막 날짜 가져오기 
 		}
-		                   
-		/* 현재 날짜까지 조회  nowDay */       
-		int[] arrLogCnt = new int[Integer.parseInt(nowDay)]; 
+		                        
+		/* 현재 날짜까지 조회  nowDay */         
+		int[] arrLogCnt = new int[Integer.parseInt(nowDay)];  
 		Mgr0117VO[] arrMgr0117VO = new Mgr0117VO[arrLogCnt.length]; // 식대
 		Mgr0118VO[] arrMgr0118VO = new Mgr0118VO[arrLogCnt.length]; // 초과근무    
 		Mgr0118VO[] arrPrivateWorkTime = new Mgr0118VO[arrLogCnt.length]; // 개인 초과근무
-		         
+		          
 		for(int i=1; i <= arrLogCnt.length; i++){ 
 			String day = ""; 
 			if((int)(Math.log10(i)+1) == 1){ // 1 자리수  
@@ -255,7 +255,7 @@ public class MainController {
 						if(j == cutLength){
 							str = ""; 
 						}else{              
-							str = ",";
+							str = ","; 
 						}                   
 						groupNames += arrUserName[j] + str; // 이름 문자열 구분값     
 						savePoint = j;        
@@ -280,13 +280,12 @@ public class MainController {
 			for(int i = 0; i < resultUserName.length -1; i++){
 				resultInfo.add(resultUserName[i]+ "_" +resultPrice[i]);
 			}     
-			      
-			
-		}else if("overTime".equals(proc)){ /* 초과근무 차트 */  
+			     
+		}else if("overTime".equals(proc)){ /* 초과근무 차트 */    
 			/* 날짜 값 schEtc05 */ 
 			List<Mgr0118VO> circleList = (List<Mgr0118VO>)cmmnService.selectList(searchVO, PROGRAM_ID + ".overTimePointClickSelectList"); 
 			String[] resultUserName = new String[circleList.size()];
-			String[] arrOverTime = new String[circleList.size()];
+			String[] arrOverTime = new String[circleList.size()];  
 			            
 			/* 이름 조회 schEtc06 */      
 			for(int i = 0; i < circleList.size(); i++){
@@ -300,11 +299,12 @@ public class MainController {
 				resultInfo.add(resultUserName[i] + "_" + arrOverTime[i]);   
 			}  
 			
-		}
-		model.addAttribute("resultInfo", resultInfo); 
+		} 
+		model.addAttribute("resultInfo", resultInfo);     
+		model.addAttribute("proc", proc);     
 		return folderPath + "circleChart";
-	}
-	
+	} 
+	 
 	/* 엑셀 다운로드 */
 	@SuppressWarnings("unchecked") 
 	@RequestMapping("/mgr/statistics/excelDown.do")
@@ -326,46 +326,26 @@ public class MainController {
 			if(Integer.parseInt(month) < 10){
 				month = "0" + month;
 			}
-		} 
-		/* 제목 URL 셋팅 */ 
-		String tit = "";  
-		String url = ""; 
-		
-		List<?> eatList;
-		List<?> overTimeList;
-		
-		/* 날짜 정보 셋팅 */                               
-		searchVO.setSchEtc01(year+"."+month); 
-		System.out.println("엑셀 다운 날짜 포멧 확인 : " + searchVO.getSchEtc01());
-		
-		/* 조회 구분 */ 
-		if("".equals(searchVO.getExcelDivn())){
-			tit = "전체 통계";
-			url = "/totalStatistics.xlsx";
-			eatList = (List<Mgr0111VO>) cmmnService.selectList(searchVO, PROGRAM_ID+".excelEatLogSelectList" );
-			overTimeList = (List<Mgr0111VO>) cmmnService.selectList(searchVO, PROGRAM_ID+".excelOverTimeSelectList" );
-			mav.addObject("eatList", eatList);
-			mav.addObject("overTimeList", overTimeList);
-		}else if("eat".equals(searchVO.getExcelDivn())){
-			tit = "식대 통계";
-			url = "/eatStatistics.xlsx";
-			eatList = (List<Mgr0111VO>) cmmnService.selectList(searchVO, PROGRAM_ID+".excelEatLogSelectList" );
-			mav.addObject("eatList", eatList);
-		}else if("overTime".equals(searchVO.getExcelDivn())){
-			tit = "초과근무 통계";
-			url = "/overTimeStatistics.xlsx";
-			overTimeList = (List<Mgr0111VO>) cmmnService.selectList(searchVO, PROGRAM_ID+".excelOverTimeSelectList" );
-			mav.addObject("overTimeList", overTimeList);
-		}
-		         
+		}    
+		/* 제목 URL 셋팅 */    
+		String tit = "오픈노트_통계자료";  
+		String url = "totalStatistics.xlsx"; 
+		   
+		/* 조회 할 날짜 값 셋팅 */                               
+		searchVO.setSchEtc01(year+"."+month);  
+		 
 		/* 통계 조회 */
+		List<Mgr0111VO> eatList = (List<Mgr0111VO>) cmmnService.selectList(searchVO, PROGRAM_ID+".excelEatLogSelectList" );
+		List<Mgr0111VO> overTimeList  = (List<Mgr0111VO>) cmmnService.selectList(searchVO, PROGRAM_ID+".excelOverTimeSelectList" );
 		List<Mgr0117VO> resultList = (List<Mgr0117VO>) cmmnService.selectList(searchVO, PROGRAM_ID+".statisticsExcelDown" );
 		
-		mav.addObject("target", tit);  
+		mav.addObject("target", tit);   
 		mav.addObject("source", url);
 		mav.addObject("year", year);
 		mav.addObject("month", month);
-		
+		 
+		mav.addObject("eatList", eatList);
+		mav.addObject("overTimeList", overTimeList);
 		if(resultList.size() > 0){
 			mav.addObject("result", resultList);
 		}    

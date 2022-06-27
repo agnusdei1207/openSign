@@ -16,7 +16,7 @@
 		<div class="search_box">                                               
 			<form name="popFrm" id="popFrm" method="post"  onsubmit="return false;">     
 				<input type="hidden" name="popPageIndex" id="popPageIndex" value="${searchVO.popPageIndex }" />      
-				<input type="hidden" name="popDivn" id="popDivn" value="${searchVO.popDivn }" placeholder="popDivn" />    
+				<input type="hidden" name="popDivn" id="popDivn" value="${searchVO.popDivn }" placeholder="popDivn" />
 				<input type="hidden" name="schEtc04" id="schEtc04"/>   
 				<fieldset>                 
 					<legend>검색</legend>                        
@@ -38,7 +38,7 @@
 		<%--// search  --%>      
 		<div class="popTbl">      
 		</div>   
-</div>      
+</div>       
                    
 <script type="text/javaScript">  
   
