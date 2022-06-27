@@ -271,8 +271,8 @@ public class Mgr0117Controller {
 		String userpwd = "";   
 		/* IMAP/SMTP 설정 */ 
 		Properties props = new Properties(); 
-   
-		/* 호스트, 계정 비번 설정 */
+ 
+		// 호스트, 계정 비번 설정 
 		host = "smtp.gmail.com";	 
 		useraddr = "opennote.opensign@gmail.com";
 		userpwd = "bvuwxxdqcgkkgsmk";        
@@ -300,17 +300,18 @@ public class Mgr0117Controller {
 				return new javax.mail.PasswordAuthentication(userId, userPw);
 			} 
 		});   
-		
 		/* Message 설정 */ 
 		MimeMessage message = new MimeMessage(session);   
 		message.setFrom(new InternetAddress(useraddr, MimeUtility.encodeText("오픈노트", "UTF-8", "B"))); 
 		message.setSender(new InternetAddress(useraddr)); // 발송인
 		message.setSubject(ttl); // 제목 
-		session.setDebug(true); // 디버깅 여부
+		    
+		/* 디버깅 여부 */ 
+		session.setDebug(true); 
     
-		/* 내용 설정 */     
+		/* 내용 값 설정 */     
 		String htmlContents = StringUtil.unEscape(htmlContent); 
-            
+           
 		/* 한 명씩 전달하는  경우 */    
 		message.setRecipient(Message.RecipientType.TO, new InternetAddress(mail));
    

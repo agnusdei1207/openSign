@@ -207,19 +207,4 @@
 		]]>     
 	</select>
 	
-	<!-- 관리자 조회 -->
-	<select id="UserSelectContents" parameterType="mgr0117VO" resultType="mgr0006VO">
-		/* Main.UserSelectContents */
-		<![CDATA[       
-      	  		SELECT	 
-					  	 SEQ												seq
-					    ,NAME												name
-					  	 
-				  FROM	t_ad_user
-						   
-		 		 WHERE	USE_YN = 'Y'  
-		 		   AND	SEQ = #{schEtc02}
-	      ]]>         
-	</select>
-	
 </mapper>

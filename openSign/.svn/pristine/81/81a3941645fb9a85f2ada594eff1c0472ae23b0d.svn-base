@@ -312,19 +312,19 @@ public class MainController {
 		     
 		ModelAndView mav = new ModelAndView(excelView);  
 		
-		/* default 날짜 값 설정  */       
-		String year = DateUtils.getNowDate("yyyy");       
+		/* default 날짜 값 설정  */     
+		String year = DateUtils.getNowDate("yyyy");     
 		String month = DateUtils.getNowDate("MM"); 
 		
 		/* 날짜 검색 시  값 셋팅 */
 		if(!"".equals(searchVO.getExcelYear())){
-			year = searchVO.getExcelYear();  
+			year = searchVO.getExcelYear(); 
 		} 
 		if(!"".equals(searchVO.getExcelMonth())){
-			month = searchVO.getExcelMonth();  
+			month = searchVO.getExcelMonth();
 			/* 날짜 포멧 형식 맞추기 */
 			if(Integer.parseInt(month) < 10){
-				month = "0" + month; 
+				month = "0" + month;
 			}
 		}    
 		/* 제목 URL 셋팅 */    
@@ -333,33 +333,13 @@ public class MainController {
 		   
 		/* 조회 할 날짜 값 셋팅 */                               
 		searchVO.setSchEtc01(year+"."+month);  
-		  
+		 
 		/* 통계 조회 */
 		List<Mgr0111VO> eatList = (List<Mgr0111VO>) cmmnService.selectList(searchVO, PROGRAM_ID+".excelEatLogSelectList" );
 		List<Mgr0111VO> overTimeList  = (List<Mgr0111VO>) cmmnService.selectList(searchVO, PROGRAM_ID+".excelOverTimeSelectList" );
 		List<Mgr0117VO> resultList = (List<Mgr0117VO>) cmmnService.selectList(searchVO, PROGRAM_ID+".statisticsExcelDown" );
-		  
-		/* 식사 인원 이름 셋팅 */ 
-		for(int i = 0; i < eatList.size(); i++){ 
-			String userNames = "";
-			String[] arrUserSeq = new String[eatList.get(i).getUserSeq().split(",").length];
-			arrUserSeq = eatList.get(i).getUserSeq().split(",");
-			/* 조회 명단 이름 가져오기*/
-			for(int j = 0; j < arrUserSeq.length; j++){   
-				System.out.println("명단 : " + arrUserSeq[j]);
-				searchVO.setSchEtc02(arrUserSeq[j]);
-				Mgr0006VO info = (Mgr0006VO)cmmnService.selectContents(searchVO, PROGRAM_ID+".UserSelectContents"); 
-				System.out.println("이름 : " + info.getName());
-				String comma = ",";  
-				if(j == arrUserSeq.length - 1){ 
-					comma = "";   
-				}    
-				userNames += info.getName() + comma;
-			}     
-			eatList.get(i).setUserSeq(userNames);
-		}   
 		
-		mav.addObject("target", tit);      
+		mav.addObject("target", tit);   
 		mav.addObject("source", url);
 		mav.addObject("year", year);
 		mav.addObject("month", month);
