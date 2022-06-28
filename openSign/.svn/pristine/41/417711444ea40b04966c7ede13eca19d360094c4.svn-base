@@ -35,8 +35,6 @@ public class Mgr0118VO extends CmmnDefaultVO implements Serializable {
 	private String position;
 	private String name;
 	
-	private String teamMail;
-	
 	/* T_OVER_ADD */
 	private String adSeq;
 	private String emplySeq;
@@ -53,12 +51,6 @@ public class Mgr0118VO extends CmmnDefaultVO implements Serializable {
 	private String excelRow;
 	
 	
-	public String getTeamMail() {
-		return teamMail;
-	}
-	public void setTeamMail(String teamMail) {
-		this.teamMail = teamMail;
-	}
 	public String getOtSeq() {
 		return otSeq;
 	}

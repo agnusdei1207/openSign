@@ -4,11 +4,10 @@
 <div class="content_box">
 	<form id="defaultFrm" name="defaultFrm" method="post" onsubmit="return false;">
 		<input type="hidden" id="otSeq" name="otSeq" value="<c:out value="${mgr0118VO.otSeq }"/>"/>
-		<input type="hidden" id="emplySeq" name="emplySeq" value="<c:out value="${mgr0118VO.emplySeq }"/>"/> 
-		<input type="hidden" id="teamMail" name="teamMail" value="<c:out value="${mgr0118VO.teamMail }"/>"/> 
-		<input type="hidden" id="name" name="name" value="<c:out value="${mgr0118VO.name }"/>"/> 
-		<jsp:directive.include file="/WEB-INF/jsp/cmmn/inc/incSearchForm.jsp"/> 
-		<div class="tbl_wrap">   
+		<input type="hidden" id="emplySeq" name="emplySeq" value="<c:out value="${mgr0118VO.emplySeq }"/>"/>
+		<input type="hidden" id="rgstId" name="rgstId" value="<c:out value="${mgr0118VO.rgstId }"/>"/>
+		<jsp:directive.include file="/WEB-INF/jsp/cmmn/inc/incSearchForm.jsp"/>
+		<div class="tbl_wrap">
 			<table class="tbl_row_type01"> 
 				<caption>내용(제목, 작성자, 작성일 등으로 구성)</caption>
 				<colgroup>
@@ -22,7 +21,7 @@
 						<th scope="row"><strong>결재상태</strong></th>
 						<td>
 							<c:choose>
-								<c:when test="${loginVO.authCode eq '2' }">
+								<c:when test="${loginVO.authCode eq '1' }">
 									<select id="status" name="status" class="text w50p">
 										<option value="A" <c:out value="${mgr0118VO.status eq 'A' ? 'selected=\"selected\"' : '' }"/>>신청</option>
 										<option value="B" <c:out value="${mgr0118VO.status eq 'B' ? 'selected=\"selected\"' : '' }"/>>반려</option>
@@ -53,7 +52,7 @@
 						<th scope="row"><strong>등록자</strong></th>
 						<td>
 							<c:choose>
-								<c:when test="${loginVO.authCode eq '4' }">
+								<c:when test="${loginVO.authCode eq '2' }">
 									<c:out value="${loginVO.name}"/>
 								</c:when>
 								<c:otherwise>
@@ -90,12 +89,10 @@
 				<caption>내용(제목, 작성자, 작성일 등으로 구성)</caption>
 				<colgroup>
 					<col style="width:10%;">
-					<col style="width:18%;">
-					<col style="width:18%;">
-					<col style="width:50%;">
-					<c:if test="${loginVO.authCode eq '1' || loginVO.authCode eq '4' }">
-						<col style="width:5%;"> 
-					</c:if> 
+					<col style="width:15%;">
+					<col style="width:15%;">
+					<col style="width:50%;"> 
+					<col style="width:5%;"> 
 				</colgroup>
 				<thead>
 					<tr>
@@ -103,9 +100,7 @@
 						<th scope="col"><span class="th_tit">근무시작</span></th>
 						<th scope="col"><span class="th_tit">근무종료</span></th>
 						<th scope="col">작업내용</th>
-						<c:if test="${loginVO.authCode eq '1' || loginVO.authCode eq '4' }">
-							<th scope="col"></th>
-						</c:if>
+						<th scope="col"></th>
 					</tr>
 				</thead>
 				<tbody id="add_tbody">
@@ -139,7 +134,7 @@
 							</td>
 							<td>
 								<span class="pick_input" style="margin-right:11px;">
-									<input type="text" name="endDate" id="endDate_${status.count }" class="text w80" maxlength="30" readonly value="<c:out value="${add.endDate}"/>"/>
+										<input type="text" name="endDate" id="endDate_${status.count }" class="text w80" maxlength="30" readonly value="<c:out value="${add.endDate}"/>"/>
 								</span>
 								<select name="endHour" id="endTime_${status.count }" style="width:40px;">
 									<option value=""></option>
@@ -161,11 +156,9 @@
 							<td>
 								<input type="text" name="cont" id="cont_${status.count }" class="text w100p" maxlength="100" value="<c:out value="${add.cont }"/>" />
 							</td>
-							<c:if test="${loginVO.authCode eq '1' || loginVO.authCode eq '4' }">
-								<td>
-									<a href="javascript:void(0)" class="btn btn_sml btn_del" id="btn_add_del_${status.count}" onclick="fncDel(this,'${status.count }','${add.emplySeq}','${add.emplyName}')">삭제</a>
-								</td>
-							</c:if>
+							<td>
+								<a href="javascript:void(0)" class="btn btn_sml btn_del" id="btn_add_del_${status.count}" onclick="fncDel(this,'${status.count }','${add.emplySeq}','${add.emplyName}')">삭제</a>
+							</td>
 						</tr>
 						</c:forEach>				
 					</c:if>
@@ -173,14 +166,18 @@
 			</table>
 		</div>
 		<div class="btn_area">
-			<c:if test="${(loginVO.seq eq mgr0118VO.rgstId && mgr0118VO.status ne 'D' && loginVO.authCode eq '4' && searchVO.procType eq 'update') || (loginVO.authCode eq '1' && searchVO.procType eq 'update') }">
-				<a href="javascript:void(0);" class="btn btn_mdl btn_rewrite" onclick="fncSubmit();">수정</a>
-				<a href="javascript:void(0);" class="btn btn_mdl btn_del" id="btn_del">삭제</a>	 
-			</c:if>
-			<c:if test="${searchVO.procType eq 'insert' }">
-				<a href="javascript:void(0);" class="btn btn_mdl btn_save" onclick="fncSubmit();">등록</a>
-			</c:if>
-				<a href="javascript:void(0);" class="btn btn_mdl btn_cancel" id="btn_list">${searchVO.procType eq 'update' ? '목록' : '취소'}</a>
+			<c:choose>
+				<c:when test="${loginVO.authCode ne '3' }">
+					<a href="javascript:void(0);" class="btn btn_mdl btn_${searchVO.procType eq 'update'? 'rewrite':'save'}" onclick="fncSubmit();">${searchVO.procType eq  'update' ? '수정' : '등록'}</a>
+					<c:if test="${searchVO.procType eq 'update'}">
+						<a href="javascript:void(0);" class="btn btn_mdl btn_del" id="btn_del">삭제</a>	 
+					</c:if>	
+					<a href="javascript:void(0);" class="btn btn_mdl btn_cancel" id="btn_list">${searchVO.procType eq 'update' ? '목록' : '취소'}</a>
+				</c:when>
+				<c:otherwise>
+					<a href="javascript:void(0);" class="btn btn_mdl btn_list" id="btn_list">목록</a>
+				</c:otherwise>
+			</c:choose>
 		</div>
 	</form>
 </div>
@@ -320,8 +317,8 @@ function fncStaffAdd(){
 			var html = "";
 			    html += '<tr id="add_tr_'+addLength+'"><td id="chkUser_'+addLength+'" data-info="'+userSeq+'" data-name="'+userName+'">'+userName+'</td>';
 			    html += '<input type="hidden" id="adSeq_'+addLength+'" name="adSeq" value=" " />';
-			    html += '<td style="text-align:left;"><span class="pick_input" style="margin-right:11px; margin-left:15px;"><input type="text" name="staDate" id="staDate_'+addLength+'" class="text w80" maxlength="30" readonly/></span>';
-			    html += '<select name="staHour" id="staTime_'+addLength+'" style="width:40px; margin-left:3px;">';
+			    html += '<td><span class="pick_input" style="margin-right:11px;"><input type="text" name="staDate" id="staDate_'+addLength+'" class="text w80" maxlength="30" readonly/></span>';
+			    html += '<select name="staHour" id="staTime_'+addLength+'" style="width:40px;">';
 			    html += '<option value=""></option><c:forEach var="i" begin="0" end="23" step="1">';
 			    html += '<option value="<fmt:formatNumber value='${i}' minIntegerDigits='2' type='number'/>"><fmt:formatNumber value='${i}' minIntegerDigits='2' type='number'/></option></c:forEach></select>시 ';
 				html += '<select name="staMin" id="staMin_'+addLength+'" style="width:40px; margin-left:9px;">';
@@ -331,7 +328,7 @@ function fncStaffAdd(){
 				html += '<select name="endHour" id="endTime_'+addLength+'" style="width:40px;">';
 				html += '<option value=""></option><c:forEach var="i" begin="0" end="23" step="1">';
 				html += '<option value="<fmt:formatNumber value='${i}' minIntegerDigits='2' type='number'/>"><fmt:formatNumber value='${i}' minIntegerDigits='2' type='number'/></option></c:forEach></select>시';
-				html += '<select name="endMin" id="endMin_'+addLength+'" style="width:40px; margin-left:15px;">';
+				html += '<select name="endMin" id="endMin_'+addLength+'" style="width:40px; margin-left:9px;">';
 				html += '<option value=""></option><c:forEach var="i" begin="0" end="50" step="10">';
 				html += '<option value="<fmt:formatNumber value='${i}' minIntegerDigits='2' type='number'/>"><fmt:formatNumber value='${i}' minIntegerDigits='2' type='number'/></option></c:forEach></select>분</td>';
 				html += '<td><input type="text" name="cont" id="cont_'+addLength+'" class="text w100p" maxlength="100"></td>';

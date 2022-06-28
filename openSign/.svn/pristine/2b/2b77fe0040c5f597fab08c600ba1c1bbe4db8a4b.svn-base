@@ -19,19 +19,19 @@
 				<tbody>        
 					<tr>               
 						<th scope="row"><strong>상태 </strong></th>                 
-						<td colspan="3">                 
-							<c:choose>      
-								<c:when test="${loginVO.authCode eq '1' || (loginVO.authCode eq '3' && mgr0117VO.state eq 'N')}">                
+						<td colspan="3">            
+							<c:choose>  
+								<c:when test="${loginVO.authCode eq '1' }">                
 									<select name="state" id="state" style="width:192px;">
 										<option value="N" ${mgr0117VO.state eq 'N' ? 'selected="selected"' : '' }>미확인</option>
 										<option value="Y" ${mgr0117VO.state eq 'Y' ? 'selected="selected"' : '' }>확인</option> 
 									</select>
-								</c:when>          
+								</c:when>        
 								<c:otherwise>      
 									${empty mgr0117VO.state ? '미확인' : mgr0117VO.state eq 'N' ? '미확인' : '확인'}
-								</c:otherwise>           
-							</c:choose>               
-							<c:if test="${loginVO.authCode eq '1' || (loginVO.authCode eq '3' && mgr0117VO.state eq 'N')}">          
+								</c:otherwise>          
+							</c:choose>         
+							<c:if test="${loginVO.authCode eq '1' }">       
 								<a href="javscript:void(0);" onclick="fncUpdateState();" class="btn btn_mdl btn_save" style="background-color:#308cde;border-color: #308cde;margin-left:3px;">변경</a>
    							</c:if>    
 						</td>          
@@ -56,7 +56,7 @@
 						<th scope="row"><strong class="th_tit">카드 선택</strong></th>
 						<td>     
 							<select name="number" id="number"  class="w100p">             
-								<option value="">카드 선택</option>                
+								<option value="">카드 선택</option>               
 								<c:if test="${fn:length(cardList) gt 0 }">         
 									<c:forEach var="card" items="${cardList }">     
 										<option value="${card.number }" ${card.number eq mgr0117VO.number ? 'selected="selected"' : '' }>카드 번호 : ${card.number } | 카드 이름 : ${card.name }</option>
@@ -71,12 +71,12 @@
 							<input type="text" name="etc" id="etc" class="text w100p" maxlength="70" value="<c:out value="${mgr0117VO.etc }"/>"/>
 						</td>  
 					</tr>  
-					<tr>                                   
+					<tr>                                 
 						<th scope="row"><strong class="th_tit" style="margin-right: 11px;">식사 인원</strong>
 							<c:if test="${searchVO.procType eq 'update' && mgr0117VO.state ne 'Y' }">
 								<a href="javascript:void(0);" class="btn btn_sml btn_ok" onclick='fncOpenModal();'>추가</a>
-							</c:if>  
-						</th>        
+							</c:if>
+						</th>       
 						<td colspan="3">                 
 							<ul id="receiver" class="mail_select_list">                           
 								<c:if test="${fn:length(userList) gt 0 }">                     
@@ -90,7 +90,7 @@
 									</c:forEach>    
 								</c:if>     
 							</ul>              
-						</td>    
+						</td>   
 					</tr>   
 					<tr>     
 						<th scope="row"><strong>영수증 첨부 </strong></th> 
@@ -99,18 +99,18 @@
 						</td>    
 					</tr>  
 				</tbody>         
-			</table>                             
+			</table>                         
 		</div>                                                       
-		<div class="btn_area">                               
-		<c:if test="${searchVO.procType ne 'update'}">       
-			<a href="javascript:void(0);" onclick="fncSubmit('insert');" class="btn btn_mdl btn_save">등록</a>  
-		</c:if>                                     
-		<c:if test="${(loginVO.seq eq mgr0117VO.rgstSeq &&  mgr0117VO.state eq 'N') || ((loginVO.authCode eq '1') && searchVO.procType eq 'update')}">
+		<div class="btn_area">                             
+		<c:if test="${searchVO.procType ne 'update'}">     
+			<a href="javascript:void(0);" onclick="fncSubmit('insert');" class="btn btn_mdl btn_save">등록</a>
+		</c:if>                                   
+		<c:if test="${(loginVO.seq eq mgr0117VO.rgstSeq &&  mgr0117VO.state eq 'N') || (loginVO.authCode eq '1' && searchVO.procType eq 'update')}">
 			<a href="javascript:void(0);" onclick="fncSubmit('update');" class="btn btn_mdl btn_rewrite">수정</a>
 			<a href="javascript:void(0);" onclick="fncPageBoard('del', 'deleteProc.do');" class="btn btn_mdl btn_del">삭제</a>
 		</c:if>   
 			<a href="javascript:void(0);" onclick="fncPageBoard('list', 'list.do')" class="btn btn_mdl btn_cancel">${searchVO.procType eq  'update' ? '목록' : '취소'}</a>
-		</div>    
+		</div>  
 	</form>          
 </div>            
    

@@ -126,7 +126,7 @@ public class MainController {
 			arrMgr0118VO[i-1] = (Mgr0118VO)cmmnService.selectContents(searchVO, PROGRAM_ID + ".overTimeLogSelectContents"); 
 			arrPrivateWorkTime[i-1] = (Mgr0118VO)cmmnService.selectContents(searchVO, PROGRAM_ID + ".privateWorkOverTime"); 
 		}              
-		               
+		             
 		model.addAttribute("arrMgr0117VO", arrMgr0117VO);
 		model.addAttribute("arrMgr0118VO", arrMgr0118VO); 
 		model.addAttribute("arrPrivateWorkTime", arrPrivateWorkTime);
@@ -134,7 +134,7 @@ public class MainController {
 		 
 		return  folderPath + "midArea";  
 	}      
-	   
+	  
 	
 	@RequestMapping("/mgr/statistics/modalList.do")
 	public String popList(@ModelAttribute("searchVO") Mgr0117VO searchVO, ModelMap model, HttpServletRequest request) throws Exception {

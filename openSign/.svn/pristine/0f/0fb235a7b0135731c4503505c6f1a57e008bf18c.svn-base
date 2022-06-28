@@ -63,11 +63,9 @@ public class Mgr0118Controller {
 	
 	@RequestMapping(folderPath + "list.do")
 	public String list(@ModelAttribute("searchVO") Mgr0118VO searchVO, ModelMap model, HttpServletRequest request) throws Exception {
-		
-		/* fncDate 한달 단위로 설정  */
-		String time = DateUtils.getCurrentDate("yyyy.MM.01");
+		// 검색조건에 현재 날짜로 셋팅
+		String time = DateUtils.getCurrentDate("yyyy.MM.dd");
 		searchVO.setSearchStartDate(time);
-		time = DateUtils.getCurrentDate("yyyy.MM.dd");
 		searchVO.setSearchEndDate(time);
 		
 		return ".mLayout:" + folderPath + "list";
@@ -123,26 +121,8 @@ public class Mgr0118Controller {
 	}
 	
 
-	@SuppressWarnings("unchecked")
 	@RequestMapping(folderPath + "{procType}Proc.do")
 	public String proc(@ModelAttribute("searchVO") Mgr0118VO searchVO, ModelMap model,@PathVariable String procType, HttpServletRequest request) throws Exception{
-		
-		
-		List<Mgr0006VO> adminList = (List<Mgr0006VO>)cmmnService.selectList(searchVO, "Mgr0006.authCodeSelectList"); // 결재자
-		
-		String status = "";
-		if(searchVO.getStatus().equals("A")){ 
-			status = "[결재 신청]";
-		}else if(searchVO.getStatus().equals("B")){
-			status = "[결재 반려]";
-		}else if(searchVO.getStatus().equals("C")){
-			status = "[결재 재신청]";
-		}else if(searchVO.getStatus().equals("D")){
-			status = "[결재 승인]";
-		}
-		
-		String cont = "추가근무 처리가 " + status.replace("[결재","").replace("]","") +"되었습니다. 확인바랍니다.";
-		String title = status + searchVO.getName() + "님이 요청하신 '추가근무-근태관리'가 "+ status.replace("[결재","").replace("]", "") +"되었습니다.";
 		
 		if(procType != null){
 			
@@ -177,27 +157,34 @@ public class Mgr0118Controller {
 						cmmnService.insertContents(searchVO, PROGRAM_ID + ".addInsertContents");
 					} 
 				}
-				
-				for (Mgr0006VO mgr0006VO : adminList) {
-					sendMail(mgr0006VO.getEmail(), cont, title);
-				}
-				
 				model.addAttribute("message","등록되었습니다.");
 				model.addAttribute("cmmnScript","list.do");
 				return "cmmn/execute";
 				
 				
-			}else if(procType.equals("update")){  
+			}else if(procType.equals("update")){
 				
-				if("B".equals(searchVO.getStatus()) || "D".equals(searchVO.getStatus())){
-					sendMail(searchVO.getTeamMail(), cont, title);
-				}else if("C".equals(searchVO.getStatus())){
-					for (Mgr0006VO mgr0006VO : adminList) {
-						sendMail(mgr0006VO.getEmail(), cont, title);
-					}
-				} 
+				String status = "";
 				
+				if(searchVO.getStatus().equals("B")){
+					status = "[결재 반려]";
+				}else if(searchVO.getStatus().equals("C")){
+					status = "[결재 재신청]";
+					
+				}else if(searchVO.getStatus().equals("D")){
+					status= "[결재 승인]";
+				}
+				
+				Mgr0006VO mgr0006VO = (Mgr0006VO)cmmnService.selectContents(searchVO, "Mgr0006");
+				if(mgr0006VO != null){
+					
+				}
+				String title = status + mgr0006VO.getName() + "님이 요청하신 '추가근무-근태관리연동'이 완료되었습니다.";
+				String cont = "추가근무 신청이 " + status + "되었습니다. 확인바랍니다.";
+				
+				sendMail(mgr0006VO.getEmail(), cont, title);
 				cmmnService.updateContents(searchVO, PROGRAM_ID);
+				
 				if(arrAdSeq.length > 0){
 					for(int i = 0; i < arrAdSeq.length; i++){
 						
@@ -276,35 +263,8 @@ public class Mgr0118Controller {
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(folderPath + "statusUpdate.do")
 	public Map stateUpdate(@ModelAttribute("searchVO") Mgr0118VO searchVO) throws Exception{
-		
 		Map<String, String>map = new HashMap<>();
 		cmmnService.updateContents(searchVO, PROGRAM_ID + ".statusUpdateContents");
-		
-		@SuppressWarnings("unchecked")
-		List<Mgr0006VO> adminList = (List<Mgr0006VO>)cmmnService.selectList(searchVO, "Mgr0006.authCodeSelectList"); // 결재자
-		
-		String status = "";
-		if(searchVO.getStatus().equals("A")){ 
-			status = "[결재 신청]";
-		}else if(searchVO.getStatus().equals("B")){
-			status = "[결재 반려]";
-		}else if(searchVO.getStatus().equals("C")){
-			status = "[결재 재신청]";
-		}else if(searchVO.getStatus().equals("D")){
-			status = "[결재 승인]";
-		}
-		
-		String cont = "추가근무 처리가 " + status.replace("[결재","").replace("]","") +"되었습니다. 확인바랍니다.";
-		String title = status + searchVO.getName() + "님이 요청하신 '추가근무-근태관리'가 "+ status.replace("[결재","").replace("]", "") +"되었습니다.";
-		
-		if("B".equals(searchVO.getStatus()) || "D".equals(searchVO.getStatus())){
-			sendMail(searchVO.getTeamMail(), cont, title);
-		}else if("C".equals(searchVO.getStatus())){
-			for (Mgr0006VO mgr0006VO : adminList) {
-				sendMail(mgr0006VO.getEmail(), cont, title);
-			}
-		} 
-		
 		map.put("result", "변경이 완료되었습니다.");
 		
 		return map;

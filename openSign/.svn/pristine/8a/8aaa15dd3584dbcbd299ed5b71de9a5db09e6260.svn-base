@@ -89,9 +89,7 @@
 		<ui:pagination paginationInfo="${paginationInfo}" type="manage" jsFunction="fncPageBoard" />
 	</div>
 	<div class="btn_right">
-		<c:if test="${loginVO.authCode eq '1' || loginVO.authCode eq '4' }">
-			<a href="javascript:void(0);" class="btn btn_mdl btn_save" onclick="fncPageBoard('write','insertForm.do');">등록</a>		
-		</c:if>
+		<a href="javascript:void(0);" class="btn btn_mdl btn_save" onclick="fncPageBoard('write','insertForm.do');">등록</a>		
 	</div>
 </div>
 <%-- //paging end--%>

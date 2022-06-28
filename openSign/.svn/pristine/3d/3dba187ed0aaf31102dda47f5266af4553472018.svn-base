@@ -27,8 +27,8 @@
 	 		AND AUTH_CODE = #{schEtc03}
 	 	</if>
 	 	<if test='schEtc04 !=null and schEtc04 !=""'>
-	 		AND A.USE_YN = #{schEtc04}
-	 	</if>  
+	 		AND USE_YN = #{schEtc04}
+	 	</if>
 	 	<if test="schEtc15 !=null and schEtc15 !='' and schEtc15 = 'VOC'">
 	 		AND AUTH_CODE IN ('1', '2', '3')
 	 	</if>  
@@ -95,24 +95,23 @@
 		<![CDATA[
 			SELECT 
 				COUNT(SEQ) cnt 
-			FROM t_ad_user A
-			WHERE A.USE_YN='Y'
-		]]> 
+			FROM t_ad_user
+			WHERE USE_YN='Y'
+		]]>
 		<include refid="Where"></include>
 	</select>
 	
-	<insert id="insertContents" parameterType="mgr0006VO">  
+	<insert id="insertContents" parameterType="mgr0006VO">
 	/* Mgr0006.insertContents */
-		<![CDATA[
 		INSERT INTO t_ad_user(
 			SEQ
 			, ID
 			, PWD
-			, NAME 
+			, NAME
 			, PART
 			, POSITION	
 		    , AUTH_CODE
-			, EMAIL 
+			, EMAIL
 			, TEL
 			, HP
 		) VALUES (
@@ -127,7 +126,6 @@
 			, #{tel ,jdbcType=VARCHAR}
 			, #{hp ,jdbcType=VARCHAR}
 		)
-		]]> 
 	</insert>
 	
 	

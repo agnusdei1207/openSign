@@ -31,7 +31,7 @@
 		</if>		
 		<if test="searchStartDate !=null and searchStartDate !=''">      
 			<![CDATA[                       
-				AND #{searchStartDate} <= DATE_FORMAT(RGST_DT, '%Y.%m.%d') 
+				AND #{searchStartDate} <= DATE_FORMAT(sysDate(), '%Y.%m.%d') 
 				AND #{searchEndDate} >= DATE_FORMAT(RGST_DT, '%Y.%m.%d')
 			]]>    
 		</if> 
@@ -51,20 +51,18 @@
 		/* Mgr0118.selectContents */
 		<![CDATA[
 		 	SELECT  
-					 A.OT_SEQ 															  otSeq
-					,DATE_FORMAT(A.RGST_DT,'%Y.%m.%d')    								  rgstDt
-					,A.RGST_ID 															  rgstId
-					,F_USER_NM(A.RGST_ID)													  name
-					,(SELECT NAME FROM t_ad_user WHERE USE_YN = 'Y' AND SEQ = A.APPROVER )  approver
-					,A.STATUS 															  status   
-				    ,A.PRJCT_NM 															  prjctNm     
-					,A.ETC 																  etc   
-					,A.ATCH_FILE_ID 														  atchFileId
-					,(SELECT EMAIL FROM t_ad_user WHERE USE_YN = 'Y' AND SEQ = A.RGST_ID)	teamMail
-					
-		      FROM   T_OVER_TIME A
-			 WHERE   A.USE_YN='Y'	
-			   AND   A.OT_SEQ = #{otSeq}
+					 OT_SEQ 							otSeq
+					,DATE_FORMAT(RGST_DT,'%Y.%m.%d')    rgstDt
+					,RGST_ID 							rgstId
+					,F_USER_NM(RGST_ID)					name
+					,(SELECT NAME FROM t_ad_user WHERE USE_YN = 'Y' AND SEQ = APPROVER )  approver
+					,STATUS 							status   
+				    ,PRJCT_NM 							prjctNm     
+					,ETC 								etc   
+					,ATCH_FILE_ID 						atchFileId
+		      FROM   T_OVER_TIME 
+			 WHERE   USE_YN='Y'	
+			   AND   OT_SEQ = #{otSeq}
 		]]>
 	</select>
 

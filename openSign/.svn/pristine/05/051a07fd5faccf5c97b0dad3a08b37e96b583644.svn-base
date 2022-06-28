@@ -44,7 +44,7 @@
 		   AND	EMPLY_SEQ = #{schEtc04}
 		]]>    
 	</select>        
-	 
+	
 	<!-- 월별 식대 총계  -->
 	<select id="searchEatLogSelectContents" parameterType="cmmnDefaultVO" resultType="mgr0117VO"> 
 		/* Main.searchEatLogSelectContents */ 
