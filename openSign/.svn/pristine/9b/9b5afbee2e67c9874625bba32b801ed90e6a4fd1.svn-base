@@ -125,7 +125,7 @@
 									<span class="pick_input" style="margin-right:11px;">
 										<input type="text" name="staDate" id="staDate_${status.count }" class="text w80" maxlength="30" readonly value="<c:out value="${add.staDate}"/>"/>
 									</span>
-									<select name="staHour" id="staHour_${status.count }" style="width:40px;">
+									<select name="staHour" id="staTime_${status.count }" style="width:40px;">
 										<option value=""></option>
 										<c:forEach var="i" begin="0" end="23" step="1">
 											<option value="<fmt:formatNumber value='${i}' minIntegerDigits='2' type='number'/>" ${i eq add.staHour ? 'selected="selected"' : ''}> 
@@ -146,7 +146,7 @@
 									<span class="pick_input" style="margin-right:11px;">
 										<input type="text" name="endDate" id="endDate_${status.count }" class="text w80" maxlength="30" readonly value="<c:out value="${add.endDate}"/>"/>
 									</span>
-									<select name="endHour" id="endHour_${status.count }" style="width:40px;">
+									<select name="endHour" id="endTime_${status.count }" style="width:40px;">
 										<option value=""></option>
 										<c:forEach var="i" begin="0" end="23" step="1">
 											<option value="<fmt:formatNumber value='${i}' minIntegerDigits='2' type='number'/>" ${i eq add.endHour ? 'selected="selected"' : ''}>
@@ -175,21 +175,17 @@
 							</c:forEach>				
 						</c:when>
 						<c:otherwise>
-							<tr id="tr_no_data"><td colspan="4" class="no_data">데이터가 없습니다.<td></tr>
+							<tr id="tr_no_data"><td colspan="5" class="no_data">데이터가 없습니다.<td></tr>
 						</c:otherwise>
 					</c:choose>
 				</tbody>
 			</table>
 		</div>
 		<div class="btn_area">
-			<c:if test="${(loginVO.seq eq mgr0118VO.rgstId && mgr0118VO.status ne 'D' && mgr0118VO.status ne 'B' && loginVO.authCode eq '4' && searchVO.procType eq 'update') || (loginVO.authCode eq '1' && searchVO.procType eq 'update') }">
+			<c:if test="${(loginVO.seq eq mgr0118VO.rgstId && mgr0118VO.status ne 'D' && loginVO.authCode eq '4' && searchVO.procType eq 'update') || (loginVO.authCode eq '1' && searchVO.procType eq 'update') }">
 				<a href="javascript:void(0);" class="btn btn_mdl btn_rewrite" onclick="fncSubmit();">수정</a>
 				<a href="javascript:void(0);" class="btn btn_mdl btn_del" id="btn_del">삭제</a>	 
 			</c:if>
-		<%-- 	<c:if test="${(mgr0118VO.status eq 'B' && searchVO.procType eq 'update' && loginVO.authCode eq '4') }">
-				<a href="javascript:void(0);" class="btn btn_mdl btn_rewrite" onclick="fncSubmit();">재신청</a>
-				<a href="javascript:void(0);" class="btn btn_mdl btn_del" id="btn_del">삭제</a>
-			</c:if> --%>
 			<c:if test="${searchVO.procType eq 'insert' }">
 				<a href="javascript:void(0);" class="btn btn_mdl btn_save" onclick="fncSubmit();">등록</a>
 			</c:if>
@@ -329,14 +325,14 @@ function fncStaffAdd(){
 			    html += '<tr id="tr_add_'+addLength+'"><td id="chkUser_'+addLength+'" data-info="'+userSeq+'" data-name="'+userName+'">'+userName+'</td>';
 			    html += '<input type="hidden" id="adSeq_'+addLength+'" name="adSeq" value=" " />';
 			    html += '<td style="text-align:left;"><span class="pick_input" style="margin-right:11px; margin-left:17px;"><input type="text" name="staDate" id="staDate_'+addLength+'" class="text w80" maxlength="30" readonly/></span>';
-			    html += '<select name="staHour" id="staHour_'+addLength+'" style="width:40px; margin-left:3px;">';
+			    html += '<select name="staHour" id="staTime_'+addLength+'" style="width:40px; margin-left:3px;">';
 			    html += '<option value=""></option><c:forEach var="i" begin="0" end="23" step="1">';
 			    html += '<option value="<fmt:formatNumber value='${i}' minIntegerDigits='2' type='number'/>"><fmt:formatNumber value='${i}' minIntegerDigits='2' type='number'/></option></c:forEach></select>시 ';
 				html += '<select name="staMin" id="staMin_'+addLength+'" style="width:40px; margin-left:9px;">';
 				html += '<option value=""></option><c:forEach var="i" begin="0" end="50" step="10">';
 				html += '<option value="<fmt:formatNumber value='${i}' minIntegerDigits='2' type='number'/>"><fmt:formatNumber value='${i}' minIntegerDigits='2' type='number'/></option></c:forEach></select>분</td>';
 				html += '<td style="text-align:left;"><span class="pick_input" style="margin-right:11px; margin-left:17px;"><input type="text" name="endDate" id="endDate_'+addLength+'" class="text w80" maxlength="30" readonly/></span>';
-				html += '<select name="endHour" id="endHour_'+addLength+'" style="width:40px; margin-left:3px;">';
+				html += '<select name="endHour" id="endTime_'+addLength+'" style="width:40px; margin-left:3px;">';
 				html += '<option value=""></option><c:forEach var="i" begin="0" end="23" step="1">';
 				html += '<option value="<fmt:formatNumber value='${i}' minIntegerDigits='2' type='number'/>"><fmt:formatNumber value='${i}' minIntegerDigits='2' type='number'/></option></c:forEach></select>시';
 				html += '<select name="endMin" id="endMin_'+addLength+'" style="width:40px; margin-left:15px;">';
@@ -394,7 +390,7 @@ function fncDel(obj, idx, seq, name){
 	
 }
 
-<%-- submit +  유효성 검사  --%>
+<%-- 유효성 검사  --%>
 function fncSubmit(seq){
 	
 	$("#emplySeq").val(chkArray);
@@ -411,37 +407,32 @@ function fncSubmit(seq){
 	if($("[id^='tr_add_']").length == 0){
 		alert("인원을 추가해주세요.");
 		return false;
-	} 
-	       
+	}
 	
 	$("[id^='tr_add_']").each(function(idx){
 		
 		var addIdx = $(this).attr("id").split("_")[2];
-	
-		if(!$("#staDate_"+addIdx).val() || !$("#staHour_"+addIdx).val() || !$("#staMin_"+addIdx).val()){
-			alertMsg("staMin_"+addIdx, "red", "근무시작 시간을 선택해주세요.", "B");
+		
+		if(!$.trim($("#staMin_"+addIdx).val())){
+			alertMsg("staMin_"+addIdx, "red", "근무시작일을 전부 선택해주세요.", "B");
 			submitChk = false;
 			if(focusId == ""){focusId = "staMin_"+addIdx };
-		}else{
-			alertMsg("staMin_"+addIdx);
+			
 		}
 		
-		if(!$("#endDate_"+addIdx).val() || !$("#endHour_"+addIdx).val() || !$("#endMin_"+addIdx).val()){
-			alertMsg("endMin_"+addIdx, "red", "근무종료 시간을 선택해주세요.", "B");
+		if(!$.trim($("#endMin_"+addIdx).val())){
+			alertMsg("endMin_"+addIdx, "red", "근무종료일을 전부 선택해주세요.", "B");
 			submitChk = false;
 			if(focusId == ""){focusId = "endMin_"+addIdx };
-		}else{
-			alertMsg("endMin_"+addIdx);
+			
 		}
 		
 		if(!$.trim($("#cont_"+addIdx).val())){
 			alertMsg("cont_"+addIdx, "red", "내용을 입력해주세요.", "B");
 			submitChk = false;
 			if(focusId == ""){focusId = "cont_"+addIdx };
-		}else{
-			alertMsg("cont_"+addIdx);
+			
 		}
-		
 	});
 	
 	if(!submitChk){

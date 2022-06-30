@@ -362,11 +362,11 @@
 			 WHERE	EL_SEQ = #{elSeq}                                                        
 		]]>
 	</update> 
-	
+	  
 	<!-- 상태 업데이트 -->		 
 	<update id="stateUpdateContents" parameterType="mgr0117VO">
 		/* Mgr0117.stateUpdateContents */
-		<![CDATA[
+		<![CDATA[    
 			UPDATE	T_EAT_LOG      
 			   SET	  	    
 					STATE													=#{state		 }

@@ -269,6 +269,24 @@ public class Mgr0117Controller {
 		map.put("result", "변경이 완료되었습니다.");             
 		       
 		return map;
+	}  
+	    
+	/* 일괄 상태 변경 */  
+	@RequestMapping(folderPath + "checkedUpdate.do")
+	public String checkedUpdate(@ModelAttribute("searchVO") Mgr0117VO searchVO, ModelMap model) throws Exception{
+		    
+		if(!"".equals(StringUtil.nullString(searchVO.getSchEtc03()))){
+			String[] tempArray = searchVO.getSchEtc03().split(",");    
+			for(String temp : tempArray){  
+				searchVO.setElSeq(temp); 
+				searchVO.setState("Y");
+				cmmnService.updateContents(searchVO, PROGRAM_ID + ".stateUpdateContents");
+			}
+		}
+		          
+		model.addAttribute("message", "변경이 완료되었습니다.");
+		model.addAttribute("cmmnScript", "list.do");
+		return "cmmn/execute";
 	} 
 	
 	/* 메일 전송 */     

@@ -4,11 +4,16 @@
 <%-- content --%>
 <div class="content_box">   
 	<%-- search  --%> 
-	<div class="search_box">
+	<div class="search_box">  
 		<form name="defaultFrm" id="defaultFrm" method="post" onsubmit="return false;">
 			<input type="hidden" id="elSeq" name="elSeq"/>
+			<input type="hidden" id="schEtc03" name="schEtc03"/>
 			<input type="hidden" id="pageIndex" name="pageIndex"/>
-			<fieldset> 
+			<%-- 확인 & 결재자 --%>          
+			<c:if test="${loginVO.authCode eq '3' || loginVO.authCode eq '1' }">       
+				<input type="hidden" name="approver" id="approver" value="${loginVO.seq}"/>  
+			</c:if>
+			<fieldset>   
 				<legend>검색</legend>           
 				<div class="search_basic"> 
 					<strong class="tit">상태</strong>
@@ -52,6 +57,9 @@
 </div>
      
 <script type="text/javaScript">
+  
+<%-- 체크 상태 저장 --%>
+var checkedArray = new Array();  
   
 $(function(){  
 	<%-- 날짜 값 셋팅 --%>

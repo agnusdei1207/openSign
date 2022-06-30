@@ -172,7 +172,6 @@
 			   SET
 			   	   STATUS 		= #{status}
 			   	  ,APPROVER		= #{loginSeq}
-			   	  
 			 WHERE OT_SEQ 		= #{otSeq}	
 		]]>
 	</update>

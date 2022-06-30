@@ -52,41 +52,38 @@
 									${empty mgr0116VO.state ? '대여' : mgr0116VO.state eq 'B' ? '대여' : '반납'}
 								</c:otherwise>               
 							</c:choose>         
+							<c:if test="${loginVO.authCode eq '1' || (loginVO.authCode eq '3' && mgr0116VO.state eq 'B')}">            
+								<a href="javscript:void(0);" onclick="fncUpdateState();" class="btn btn_mdl btn_save" style="background-color:#308cde;border-color: #308cde;margin-left:3px;">변경</a>
+   							</c:if>   
 						</td>                      
 					</tr>        
 					<tr>        
 						<th scope="row"><strong class="th_tit">대여일</strong></th> 
 						<td>   
 							<c:choose>    
-								<c:when test="${empty mgr0116VO.rentalDate }">
-									-
-								</c:when>    
 								<c:when test="${(searchVO.procType eq 'update' && mgr0116VO.state eq 'B' && loginVO.seq eq mgr0116VO.rgstSeq) || (searchVO.procType eq 'insert') || (loginVO.authCode eq '1')}">
 									<input type="hidden" name="dateCondition" id="dateCondition" value="0"/>   
 									<span class="calendar_input type03"> 
 										<input type="text" name="rentalDate" id="rentalDate" class="text p50" value="<c:out value="${mgr0116VO.rentalDate }"/>" readonly="readonly"/> 
 									</span>   
 								</c:when>   
-								<c:otherwise>   
+								<c:otherwise>  
 									<input type="hidden" name="rentalDate" value="${mgr0116VO.rentalDate }">
 									<c:out value="${mgr0116VO.rentalDate }"/>
 								</c:otherwise>
-							</c:choose>         
-						</td>      
+							</c:choose>     
+						</td>                      
 						<th scope="row"><strong class="th_tit">반납일</strong></th>       
-						<td>                        
-							<c:choose>       
-								<c:when test="${(searchVO.procType eq 'update' && mgr0116VO.state eq 'B' && loginVO.authCode eq '3') || (loginVO.authCode eq '1')}">
+						<td>                 
+							<c:choose>                     
+								<c:when test="${(searchVO.procType eq 'update' && mgr0116VO.state eq 'B' && (loginVO.seq eq mgr0116VO.rgstSeq && loginVO.authCode eq '3')) || (loginVO.authCode eq '1')}">
 									<span class="calendar_input type03"> 
 										<input type="text" name="returnDate" id="returnDate" class="text p50" value="<c:out value="${mgr0116VO.returnDate }"/>" readonly="readonly"/> 
 									</span>
 								</c:when>       
-								<c:when test="${empty mgr0116VO.returnDate }"> 
-									-
-								</c:when>
 								<c:otherwise>           
 									<input type="hidden" name="returnDate" value="${mgr0116VO.returnDate }">
-										<c:out value="${mgr0116VO.returnDate }"/> 
+										<c:out value="${mgr0116VO.returnDate }"/>
 								</c:otherwise>
 							</c:choose>       
 						</td>
@@ -141,4 +138,19 @@ function fncSubmit(proc){
 }        
     
   
+<%-- 상태 변경 --%>
+function fncUpdateState(){      
+	fncLoadingStart();                   
+	$.ajax({                                     
+	    method: "POST",               
+	    url: "stateUpdate.do",	                                                  
+	    data : $("#defaultFrm").serialize(),    
+	    dataType: "JSON",              
+	    success: function(data) {    
+	    	alert(data.result);    
+	    },complete : function(){     
+	    	fncLoadingEnd();
+		}     
+	});	
+}
 </script>

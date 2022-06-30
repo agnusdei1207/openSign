@@ -167,15 +167,6 @@
 			 WHERE	CL_SEQ = #{clSeq}                                                        
 	</update>  
 	  
-	 <!-- 상태 업데이트 -->		    
-	<update id="stateUpdateContents" parameterType="mgr0116VO">
-		/* Mgr0116.stateUpdateContents */   
-		<![CDATA[  
-			UPDATE	T_CARD_LOG      
-			   SET	STATE													=#{state }
-			 WHERE	CL_SEQ = #{clSeq}                                                        
-		]]>
-	</update>           
 	 
 	  
 	<!-- 원글 삭제 -->
@@ -186,8 +177,19 @@
 		       SET USE_YN='N'
 			 WHERE CL_SEQ=#{clSeq}
 		]]> 
-	</update>
+	</update> 
 
+	<!-- 상태 변경 -->
+	<update id="stateUpdateContents" parameterType="mgr0116VO">
+		/* Mgr0116.stateUpdateContents */
+		<![CDATA[
+			UPDATE T_CARD_LOG 
+		       SET STATE = #{state}
+		       	   ,APPROVER = #{approver} 
+		       	   ,RETURN_DATE = #{returnDate}
+			 WHERE CL_SEQ=#{clSeq}
+		]]>  
+	</update>
 
 	
 	  

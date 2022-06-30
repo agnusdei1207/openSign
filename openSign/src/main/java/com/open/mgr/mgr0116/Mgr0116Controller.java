@@ -1,8 +1,6 @@
 package com.open.mgr.mgr0116;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -12,12 +10,12 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.open.cmmn.excel.ExcelView;
 import com.open.cmmn.service.CmmnService;
 import com.open.cmmn.util.DateUtils;
+import com.open.cmmn.util.StringUtil;
 import com.open.mgr.mgr0116.service.Mgr0116VO;
 
 import egovframework.rte.ptl.mvc.tags.ui.pagination.PaginationInfo;
@@ -145,22 +143,26 @@ public class Mgr0116Controller {
 		}    
 		
 		return mav; 
-	}    
-	
-	/* 상태 변경 */ 
-	@ResponseBody   
-	@SuppressWarnings("rawtypes")  
-	@RequestMapping(folderPath + "stateUpdate.do")
-	public Map stateUpdate(@ModelAttribute("searchVO") Mgr0116VO searchVO) throws Exception{
-		
-		Map<String, String> map = new HashMap<>();   
-		cmmnService.updateContents(searchVO, PROGRAM_ID + ".stateUpdateContents");
-		map.put("result", "변경이 완료되었습니다.");             
-		      
-		return map;
-	}
-	
-	
-	
+	}        
+	    
+	/* 일괄 반납 상태로 변경 */    
+	@RequestMapping(folderPath + "checkedUpdate.do")
+	public String checkedUpdate(@ModelAttribute("searchVO") Mgr0116VO searchVO, ModelMap model) throws Exception{
+		    
+		if(!"".equals(StringUtil.nullString(searchVO.getSchEtc03()))){
+			String time = DateUtils.getCurrentDate("yyyy.MM.dd");
+			String[] tempArray = searchVO.getSchEtc03().split(",");    
+			for(String temp : tempArray){  
+				searchVO.setClSeq(temp); 
+				searchVO.setState("R");    
+				searchVO.setReturnDate(time);
+				cmmnService.updateContents(searchVO, PROGRAM_ID + ".stateUpdateContents");
+			}
+		}
+		             
+		model.addAttribute("message", "변경이 완료되었습니다.");
+		model.addAttribute("cmmnScript", "list.do");
+		return "cmmn/execute";
+	} 
 
 }

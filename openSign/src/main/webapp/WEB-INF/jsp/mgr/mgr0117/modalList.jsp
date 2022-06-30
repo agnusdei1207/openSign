@@ -41,9 +41,10 @@
 </div>      
                    
 <script type="text/javaScript">  
+
+
   
 $(function(){                            
-	     
 	$("#popDivn").val("${searchVO.popDivn}");  
 	
 	if("${searchVO.popDivn}" == null || "${searchVO.popDivn}" == ""){

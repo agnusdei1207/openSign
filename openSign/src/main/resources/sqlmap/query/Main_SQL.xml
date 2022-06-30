@@ -11,12 +11,13 @@
 				  	,DATE_FORMAT(EAT_DATE, '%Y.%m.%d')							eatDate
 			     	    	   
 			  FROM	T_EAT_LOG 
-		 	 WHERE	EAT_DATE = #{schEtc01}
+		 	 WHERE	EAT_DATE = #{schEtc01}   
 			   AND	USE_YN = 'Y'
+			   AND	STATE = 'Y' 
 		     GROUP	BY  eatDate   
 		]]>     
 	</select>         
-	                             
+	                              
 	<!-- 초과근무 시간 조회 -->        
 	<select id="overTimeLogSelectContents" parameterType="cmmnDefaultVO" resultType="mgr0118VO">
 		/* Main.overTimeLogSelectContents */  
@@ -72,7 +73,7 @@
 		]]>
 	</select>	    
 	
-	<!-- 데이터 있는 연도만 조회 -->
+	<!-- 데이터 있는 연도만 조회 --> 
 	<select id="selectYearList" parameterType="cmmnDefaultVO" resultType="mgr0117VO">
 		/* Main.selectYearList */
 		<![CDATA[ 
@@ -111,7 +112,7 @@
 					,PRICE											price
 			  FROM	t_eat_log
 			 WHERE	USE_YN = 'Y'         
-			   AND	DATE_FORMAT(EAT_DATE, '%Y.%m.%d') = #{schEtc05} 
+			   AND	DATE_FORMAT(EAT_DATE, '%Y.%m.%d') = #{schEtc05}   
 		]]> 
 	</select>   
 	    
